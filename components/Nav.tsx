@@ -6,7 +6,6 @@ const NAV_LINKS = [
   { href: "#solution", label: "Solution" },
   { href: "#who-we-serve", label: "Who We Serve" },
   { href: "#why-chronilogix", label: "Why Chronilogix" },
-  { href: "#pricing", label: "Pricing" },
 ];
 
 export function Nav() {
@@ -29,9 +28,12 @@ export function Nav() {
       }`}
     >
       <div className="container-page flex h-16 items-center justify-between md:h-20">
-        <a href="#" className="flex items-center gap-2 text-ink">
-          <Logo />
-          <span className="text-base font-medium tracking-tight">Chronilogix</span>
+        <a href="#" className="flex items-center text-ink">
+          <img
+            src="/cronilogix-logo.svg"
+            alt="Chronilogix"
+            className="h-7 w-auto md:h-8"
+          />
         </a>
 
         <nav className="hidden lg:flex items-center gap-8">
@@ -116,17 +118,3 @@ export function Nav() {
   );
 }
 
-function Logo() {
-  return (
-    <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-brand-600 text-white">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-        <path
-          d="M7 1.4v2.8M7 9.8v2.8M3.1 3.1l2 2M8.9 8.9l2 2M1.4 7h2.8M9.8 7h2.8M3.1 10.9l2-2M8.9 5.1l2-2"
-          stroke="currentColor"
-          strokeWidth="1.4"
-          strokeLinecap="round"
-        />
-      </svg>
-    </span>
-  );
-}

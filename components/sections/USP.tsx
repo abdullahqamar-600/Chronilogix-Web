@@ -2,130 +2,78 @@
 
 import { useState } from "react";
 
-const PILLARS = [
-  {
-    title: "Evidence-Based MI",
-    body:
-      "400+ peer-reviewed studies underpin every conversation. Not generic AI advice.",
-  },
-  {
-    title: "Real-Time Clinical Validation",
-    body:
-      "A second model audits every response for clinical accuracy before the member sees it. No perceptible latency.",
-  },
-  {
-    title: "Culturally Tailored",
-    body:
-      "Adapts language, framing, and approach to each member’s background and values.",
-  },
-  {
-    title: "Crisis-Safe by Design",
-    body:
-      "Structured risk assessment with escalation to the 988 Suicide & Crisis Lifeline when warranted. Part of the clinical architecture, not a disclaimer.",
-  },
-];
-
 export function USP() {
+  const [playing, setPlaying] = useState(false);
+
   return (
-    <section id="why-chronilogix" className="section bg-paper">
-      <div className="container-page">
-        <p className="eyebrow">Why Chronilogix</p>
-        <h2 className="mt-4 max-w-3xl text-section font-normal text-ink">
-          Built on a person.
-          <br className="hidden md:block" /> Engineered for healthcare.
-        </h2>
+    <section
+      id="why-chronilogix"
+      className="relative overflow-hidden rounded-[28px] bg-ink"
+    >
+      <div className="group relative aspect-[4/5] sm:aspect-video">
+        <img
+          src="/ken-thumbnail.png"
+          alt="Dr. Ken Resnicow, seated in conversation"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
 
-        <ResnicowCallout />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-ink/35 to-transparent"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-ink/70 via-ink/25 to-transparent"
+        />
 
-        <div className="mt-12 grid gap-4 md:grid-cols-2">
-          {PILLARS.map((p) => (
-            <div
-              key={p.title}
-              className="flex items-start gap-4 rounded-2xl border border-ink/10 bg-white p-6"
-            >
-              <span className="mt-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-600/10 text-brand-700">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
-                  <path
-                    d="M2 6.5 4.8 9 10 3.5"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-              <div>
-                <p className="text-base font-medium text-ink">{p.title}</p>
-                <p className="mt-1 text-sm leading-relaxed text-ink-soft">
-                  {p.body}
-                </p>
-              </div>
-            </div>
-          ))}
+        <div className="absolute left-8 top-8 md:left-12 md:top-12 lg:left-16 lg:top-16">
+          <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/75">
+            Why Chronilogix
+          </p>
+          <p className="mt-2 text-sm text-white/85 md:text-base">
+            Watch · 2 min
+          </p>
         </div>
 
-        <TechnicalNote />
+        <button
+          type="button"
+          aria-label="Play video"
+          onClick={() => setPlaying(true)}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 transition-opacity duration-300 focus:outline-none focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 group-hover:opacity-100"
+        >
+          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-ink shadow-widget transition-transform hover:scale-105 md:h-20 md:w-20">
+            <PlayIcon />
+          </span>
+        </button>
+
+        <div className="absolute bottom-8 left-8 text-white md:bottom-12 md:left-12 lg:bottom-16 lg:left-16">
+          <p className="text-xl font-normal md:text-2xl">Dr. Ken Resnicow</p>
+          <p className="mt-1 text-sm text-white/75 md:text-base">
+            The mind behind Chronilogix
+          </p>
+        </div>
+
+        <div className="absolute bottom-8 right-8 max-w-sm text-right md:bottom-12 md:right-12 md:max-w-md lg:bottom-16 lg:right-16 lg:max-w-lg">
+          <h2 className="text-xl font-normal tracking-tight text-white md:text-2xl lg:text-3xl">
+            The human intelligence behind our AI.
+          </h2>
+          <p className="mt-4 text-sm leading-relaxed text-white/90 md:text-base">
+            At the heart of our platform is not just technology. It is 30
+            years of global experience. Dr. Ken Resnicow, one of the world’s
+            foremost experts in Motivational Interviewing and Cultural
+            Tailoring, has spent decades guiding patients across diverse
+            backgrounds, conditions, and cultures toward real, lasting change.
+          </p>
+        </div>
       </div>
     </section>
   );
 }
 
-function ResnicowCallout() {
+function PlayIcon() {
   return (
-    <div className="mt-12 overflow-hidden rounded-[28px] border border-ink/10 bg-gradient-to-br from-brand-50 via-paper-warm to-paper p-8 md:p-14">
-      <div className="grid gap-10 md:grid-cols-[1fr_1.4fr] md:items-center">
-        <div>
-          <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-brand-700">
-            The human intelligence behind the platform
-          </p>
-          <h3 className="mt-4 text-3xl font-normal leading-tight text-ink md:text-4xl">
-            The platform is built on a person.
-          </h3>
-        </div>
-        <div className="space-y-5 text-base leading-relaxed text-ink-soft md:text-lg">
-          <p>
-            Dr. Ken Resnicow is one of the world’s foremost experts in
-            Motivational Interviewing and Cultural Tailoring. Three decades
-            guiding patients across diverse backgrounds toward real, lasting
-            change. Chronilogix is built on his life’s work — designed to
-            reflect, not lecture. To ask the right question, in the right way,
-            for the right person.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TechnicalNote() {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="mt-12 rounded-2xl border border-ink/10 bg-paper-warm">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between px-6 py-4 text-left"
-        aria-expanded={open}
-      >
-        <span className="text-sm font-medium text-ink">
-          Technical note — for IT and procurement reviewers
-        </span>
-        <span
-          className={`text-ink-muted transition-transform ${open ? "rotate-180" : ""}`}
-        >
-          ⌄
-        </span>
-      </button>
-      {open && (
-        <div className="border-t border-ink/5 px-6 pb-6 pt-4 text-sm leading-relaxed text-ink-soft">
-          Chronilogix runs on a proprietary multi-model architecture with a
-          real-time clinical validation layer — a second model audits every
-          response for clinical accuracy before the member sees it.
-          Corrections happen instantly, with no perceptible latency. The
-          system was designed alongside Dr. Resnicow and is subject to
-          continuous clinical review.
-        </div>
-      )}
-    </div>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>
+      <path d="M7 4.5v11l9-5.5-9-5.5Z" fill="currentColor" />
+    </svg>
   );
 }

@@ -10,13 +10,15 @@ export function Problem() {
       id="problem"
       className="relative overflow-hidden rounded-[28px] bg-paper"
     >
-      <div className="grid lg:min-h-[640px] lg:grid-cols-2">
-        <div className="relative aspect-square lg:aspect-auto">
-          <img
-            src="/problem.png"
-            alt="A person standing alone in a golden field, looking at their phone."
-            className="absolute inset-0 h-full w-full object-cover"
-          />
+      <div className="grid lg:min-h-screen lg:grid-cols-2">
+        <div className="relative p-2 lg:p-2">
+          <div className="relative aspect-square overflow-hidden rounded-[24px] lg:aspect-auto lg:h-full">
+            <img
+              src="/problem.png"
+              alt="A person standing alone in a golden field, looking at their phone."
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </div>
         </div>
 
         <div className="flex flex-col justify-center p-10 md:p-14 lg:p-16 xl:p-20">
@@ -32,21 +34,18 @@ export function Problem() {
             And the ones who do are stuck on a waitlist.
           </p>
 
-          <ul className="mt-12 space-y-5 md:space-y-6">
+          <div className="mt-12 space-y-6 md:space-y-8">
             {STATS.map((s) => (
-              <li
-                key={s.value}
-                className="flex items-baseline gap-5 border-t border-ink/10 pt-5"
-              >
-                <span className="min-w-[5.5rem] text-3xl font-normal tracking-tight text-ink md:text-4xl">
+              <div key={s.value} className="border-t border-ink/10 pt-5">
+                <p className="text-4xl font-medium tracking-tight text-ink md:text-5xl">
                   {s.value}
-                </span>
-                <span className="text-sm leading-snug text-ink-muted">
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-ink-muted">
                   {s.label}
-                </span>
-              </li>
+                </p>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     </section>

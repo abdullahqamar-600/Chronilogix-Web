@@ -1,5 +1,4 @@
 import { Nav } from "@/components/Nav";
-import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/sections/Hero";
 import { Problem } from "@/components/sections/Problem";
 import { Solution } from "@/components/sections/Solution";
@@ -21,14 +20,13 @@ export default function HomePage() {
         <AskChronilogix />
         <Problem />
         <Solution />
-        <TrustSignals />
         <WhoWeServe />
         <USP />
-        <SocialProof />
-        <Pricing />
+        <TrustSignals />
+        {/* <SocialProof /> */}
+        {/* <Pricing /> — content merged into FinalCTA */}
         <FinalCTA />
       </main>
-      <Footer />
       <QuestionsWidget />
     </>
   );

@@ -34,6 +34,47 @@
   to { stroke-dashoffset: 0; }
 }
 
+@keyframes loaderProgress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes barGrow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(var(--bar-target, 1)); }
+}
+
+@keyframes orbRotateA {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes orbRotateB {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes brainFill {
+  from { clip-path: inset(100% 0 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes scaleXFromLeft {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes circlePop {
+  0% { opacity: 0; transform: scale(0); }
+  60% { opacity: 1; transform: scale(1.15); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -83,5 +124,21 @@
 
   .section {
     @apply relative overflow-hidden rounded-[28px] py-24 md:py-32 lg:py-40;
+  }
+}
+
+@layer utilities {
+  .animate-orb-rotate-a {
+    animation: orbRotateA 14s linear infinite;
+  }
+  .animate-orb-rotate-b {
+    animation: orbRotateB 22s linear infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-orb-rotate-a,
+  .animate-orb-rotate-b {
+    animation: none;
   }
 }
