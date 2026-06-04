@@ -8,6 +8,10 @@ const serif = Newsreader({
   style: ["normal", "italic"],
   variable: "--font-serif",
   display: "swap",
+  // Next.js 14.2.x can't auto-generate fallback metrics for Newsreader and
+  // logs a noisy warning each build. The auto-tuning is purely a CLS hint —
+  // disabling it silences the warning with no functional change.
+  adjustFontFallback: false,
 });
 
 const sans = Hanken_Grotesk({
