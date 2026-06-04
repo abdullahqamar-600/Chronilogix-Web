@@ -13,7 +13,15 @@ const PERSONAS = ["Employers", "Universities", "Health Plans", "App Partners"];
 const REVEAL_DURATION_MS = 2400;
 const REVEAL_WINDOW_RATIO = 4;
 
-export function Hero() {
+// Hardcoded asset URL is used as the fallback when Sanity is unreachable
+// at build time (network blip, missing env vars, etc.) so the homepage never
+// renders without a hero video. To swap the video permanently, upload a new
+// one in Sanity Studio → Site Settings → Hero Video and publish.
+const HERO_VIDEO_FALLBACK =
+  "https://cdn.sanity.io/files/q1nckxts/production/aa702253c4350f53d0117201982fbb1d8d68cf4f.mp4";
+
+export function Hero({ videoUrl }: { videoUrl?: string | null } = {}) {
+  const resolvedVideoUrl = videoUrl ?? HERO_VIDEO_FALLBACK;
   const runwayRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [revealProgress, setRevealProgress] = useState(0);
@@ -125,7 +133,7 @@ export function Hero() {
       >
         <video
           className="absolute inset-0 h-full w-full object-cover"
-          src="/hero%20video.mp4"
+          src={resolvedVideoUrl}
           poster="/hero-landscape.jpeg"
           autoPlay
           muted

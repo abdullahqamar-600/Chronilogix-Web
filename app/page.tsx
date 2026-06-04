@@ -8,13 +8,20 @@ import { Solution } from "@/components/sections/Solution";
 // import { AskChronilogix } from "@/components/sections/AskChronilogix";
 import { WhoWeServe } from "@/components/sections/WhoWeServe";
 import { ProofPoints } from "@/components/sections/ProofPoints";
+import { getSiteSettings } from "@/lib/sanity";
 
-export default function HomePage() {
+// Statically generate at build time; revalidate hourly so a video swap in
+// Sanity Studio shows up on the live site within an hour without redeploying.
+export const revalidate = 3600;
+
+export default async function HomePage() {
+  const { heroVideoUrl } = await getSiteSettings();
+
   return (
     <>
       <Nav />
       <main className="flex flex-col gap-2 p-2 md:gap-3 md:p-3">
-        <Hero />
+        <Hero videoUrl={heroVideoUrl} />
         <Statement />
         {/* <AskChronilogix /> */}
         <Problem />

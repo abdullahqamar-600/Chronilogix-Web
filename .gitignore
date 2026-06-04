@@ -44,6 +44,11 @@ next-env.d.ts
 .vscode/
 .claude/
 
-# Large media (host externally)
+# Large media (host externally — hero video is now served from Sanity)
 /public/hero video.mp4
 *.mp4
+
+# Sanity Studio runtime artifacts
+/sanity/node_modules
+/sanity/dist
+/sanity/.sanity
