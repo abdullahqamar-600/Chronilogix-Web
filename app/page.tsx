@@ -1,12 +1,13 @@
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/sections/Hero";
+import { Statement } from "@/components/sections/Statement";
 import { Problem } from "@/components/sections/Problem";
 import { Solution } from "@/components/sections/Solution";
-import { AskChronilogix } from "@/components/sections/AskChronilogix";
-import { TrustSignals } from "@/components/sections/TrustSignals";
+// Hidden for now — restore by un-commenting the import and the <AskChronilogix /> render below.
+// import { AskChronilogix } from "@/components/sections/AskChronilogix";
 import { WhoWeServe } from "@/components/sections/WhoWeServe";
-import { USP } from "@/components/sections/USP";
+import { ProofPoints } from "@/components/sections/ProofPoints";
 
 export default function HomePage() {
   return (
@@ -14,12 +15,12 @@ export default function HomePage() {
       <Nav />
       <main className="flex flex-col gap-2 p-2 md:gap-3 md:p-3">
         <Hero />
-        <AskChronilogix />
+        <Statement />
+        {/* <AskChronilogix /> */}
         <Problem />
         <Solution />
         <WhoWeServe />
-        <USP />
-        <TrustSignals />
+        <ProofPoints />
       </main>
       <Footer />
     </>

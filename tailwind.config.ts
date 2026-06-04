@@ -39,7 +39,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['"Neue Montreal"', "ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
+        sans: ['var(--font-sans)', "ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
+        serif: ['var(--font-serif)', "ui-serif", "Georgia", "Cambria", "Times New Roman", "serif"],
       },
       fontSize: {
         "display": ["clamp(2.75rem, 5vw + 1rem, 5rem)", { lineHeight: "1.02", letterSpacing: "-0.02em" }],

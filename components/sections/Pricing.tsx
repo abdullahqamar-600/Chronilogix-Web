@@ -22,7 +22,7 @@ export function Pricing() {
       <div className="container-page">
         <p className="eyebrow">Pricing</p>
         <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <h2 className="max-w-2xl text-section font-normal text-ink">
+          <h2 className="max-w-2xl text-section font-serif font-normal text-ink">
             Priced for scale. Built around the people you serve.
           </h2>
           <p className="max-w-md text-base leading-relaxed text-ink-soft">

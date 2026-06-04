@@ -26,7 +26,7 @@ export function SocialProof() {
     <section id="social-proof" className="section bg-paper-warm">
       <div className="container-page">
         <p className="eyebrow">Clinical evidence</p>
-        <h2 className="mt-4 max-w-3xl text-section font-normal text-ink">
+        <h2 className="mt-4 max-w-3xl text-section font-serif font-normal text-ink">
           Thirty years of research. Four hundred studies.
           <br className="hidden md:block" /> One named customer outcome.
         </h2>

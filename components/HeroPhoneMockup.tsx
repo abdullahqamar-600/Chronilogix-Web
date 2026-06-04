@@ -1,23 +1,37 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AIOrb } from "@/components/AIOrb";
-
-const CONVERSATION = {
-  aiQuestionLines: [
-    "You mentioned last time that anxiety mostly shows up on Sunday evenings.",
-    "What does that feel like when it starts?",
-  ],
-  userReply:
-    "Like dread. I start thinking about everything I didn’t finish and everything waiting for me. My chest gets tight and I just want Monday to be over before it starts.",
-  aiReflectionLines: [
-    "So it’s less about Monday itself, and more about feeling behind before you’ve even begun.",
-    "Like you’re already losing a race you haven’t started yet.",
-  ],
+type Turn = {
+  who: "ai" | "user";
+  paragraphs: string[];
 };
 
-const LINE_GAP = 700; // ms between lines fading in
-const CYCLE_MS = 11000;
+const CONVERSATION: Turn[] = [
+  {
+    who: "ai",
+    paragraphs: [
+      "What would make this time worth finishing for you, not anyone else?",
+    ],
+  },
+  {
+    who: "user",
+    paragraphs: [
+      "My son starts Little League next fall. I want to be there on the sideline.",
+    ],
+  },
+  {
+    who: "ai",
+    paragraphs: [
+      "That's the thing to hold on to. Let's start small enough that it lasts.",
+    ],
+  },
+];
+
+// Each turn fades in across its own window in chatProgress (0 → 1).
+const TURN_WINDOWS: Array<[number, number]> = [
+  [0.06, 0.22],
+  [0.32, 0.48],
+  [0.58, 0.74],
+];
 
 const SCREEN = {
   top: (24 / 1375) * 100,
@@ -34,12 +48,24 @@ const NOTCH = {
   height: (57 / 1375) * 100,
 };
 
-export function HeroPhoneMockup({ progress }: { progress: number }) {
-  // Phone is hidden at page load and rises into view as the hero
-  // runway is scrolled. At peak ~55% is visible so it sits lower.
+export function HeroPhoneMockup({
+  progress,
+  maxRisePercent = 55,
+  shiftXPercent = 0,
+  scale = 1,
+  chatProgress = 0,
+}: {
+  progress: number;
+  maxRisePercent?: number;
+  shiftXPercent?: number;
+  scale?: number;
+  chatProgress?: number;
+}) {
+  // Phone is hidden at page load and rises into view as the scroll
+  // progresses. At peak `maxRisePercent` of the phone is visible.
   const phoneRiseLinear = clamp01((progress - 0.12) / (0.65 - 0.12));
   const phoneRise = easeInOutCubic(phoneRiseLinear);
-  const phoneTranslateY = 100 - phoneRise * 55;
+  const phoneTranslateY = 100 - phoneRise * maxRisePercent;
 
   return (
     <div
@@ -47,9 +73,17 @@ export function HeroPhoneMockup({ progress }: { progress: number }) {
       style={{
         transform: `translateY(${phoneTranslateY}%)`,
         willChange: "transform",
+        zIndex: 10,
       }}
     >
-      <div className="relative aspect-[671/1375] w-[clamp(290px,31vw,440px)]">
+      <div
+        className="relative aspect-[671/1375] w-[clamp(260px,26vw,360px)]"
+        style={{
+          transform: `translateX(${shiftXPercent}%) scale(${scale})`,
+          transformOrigin: "center center",
+          willChange: "transform",
+        }}
+      >
         <img
           src="/iphone/Iphone.svg"
           alt=""
@@ -58,7 +92,10 @@ export function HeroPhoneMockup({ progress }: { progress: number }) {
           draggable={false}
         />
 
-        <ChatScreen active={phoneRise > 0.05} />
+        <ChatScreen
+          active={phoneRise > 0.05}
+          chatProgress={chatProgress}
+        />
 
         <img
           src="/iphone/Notch.png"
@@ -78,20 +115,13 @@ export function HeroPhoneMockup({ progress }: { progress: number }) {
   );
 }
 
-function ChatScreen({ active }: { active: boolean }) {
-  const [cycle, setCycle] = useState(0);
-
-  useEffect(() => {
-    if (!active) {
-      setCycle(0);
-      return;
-    }
-    const interval = setInterval(() => {
-      setCycle((c) => c + 1);
-    }, CYCLE_MS);
-    return () => clearInterval(interval);
-  }, [active]);
-
+function ChatScreen({
+  active,
+  chatProgress,
+}: {
+  active: boolean;
+  chatProgress: number;
+}) {
   return (
     <div
       className="absolute overflow-hidden"
@@ -101,102 +131,113 @@ function ChatScreen({ active }: { active: boolean }) {
         width: `${SCREEN.width}%`,
         height: `${SCREEN.height}%`,
         borderRadius: SCREEN.radius,
-        background: "linear-gradient(180deg, #FFFBE8 0%, #FFE8AA 100%)",
-        color: "#583C14",
+        backgroundColor: "#D8DCDA",
+        color: "#3A2412",
       }}
     >
+      {/* Background image */}
+      <img
+        src="/iphone-bg.png"
+        alt=""
+        aria-hidden
+        className="absolute inset-0 h-full w-full select-none object-cover"
+        draggable={false}
+      />
+      {/* Soft cream wash for text legibility over the imagery */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(255,251,236,0) 18%, rgba(255,247,225,0.6) 52%, rgba(255,244,216,0.92) 100%)",
+        }}
+      />
+      {/* Top vignette settles the orb against the sky */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-1/4"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 100%)",
+        }}
+      />
+
       {active && (
-        <div key={cycle} className="flex h-full flex-col px-7 pb-7 pt-[14%]">
-          {/* AI Orb */}
-          <div
-            style={{
-              animation: "fadeUp 600ms ease-out 200ms forwards",
-              opacity: 0,
-            }}
+        <div className="relative flex h-full flex-col px-4 pt-[22%] pb-5">
+          {/* Orb removed. Top label is now the session header. Sentence
+              case (no uppercase tracking) for accessibility — larger,
+              easier to scan, full contrast against the cream wash. */}
+          <p
+            className="text-[12.5px] font-semibold"
+            style={{ color: "#3A2412" }}
           >
-            <AIOrb size={22} />
+            Chronilogix · Tuesday 8:41
+          </p>
+
+          <div className="mt-4 flex flex-col gap-2.5">
+            {CONVERSATION.map((turn, i) => {
+              const [start, end] = TURN_WINDOWS[i];
+              const t = clamp01((chatProgress - start) / (end - start));
+              return turn.who === "ai" ? (
+                <AIBubble key={i} t={t} paragraphs={turn.paragraphs} />
+              ) : (
+                <UserBubble key={i} t={t} paragraphs={turn.paragraphs} />
+              );
+            })}
           </div>
-
-          {/* Greeting */}
-          <h3
-            className="mt-2 text-2xl font-medium leading-none tracking-tight"
-            style={{
-              animation: "fadeUp 600ms ease-out 500ms forwards",
-              opacity: 0,
-              color: "#583C14",
-            }}
-          >
-            Hi!
-          </h3>
-
-          {/* AI Question — lines fade in */}
-          <LinesFadeIn
-            lines={CONVERSATION.aiQuestionLines}
-            startDelay={1500}
-            lineGap={LINE_GAP}
-            className="mt-3 space-y-1 text-[13px] leading-[1.45]"
-          />
-
-          {/* User Reply — fade-up bubble */}
-          <div
-            className="mt-5 flex justify-end"
-            style={{
-              animation: "fadeUp 600ms ease-out 3700ms forwards",
-              opacity: 0,
-            }}
-          >
-            <div
-              className="max-w-[82%] rounded-2xl border px-3.5 py-2.5 text-[13px] leading-[1.45]"
-              style={{
-                background: "#FFFAE9",
-                borderColor: "#FFF8DF",
-                color: "#583C14",
-              }}
-            >
-              {CONVERSATION.userReply}
-            </div>
-          </div>
-
-          {/* AI Reflection — lines fade in */}
-          <LinesFadeIn
-            lines={CONVERSATION.aiReflectionLines}
-            startDelay={5400}
-            lineGap={LINE_GAP}
-            className="mt-5 space-y-1 text-[13px] leading-[1.45]"
-          />
         </div>
       )}
     </div>
   );
 }
 
-/** Line-by-line fade-up reveal. Each line is rendered as a block-level
- *  span so layout is reserved up front (opacity: 0 → 1 via animation). */
-function LinesFadeIn({
-  lines,
-  startDelay,
-  lineGap,
-  className,
-}: {
-  lines: string[];
-  startDelay: number;
-  lineGap: number;
-  className?: string;
-}) {
+function AIBubble({ t, paragraphs }: { t: number; paragraphs: string[] }) {
   return (
-    <div className={className} style={{ color: "#583C14" }}>
-      {lines.map((line, i) => (
-        <span
-          key={i}
-          className="block"
-          style={{
-            animation: `fadeUp 500ms ease-out ${startDelay + i * lineGap}ms forwards`,
-            opacity: 0,
-          }}
-        >
-          {line}
-        </span>
+    <div
+      className="self-start rounded-2xl px-4 py-2.5 text-[15px] leading-[1.4]"
+      style={{
+        background: "rgba(255, 250, 235, 0.62)",
+        backdropFilter: "blur(8px) saturate(140%)",
+        WebkitBackdropFilter: "blur(8px) saturate(140%)",
+        border: "1px solid rgba(255, 255, 255, 0.55)",
+        boxShadow:
+          "0 1px 0 rgba(255,255,255,0.55) inset, 0 6px 18px -8px rgba(58,36,18,0.18)",
+        opacity: t,
+        transform: `translateY(${(1 - t) * 6}px)`,
+        color: "#3A2412",
+        maxWidth: "96%",
+        willChange: "opacity, transform",
+      }}
+    >
+      {paragraphs.map((p, i) => (
+        <p key={i} className={i > 0 ? "mt-1.5" : ""}>
+          {p}
+        </p>
       ))}
+    </div>
+  );
+}
+
+function UserBubble({ t, paragraphs }: { t: number; paragraphs: string[] }) {
+  return (
+    <div className="flex justify-end">
+      <div
+        className="rounded-2xl px-4 py-2.5 text-[15px] leading-[1.4] shadow-[0_1px_2px_rgba(58,36,18,0.08)]"
+        style={{
+          background: "#FFF6E0",
+          color: "#3A2412",
+          maxWidth: "94%",
+          opacity: t,
+          transform: `translateY(${(1 - t) * 6}px)`,
+          willChange: "opacity, transform",
+        }}
+      >
+        {paragraphs.map((p, i) => (
+          <p key={i} className={i > 0 ? "mt-1.5" : ""}>
+            {p}
+          </p>
+        ))}
+      </div>
     </div>
   );
 }

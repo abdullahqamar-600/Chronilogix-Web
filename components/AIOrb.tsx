@@ -26,15 +26,23 @@ export function AIOrb({
   return (
     <span
       {...a11yProps}
-      className={`relative inline-block shrink-0 overflow-hidden rounded-full ${className}`}
-      style={{ width: size, height: size }}
+      className={`relative inline-block shrink-0 overflow-hidden rounded-full border border-white/25 backdrop-blur-xl backdrop-saturate-150 ${className}`}
+      style={{
+        width: size,
+        height: size,
+        boxShadow:
+          "inset 0 1px 1px rgba(255,255,255,0.45), 0 10px 26px -8px rgba(255,116,52,0.5)",
+      }}
     >
-      {/* Primary linear gradient — half bright, half deep, rotates clockwise */}
+      {/* Primary linear gradient — half bright, half deep, rotates clockwise.
+          Slight transparency lets the blurred backdrop bleed through, giving
+          a glass-bead quality rather than a solid disk. */}
       <span
         className="animate-orb-rotate-a absolute -inset-1/4"
         style={{
           background:
             "linear-gradient(135deg, #FFC591 0%, #FF7434 52%, #E45A1C 100%)",
+          opacity: 0.85,
         }}
       />
 
@@ -45,12 +53,12 @@ export function AIOrb({
           background:
             "linear-gradient(45deg, transparent 0%, #FFB87A 50%, transparent 100%)",
           mixBlendMode: "screen",
-          opacity: 0.55,
+          opacity: 0.6,
         }}
       />
 
-      {/* Subtle inner ring for crisp edge definition */}
-      <span className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-inset ring-ink/15" />
+      {/* Hairline white refraction ring on the inside edge */}
+      <span className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-inset ring-white/20" />
     </span>
   );
 }

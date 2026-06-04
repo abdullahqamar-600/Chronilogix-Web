@@ -12,7 +12,7 @@ export function NamedQuote({
   if (variant === "anchor") {
     return (
       <figure className="text-center">
-        <blockquote className="font-medium tracking-tight text-ink text-section">
+        <blockquote className="font-serif font-medium tracking-tight text-ink text-section">
           <span className="text-brand-600">“</span>
           {quote}
           <span className="text-brand-600">”</span>

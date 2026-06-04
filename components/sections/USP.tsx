@@ -54,7 +54,7 @@ export function USP() {
         </div>
 
         <div className="absolute bottom-8 right-8 max-w-sm text-right md:bottom-12 md:right-12 md:max-w-md lg:bottom-16 lg:right-16 lg:max-w-lg">
-          <h2 className="text-xl font-normal tracking-tight text-white md:text-2xl lg:text-3xl">
+          <h2 className="text-xl font-serif font-normal tracking-tight text-white md:text-2xl lg:text-3xl">
             The human intelligence behind our AI.
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-white/90 md:text-base">

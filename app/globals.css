@@ -2,33 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
- * Neue Montreal — self-hosted.
- * Place font files at /public/fonts/ when available. Until then the @font-face
- * declarations resolve to system fallbacks gracefully via font-family stack.
- */
-@font-face {
-  font-family: "Neue Montreal";
-  src: url("/fonts/NeueMontreal-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Neue Montreal";
-  src: url("/fonts/NeueMontreal-Medium.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Neue Montreal";
-  src: url("/fonts/NeueMontreal-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
 @keyframes drawLine {
   from { stroke-dashoffset: 100; }
   to { stroke-dashoffset: 0; }
@@ -75,6 +48,61 @@
   to { opacity: 1; }
 }
 
+@keyframes revealItem {
+  from { filter: blur(5px); opacity: 0.45; }
+  to { filter: blur(0); opacity: 1; }
+}
+
+/* Per-word reveal — mirrors the Statement (Section 2) treatment.
+   Each word starts blurred and faded, then resolves into focus.
+   Used by Who We Serve persona content on activation. */
+@keyframes wordReveal {
+  from { filter: blur(3.5px); opacity: 0.12; }
+  to { filter: blur(0); opacity: 1; }
+}
+
+/* Soft filled halo emanating from beneath an agent blob. The circle starts
+   at the blob's exact size, expands slowly outward, fades out, and then rests
+   invisibly for the remainder of the cycle before the next pulse begins.
+   The strip's overflow:hidden crops it once it exceeds its bounds. */
+@keyframes haloFill {
+  0%   { transform: scale(1);   opacity: 0.45; }
+  45%  { transform: scale(2.8); opacity: 0;    }
+  100% { transform: scale(2.8); opacity: 0;    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .halo-fill { animation: none !important; opacity: 0 !important; }
+}
+
+/* Progressive-disclosure rows used by Problem.tsx facts.
+   Initial state lives in CSS (not inline style) so Tailwind data-attribute
+   variants can override transform/opacity once the parent flips data-revealed. */
+.reveal-row {
+  opacity: 0;
+  transform: translateY(14px);
+  transition-property: opacity, transform, filter;
+  transition-duration: 700ms;
+  transition-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.reveal-row-blur {
+  filter: blur(6px);
+}
+[data-revealed="true"] .reveal-row {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-row {
+    transition: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -84,8 +112,7 @@
   }
 
   body {
-    @apply bg-paper text-ink font-sans;
-    font-feature-settings: "ss01", "cv11";
+    @apply bg-white text-ink font-sans;
   }
 
   ::selection {

@@ -9,7 +9,7 @@ export function FinalCTA() {
       <div className="container-page relative py-24 md:py-32 lg:py-40">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr] md:items-end">
           <div>
-            <h2 className="max-w-xl text-2xl font-normal leading-snug text-white md:text-3xl">
+            <h2 className="max-w-xl text-2xl font-serif font-normal leading-snug text-white md:text-3xl">
               <span className="text-white">Book a 30-minute demo.</span>{" "}
               <span className="text-white/65">
                 We’ll show you Chronilogix in a live session, walk through the

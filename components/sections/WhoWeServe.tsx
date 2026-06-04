@@ -1,338 +1,428 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-type Stat = {
-  big: string;
-  label: string;
-  rows: { side: string; val: string; barWidth: number; primary?: boolean }[];
-};
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 
 type Persona = {
   key: string;
   label: string;
-  headlineStart: string;
-  headlineAccent: string;
-  body: string;
-  ctaLabel: string;
-  stats: Stat[];
+  headline: [string, string];
+  description: string;
+  image: string | null;
+  imageAlt: string;
 };
 
 const PERSONAS: Persona[] = [
   {
     key: "employers",
     label: "Employers & HR",
-    headlineStart: "Reach every employee.",
-    headlineAccent: "Not just the few who ask.",
-    body: "Mental health and chronic conditions drive the largest unmanaged cost lines in your population. Chronilogix slots into your benefits stack and meets the people your EAP never does.",
-    ctaLabel: "Talk to our team",
-    stats: [
-      {
-        big: "8x",
-        label: "Higher engagement than typical EAPs",
-        rows: [
-          { side: "Typical EAP", val: "3% utilization", barWidth: 12 },
-          { side: "Chronilogix", val: "25% engaged", barWidth: 100, primary: true },
-        ],
-      },
-      {
-        big: "~50%",
-        label: "Lower cost vs. live coaching",
-        rows: [
-          { side: "Live coaching", val: "$60–70 PMPM", barWidth: 100 },
-          { side: "Chronilogix", val: "$20–30 PMPM", barWidth: 42, primary: true },
-        ],
-      },
-      {
-        big: "24/7",
-        label: "Available the moment it’s needed",
-        rows: [
-          { side: "EAP hotline", val: "Business hours", barWidth: 34 },
-          { side: "Chronilogix", val: "Every hour", barWidth: 100, primary: true },
-        ],
-      },
-    ],
+    headline: ["Reach every employee.", "Not just the few who ask."],
+    description:
+      "Chronilogix integrates into your benefits stack. Every employee gets a clinically trained coaching experience, available the moment they need it, culturally tailored to who they are.",
+    image: "/for-employees.png",
+    imageAlt:
+      "A group of coworkers laughing together against a bright sky.",
   },
   {
     key: "universities",
     label: "Universities",
-    headlineStart: "Built for the",
-    headlineAccent: "60% who never raise their hand.",
-    body: "Counseling centers are overwhelmed and the students who need help most rarely ask. Chronilogix is private, immediate, and culturally tailored. Available the moment a student needs it.",
-    ctaLabel: "See the university program",
-    stats: [
-      {
-        big: "100%",
-        label: "Of students supported, with no new hires",
-        rows: [
-          { side: "Counseling staff", val: "Capped by FTEs", barWidth: 12 },
-          { side: "Chronilogix", val: "Every student", barWidth: 100, primary: true },
-        ],
-      },
-      {
-        big: "<1 min",
-        label: "To first conversation, vs. 1.6 weeks",
-        rows: [
-          { side: "Counseling center", val: "1.6 weeks avg", barWidth: 100 },
-          { side: "Chronilogix", val: "Instant access", barWidth: 4, primary: true },
-        ],
-      },
-      {
-        big: "60%",
-        label: "Of students who never seek help, reached privately",
-        rows: [
-          { side: "Counseling office", val: "Out of reach", barWidth: 4 },
-          { side: "Chronilogix", val: "Met where they are", barWidth: 100, primary: true },
-        ],
-      },
-    ],
+    headline: ["Built for the students", "who never raise their hand."],
+    description:
+      "Available the moment a student needs it. 3am before exams. After a hard call home. Culturally tailored, completely private, built on Dr. Resnicow's MI methodology.",
+    image: "/for-universities.png",
+    imageAlt: "A student studying alone in a campus library.",
   },
   {
     key: "health-plans",
     label: "Health Plans & Brokers",
-    headlineStart: "Member coaching that",
-    headlineAccent: "scales with your network.",
-    body: "Behavioral health is your fastest-growing claim category. Chronilogix delivers ongoing, evidence-based coaching at a fraction of the cost of live care, at member-volume scale.",
-    ctaLabel: "Get a custom quote",
-    stats: [
-      {
-        big: "+25%",
-        label: "Additional members engaged in care (Aetna)",
-        rows: [
-          { side: "Without Chronilogix", val: "Baseline", barWidth: 60 },
-          { side: "With Chronilogix", val: "+25% reached", barWidth: 100, primary: true },
-        ],
-      },
-      {
-        big: "2–3x",
-        label: "Lower per-member cost",
-        rows: [
-          { side: "Live coaching", val: "$60–70 PMPM", barWidth: 100 },
-          { side: "Chronilogix", val: "$20–30 PMPM", barWidth: 42, primary: true },
-        ],
-      },
-      {
-        big: "0",
-        label: "Wait time for member access",
-        rows: [
-          { side: "Live coaching", val: "Weeks–months", barWidth: 100 },
-          { side: "Chronilogix", val: "Immediate", barWidth: 4, primary: true },
-        ],
-      },
-    ],
+    headline: ["Member coaching that scales", "with your network."],
+    description:
+      "Every member in your plan gets ongoing, evidence-based coaching at a fraction of the cost of live care. A real coaching relationship, available 24 hours a day.",
+    image: null,
+    imageAlt: "",
   },
   {
     key: "app-partners",
     label: "App Partners",
-    headlineStart: "30 years of clinical research,",
-    headlineAccent: "embedded in your product.",
-    body: "Building genuinely clinical AI takes years and millions in R&D. Chronilogix drops the methodology, validation layer, and crisis protocols straight into your app.",
-    ctaLabel: "Explore the partnership",
-    stats: [
-      {
-        big: "400+",
-        label: "Clinical studies behind the methodology",
-        rows: [
-          { side: "Generic AI", val: "0 studies", barWidth: 4 },
-          { side: "Chronilogix", val: "400+ peer-reviewed", barWidth: 100, primary: true },
-        ],
-      },
-      {
-        big: "30 yrs",
-        label: "Of Motivational Interviewing pre-trained",
-        rows: [
-          { side: "Build in-house", val: "Years of R&D", barWidth: 100 },
-          { side: "Chronilogix", val: "Day-one ready", barWidth: 18, primary: true },
-        ],
-      },
-      {
-        big: "$0",
-        label: "Development overhead to integrate",
-        rows: [
-          { side: "Build in-house", val: "$5M+ to ship", barWidth: 100 },
-          { side: "Chronilogix", val: "Drop-in API", barWidth: 6, primary: true },
-        ],
-      },
-    ],
+    headline: ["30 years of clinical research,", "embedded in your product."],
+    description:
+      "Chronilogix drops in as the clinical coaching intelligence inside your product. Dr. Resnicow's 30-year methodology, with no development overhead on your side.",
+    image: null,
+    imageAlt: "",
   },
 ];
 
-const ROTATION_MS = 12000;
-
 export function WhoWeServe() {
+  const wrapRef = useRef<HTMLElement | null>(null);
+  const stepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [active, setActive] = useState(0);
-  const [intervalKey, setIntervalKey] = useState(0);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
-    const t = setInterval(
-      () => setActive((a) => (a + 1) % PERSONAS.length),
-      ROTATION_MS,
-    );
-    return () => clearInterval(t);
-  }, [intervalKey]);
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mq.matches);
+    const onChange = () => setReducedMotion(mq.matches);
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
 
-  const handleSelect = (i: number) => {
-    setActive(i);
-    setIntervalKey((k) => k + 1);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const idx = Number(
+              (entry.target as HTMLElement).dataset.step,
+            );
+            setActive((prev) => (prev === idx ? prev : idx));
+          }
+        }
+      },
+      { rootMargin: "-50% 0px -50% 0px", threshold: 0 },
+    );
+    stepRefs.current.forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  const handleNavClick = (i: number) => {
+    const step = stepRefs.current[i];
+    if (!step) return;
+    const y = step.getBoundingClientRect().top + window.scrollY + 8;
+    window.scrollTo({
+      top: y,
+      behavior: reducedMotion ? "auto" : "smooth",
+    });
   };
 
-  const persona = PERSONAS[active];
-
   return (
-    <section id="who-we-serve" className="section bg-paper">
-      <div className="container-page">
-        <p className="eyebrow mb-12 md:mb-16">Who we serve</p>
+    <section
+      ref={wrapRef}
+      id="who-we-serve"
+      aria-labelledby="who-we-serve-label"
+      data-nav-tone="dark"
+      className="relative"
+      style={{ height: `calc(100svh * ${PERSONAS.length})` }}
+    >
+      {/* Scroll-step markers — IO drives `active` from these */}
+      {PERSONAS.map((p, i) => (
+        <div
+          key={`step-${p.key}`}
+          ref={(el) => {
+            stepRefs.current[i] = el;
+          }}
+          data-step={i}
+          aria-hidden
+          className="pointer-events-none absolute left-0 right-0 h-[100svh]"
+          style={{ top: `calc(100svh * ${i})` }}
+        />
+      ))}
 
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[240px_1fr] lg:gap-20">
-          <PersonaNav
-            personas={PERSONAS}
+      <div className="sticky top-2 h-[calc(100svh-1rem)] overflow-hidden rounded-[28px] text-white md:top-3 md:h-[calc(100svh-1.5rem)]">
+        {/* Background image layers — opacity-only crossfade. Blur was the
+            jank source: animating filter:blur on a full-bleed image forces
+            expensive repaints every frame. Static scale gives a soft anchor;
+            transition is opacity-only on a long, gentle curve. */}
+        <div className="absolute inset-0" aria-hidden>
+          {PERSONAS.map((p, i) => {
+            const isActive = i === active;
+            return (
+              <div
+                key={p.key}
+                className="absolute inset-0"
+                style={{
+                  opacity: isActive ? 1 : 0,
+                  transform: "translate3d(0,0,0) scale(1.04)",
+                  transition: reducedMotion
+                    ? "none"
+                    : "opacity 1100ms cubic-bezier(0.4, 0, 0.2, 1)",
+                  willChange: "opacity",
+                }}
+              >
+                {p.image ? (
+                  <img
+                    src={p.image}
+                    alt=""
+                    className="h-full w-full select-none object-cover"
+                    draggable={false}
+                    loading={i === 0 ? "eager" : "lazy"}
+                  />
+                ) : (
+                  <PlaceholderBackdrop label={p.label} />
+                )}
+              </div>
+            );
+          })}
+          {/* Bottom darkening for legibility, sits above all image layers */}
+          <div
+            aria-hidden
+            className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/55 via-black/25 to-transparent"
+          />
+        </div>
+
+        {/* Content — bottom-anchored. The persona list IS the accordion now;
+            headline + description live INSIDE each item and expand only when
+            that persona is active. */}
+        <div className="relative flex h-full flex-col justify-end p-8 sm:p-10 md:p-14 lg:p-16 xl:p-20">
+          <h2 id="who-we-serve-label" className="sr-only">
+            Who we serve
+          </h2>
+
+          <PersonaAccordion
             active={active}
-            onSelect={handleSelect}
+            onSelect={handleNavClick}
+            reducedMotion={reducedMotion}
           />
 
-          <div
-            key={persona.key}
-            className="min-w-0"
-            style={{
-              animation: "fadeIn 450ms ease-out forwards",
-              opacity: 0,
-            }}
+          <a
+            href="#book-a-demo"
+            className="mt-8 inline-flex w-fit items-center rounded-full bg-white px-6 py-3 text-sm font-medium text-ink shadow-soft transition hover:bg-paper-warm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 md:mt-10"
           >
-            <h2 className="text-section font-normal tracking-tight text-ink md:text-display">
-              {persona.headlineStart}{" "}
-              <span className="text-brand-700">{persona.headlineAccent}</span>
-            </h2>
-
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-ink-soft md:text-lg">
-              {persona.body}
-            </p>
-
-            <a
-              href="#book-a-demo"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-medium text-white shadow-soft transition hover:bg-ink-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 focus-visible:ring-offset-2"
-            >
-              {persona.ctaLabel}
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
-                <path
-                  d="M3 6h6M6 3l3 3-3 3"
-                  stroke="currentColor"
-                  strokeWidth="1.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </a>
-
-            <div className="mt-14 space-y-10 md:mt-16 md:space-y-12">
-              {persona.stats.map((s) => (
-                <StatRow key={s.big + s.label} stat={s} />
-              ))}
-            </div>
-          </div>
+            Book a Demo
+          </a>
         </div>
       </div>
     </section>
   );
 }
 
-function PersonaNav({
-  personas,
+function PersonaAccordion({
   active,
   onSelect,
+  reducedMotion,
 }: {
-  personas: Persona[];
   active: number;
   onSelect: (i: number) => void;
+  reducedMotion: boolean;
 }) {
-  // Fill aligns with the active item's vertical center within the list.
-  const fillPct = ((active + 0.5) / personas.length) * 100;
-
   return (
-    <nav className="lg:sticky lg:top-24">
-      {/* Vertical track + fill — bounded to the persona list height (lg+) */}
-      <div className="relative">
-        <div
-          aria-hidden
-          className="absolute bottom-0 left-0 top-0 hidden w-0.5 rounded-full bg-ink/10 lg:block"
-        />
-        <div
-          aria-hidden
-          className="absolute left-0 top-0 hidden w-0.5 rounded-full bg-brand-600 lg:block"
-          style={{
-            height: `${fillPct}%`,
-            transition: "height 700ms cubic-bezier(0.4, 0, 0.2, 1)",
-          }}
-        />
-
-        <ul className="flex flex-row flex-wrap gap-x-5 gap-y-3 lg:flex-col lg:gap-7 lg:pl-8">
-          {personas.map((p, i) => {
-            const isActive = i === active;
-            return (
-              <li key={p.key} className="lg:relative">
-                {/* Persona-row marker — centered ON the track at the row's vertical middle */}
-                <span
-                  aria-hidden
-                  className={`absolute top-1/2 hidden -translate-x-1/2 -translate-y-1/2 rounded-full ring-4 ring-paper transition-all duration-300 lg:block ${
-                    isActive
-                      ? "h-2.5 w-2.5 bg-brand-600"
-                      : "h-1.5 w-1.5 bg-ink/20"
-                  }`}
-                  style={{ left: "-2rem" }}
-                />
-                <button
-                  type="button"
-                  onClick={() => onSelect(i)}
-                  className={`text-left leading-snug transition-colors ${
-                    isActive
-                      ? "text-lg font-semibold text-ink lg:text-xl"
-                      : "text-base font-medium text-ink-subtle hover:text-ink-soft"
-                  }`}
-                >
-                  {p.label}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+    <nav aria-label="Who we serve" className="min-w-0 max-w-3xl">
+      <ul className="flex flex-col">
+        {PERSONAS.map((p, i) => (
+          <PersonaItem
+            key={p.key}
+            persona={p}
+            index={i}
+            isActive={i === active}
+            onSelect={onSelect}
+            reducedMotion={reducedMotion}
+          />
+        ))}
+      </ul>
     </nav>
   );
 }
 
-function StatRow({ stat }: { stat: Stat }) {
-  return (
-    <div className="grid items-start gap-5 border-t border-ink/10 pt-6 md:grid-cols-[200px_1fr] md:gap-12">
-      <div>
-        <p className="text-4xl font-normal tracking-tight text-ink md:text-5xl">
-          {stat.big}
-        </p>
-        <p className="mt-2 text-sm leading-snug text-ink-muted">{stat.label}</p>
-      </div>
+function PersonaItem({
+  persona,
+  index,
+  isActive,
+  onSelect,
+  reducedMotion,
+}: {
+  persona: Persona;
+  index: number;
+  isActive: boolean;
+  onSelect: (i: number) => void;
+  reducedMotion: boolean;
+}) {
+  const panelId = `persona-panel-${persona.key}`;
+  const buttonId = `persona-button-${persona.key}`;
 
-      <div className="space-y-3">
-        {stat.rows.map((r, i) => (
-          <div
-            key={i}
-            className="grid grid-cols-[110px_1fr_120px] items-center gap-4 text-xs md:grid-cols-[140px_1fr_140px]"
-          >
-            <span className="font-medium uppercase tracking-[0.14em] text-ink-muted">
-              {r.side}
-            </span>
-            <div className="h-1.5 overflow-hidden rounded-full bg-ink/5">
-              <div
-                className={`h-full origin-left rounded-full ${
-                  r.primary ? "bg-brand-600" : "bg-ink/25"
-                }`}
-                style={{
-                  transform: `scaleX(${r.barWidth / 100})`,
-                  transformOrigin: "left",
-                  width: "100%",
-                }}
-              />
-            </div>
-            <span className="text-right text-ink-soft">{r.val}</span>
+  return (
+    <li className="min-w-0">
+      <button
+        type="button"
+        id={buttonId}
+        onClick={() => onSelect(index)}
+        aria-expanded={isActive}
+        aria-controls={panelId}
+        className="group flex w-full items-center gap-4 py-4 text-left md:py-5"
+      >
+        <span
+          aria-hidden
+          className="block w-[2px] shrink-0 rounded-full transition-all duration-500 ease-out"
+          style={{
+            height: isActive ? 28 : 0,
+            opacity: isActive ? 1 : 0,
+            backgroundColor: "rgba(255,255,255,0.95)",
+          }}
+        />
+        <span
+          className="text-base font-medium leading-snug transition-colors duration-500 md:text-lg"
+          style={{
+            color: isActive
+              ? "rgba(255,255,255,0.98)"
+              : "rgba(255,255,255,0.55)",
+          }}
+        >
+          {persona.label}
+        </span>
+      </button>
+
+      {/* Collapsible panel — grid-rows trick gives smooth height animation
+          without measuring content. Inner div clips overflow during transit. */}
+      <div
+        id={panelId}
+        role="region"
+        aria-labelledby={buttonId}
+        className="grid"
+        style={{
+          gridTemplateRows: isActive ? "1fr" : "0fr",
+          transition: reducedMotion
+            ? "none"
+            : "grid-template-rows 700ms cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
+      >
+        <div className="overflow-hidden">
+          <div className="pb-6 pl-6 pr-2 md:pb-8 md:pl-7">
+            <WordReveal
+              isActive={isActive}
+              reducedMotion={reducedMotion}
+              personaKey={persona.key}
+              headline={persona.headline}
+              description={persona.description}
+            />
           </div>
+        </div>
+      </div>
+    </li>
+  );
+}
+
+/**
+ * Per-word blur reveal — same visual treatment as the Statement section
+ * (Section 2). Words resolve in sequence from blur(3.5px)+opacity(0.12) to
+ * blur(0)+opacity(1) with a staggered animation-delay. Headline gets a
+ * slightly longer per-word stride for drama; description follows tighter so
+ * it doesn't drag. Re-keyed by persona so the animation restarts cleanly on
+ * every persona change.
+ */
+function WordReveal({
+  isActive,
+  reducedMotion,
+  personaKey,
+  headline,
+  description,
+}: {
+  isActive: boolean;
+  reducedMotion: boolean;
+  personaKey: string;
+  headline: [string, string];
+  description: string;
+}) {
+  const headlineLines = useMemo(
+    () => headline.map((line) => line.split(" ")),
+    [headline],
+  );
+  const descriptionWords = useMemo(
+    () => description.split(" "),
+    [description],
+  );
+
+  const HEADLINE_BASE_DELAY = 120;
+  const HEADLINE_STRIDE = 55;
+  const DESCRIPTION_STRIDE = 18;
+  const DESCRIPTION_GAP = 180;
+
+  // Total time the headline words take to finish reveal, so description can
+  // start as headline lands rather than competing for attention.
+  const headlineWordCount = headlineLines.reduce(
+    (acc, line) => acc + line.length,
+    0,
+  );
+  const descriptionStart =
+    HEADLINE_BASE_DELAY + headlineWordCount * HEADLINE_STRIDE + DESCRIPTION_GAP;
+
+  let headlineIdx = 0;
+
+  return (
+    <div
+      // Re-key so the animation restarts every time a different persona
+      // becomes active. Without the key flip, React would reuse spans and
+      // CSS animations wouldn't re-run.
+      key={`${personaKey}-${isActive ? "on" : "off"}`}
+    >
+      <h3
+        className="font-serif font-normal tracking-[-0.015em] text-white"
+        style={{
+          fontSize: "clamp(1.625rem, 2.2vw + 0.55rem, 3rem)",
+          lineHeight: 1.08,
+        }}
+      >
+        {headlineLines.map((words, li) => (
+          <Fragment key={li}>
+            {words.map((word, wi) => {
+              const delay =
+                HEADLINE_BASE_DELAY + headlineIdx * HEADLINE_STRIDE;
+              headlineIdx += 1;
+              return (
+                <Fragment key={wi}>
+                  <span
+                    className="inline-block"
+                    style={
+                      reducedMotion || !isActive
+                        ? { opacity: isActive ? 1 : 0 }
+                        : {
+                            opacity: 0.12,
+                            filter: "blur(3.5px)",
+                            animation: `wordReveal 700ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms forwards`,
+                            willChange: "filter, opacity",
+                          }
+                    }
+                  >
+                    {word}
+                  </span>
+                  {wi < words.length - 1 && " "}
+                </Fragment>
+              );
+            })}
+            {li < headlineLines.length - 1 && <br />}
+          </Fragment>
         ))}
+      </h3>
+
+      <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/75 md:mt-5 md:text-base">
+        {descriptionWords.map((word, wi) => {
+          const delay = descriptionStart + wi * DESCRIPTION_STRIDE;
+          return (
+            <Fragment key={wi}>
+              <span
+                className="inline-block"
+                style={
+                  reducedMotion || !isActive
+                    ? { opacity: isActive ? 1 : 0 }
+                    : {
+                        opacity: 0.12,
+                        filter: "blur(3.5px)",
+                        animation: `wordReveal 600ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms forwards`,
+                        willChange: "filter, opacity",
+                      }
+                }
+              >
+                {word}
+              </span>
+              {wi < descriptionWords.length - 1 && " "}
+            </Fragment>
+          );
+        })}
+      </p>
+    </div>
+  );
+}
+
+function PlaceholderBackdrop({ label }: { label: string }) {
+  return (
+    <div className="relative h-full w-full bg-[linear-gradient(135deg,#3A424D_0%,#2A3038_55%,#1A1F25_100%)]">
+      <div
+        aria-hidden
+        className="absolute inset-0 opacity-[0.16] mix-blend-overlay"
+        style={{
+          backgroundImage:
+            "radial-gradient(rgba(255,255,255,0.55) 1px, transparent 1px)",
+          backgroundSize: "20px 20px",
+        }}
+      />
+      <div className="absolute bottom-6 right-6 text-[10px] font-medium uppercase tracking-[0.24em] text-white/25">
+        Imagery — {label}
       </div>
     </div>
   );

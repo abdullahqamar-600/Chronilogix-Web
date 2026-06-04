@@ -43,3 +43,7 @@ next-env.d.ts
 .idea/
 .vscode/
 .claude/
+
+# Large media (host externally)
+/public/hero video.mp4
+*.mp4
