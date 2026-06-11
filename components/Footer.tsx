@@ -1,42 +1,148 @@
-const NAV_LINKS = [
-  { href: "#solution", label: "Solution" },
-  { href: "#who-we-serve", label: "Who We Serve" },
-  { href: "#why-chronilogix", label: "Why Chronilogix" },
-  { href: "#book-a-demo", label: "Book a Demo" },
+"use client";
+
+const CAROUSEL = [
+  {
+    src: "/card-1-bg.jpg",
+    aspect: "3/4",
+    w: "w-[260px] md:w-[300px]",
+  },
+  {
+    src: "/generated-images/chronilogix-soft-flower-senior-portrait.png",
+    aspect: "3/4",
+    w: "w-[260px] md:w-[300px]",
+  },
+  {
+    src: "/card-3-bg.jpg",
+    aspect: "3/4",
+    w: "w-[260px] md:w-[300px]",
+  },
+  {
+    src: "/generated-images/chronilogix-soft-flower-family-portrait.png",
+    aspect: "3/4",
+    w: "w-[260px] md:w-[300px]",
+  },
+];
+
+const LEGAL_LINKS = [
+  { href: "#terms", label: "Terms" },
+  { href: "#privacy", label: "Privacy" },
+  { href: "#hipaa", label: "HIPAA" },
+  { href: "#security", label: "Security" },
 ];
 
 export function Footer() {
   return (
     <footer className="relative">
-      <div className="container-page">
-        <div className="flex flex-col gap-12 py-16 md:gap-14 md:py-20 lg:py-24">
-          {/* Top horizontal row: brand/voice on the left, nav on the right */}
-          <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between md:gap-16">
-            {/* Left column — logo, headline, subtitle */}
-            <div className="max-w-2xl">
+      {/* Closing section — cream rounded card, full-bleed carousel + CTA */}
+      <section className="relative overflow-hidden rounded-[28px] bg-paper-warm pt-24 pb-20 md:pt-32 md:pb-28 lg:pt-40">
+        {/* Full-bleed marquee carousel */}
+        <div className="relative mt-14 overflow-hidden md:mt-16 lg:mt-20" aria-hidden>
+          {/* Soft edge fade so cards melt into the cream on left/right */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-paper-warm to-transparent md:w-24" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-paper-warm to-transparent md:w-24" />
+
+          <ul
+            className="flex w-max items-end gap-6"
+            style={{
+              animation: "footerMarquee 56s linear infinite",
+              willChange: "transform",
+              backfaceVisibility: "hidden",
+            }}
+          >
+            {/* Items duplicated inline so a single track animation can loop
+                by translating exactly -50% — no jump at the loop boundary. */}
+            {[0, 1].flatMap((loopIndex) =>
+              CAROUSEL.map((img, i) => {
+                const offsets = ["mb-0", "mb-6", "mb-2", "mb-8", "mb-3", "mb-5"];
+                const offset = offsets[i % offsets.length];
+                return (
+                  <li
+                    key={`${loopIndex}-${i}`}
+                    className={`shrink-0 ${img.w} ${offset}`}
+                  >
+                    <div
+                      className="overflow-hidden rounded-[22px] border border-ink/[0.04] bg-paper shadow-[0_10px_28px_-18px_rgba(20,8,2,0.22)]"
+                      style={{ aspectRatio: img.aspect }}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={img.src}
+                        alt=""
+                        className="h-full w-full object-cover"
+                        draggable={false}
+                      />
+                    </div>
+                  </li>
+                );
+              })
+            )}
+          </ul>
+        </div>
+
+        {/* Big closing CTA */}
+        <div className="container-page mt-24 text-center md:mt-32 lg:mt-40">
+          <h3 className="mx-auto text-display font-serif font-normal text-ink">
+            <span className="whitespace-nowrap">Human coaches cannot scale.</span>
+            <br />
+            <span className="text-brand-700">Our AI can.</span>
+          </h3>
+          <p className="mx-auto mt-7 max-w-[46ch] body-quiet">
+            Always on. Never judging. Built so members keep showing up, and so
+            the people behind every program can finally reach all of them.
+          </p>
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <a href="#book-a-demo" className="btn-primary">
+              Book a Demo
+            </a>
+            <a
+              href="#whitepaper"
+              className="group/wp btn-secondary"
+            >
+              Download whitepaper
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                aria-hidden
+                className="transition-transform duration-300 ease-out motion-reduce:transition-none group-hover/wp:translate-x-1"
+              >
+                <path
+                  d="M3 7h6m0 0L6 4m3 3-3 3"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Bottom legal strip */}
+      <div className="border-t border-ink/[0.07]">
+        <div className="container-page">
+          <div className="flex flex-col items-center gap-4 py-6 text-xs text-ink-muted md:flex-row md:items-center md:justify-between md:gap-6 md:py-7">
+            {/* Wordmark */}
+            <div className="flex items-center gap-2.5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/Logo%20Packs/Primary%20Logo/Chronilogix_Logo-FullColor.svg"
                 alt="Chronilogix"
-                className="h-7 w-auto md:h-8"
+                className="h-5 w-auto"
               />
-
-              <h2 className="mt-7 font-sans text-3xl font-normal leading-[1.1] tracking-tight text-ink sm:text-4xl md:mt-8 md:text-[44px] md:leading-[1.05] lg:text-5xl">
-                Coaching that
-                <br />
-                <span className="whitespace-nowrap font-serif font-normal text-brand-600">
-                  Listens, Asks. Remembers.
-                </span>
-              </h2>
+              <span className="text-ink-muted">© 2026</span>
             </div>
 
-            {/* Right column — sitemap */}
-            <nav aria-label="Footer" className="md:pt-2">
-              <ul className="flex flex-wrap gap-x-6 gap-y-3 md:flex-col md:items-end md:gap-y-4">
-                {NAV_LINKS.map((link) => (
+            {/* Legal links */}
+            <nav aria-label="Legal" className="order-3 md:order-2">
+              <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+                {LEGAL_LINKS.map((link) => (
                   <li key={link.href}>
                     <a
                       href={link.href}
-                      className="text-sm text-ink/80 transition hover:text-brand-600 md:text-base"
+                      className="text-ink-muted transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
                     >
                       {link.label}
                     </a>
@@ -44,12 +150,11 @@ export function Footer() {
                 ))}
               </ul>
             </nav>
-          </div>
 
-          {/* Bottom horizontal row: legal strip */}
-          <div className="flex flex-col gap-2 text-xs text-ink-muted md:flex-row md:items-center md:justify-between md:gap-6">
-            <span>© 2026 Chronilogix · HIPAA Compliant · Made in the USA</span>
-            <span>Member data is never used to train our models.</span>
+            {/* Trust line */}
+            <p className="order-2 text-center text-ink-muted md:order-3 md:text-right">
+              Member data is never used to train our models.
+            </p>
           </div>
         </div>
       </div>

@@ -1,70 +1,77 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState } from "react";
-import { AIOrb } from "@/components/AIOrb";
-
-const SESSION_MESSAGES = [
-  "What made that possible?",
-  "What does that say about you?",
-  "Where else in your life might that be true?",
-  "What would feel different next week?",
-];
-
-const STEPS = [
-  {
-    label: "Listening",
-    title: "Before any advice, it learns who you really are.",
-    Visual: IntakeVisual,
-    Icon: WaveIcon,
-  },
-  {
-    label: "Asking",
-    title: "Open questions that help insight find you.",
-    Visual: SessionVisual,
-    Icon: ChatIcon,
-  },
-  {
-    label: "Remembering",
-    title: "Every session builds on the last.",
-    Visual: MemoryVisual,
-    Icon: ClockIcon,
-  },
-] as const;
+import { useEffect, useRef, useState } from "react";
+import { SessionWalkthrough } from "@/components/sections/SessionWalkthrough";
 
 type Agent = {
   name: string;
-  heading: string;
+  condition: string;
   body: string;
+  // Small floating tags showing the kinds of moments this coach handles.
+  // Rendered as low-contrast chips that orbit the avatar.
+  topics: string[];
+  // Featured Q&A — the single anchor moment on each card. Q is the kind
+  // of thing a member actually says; A is the coach's response, written
+  // to demonstrate the agent's voice on a high-stakes statement that
+  // shows up in real coaching sessions.
+  featuredQ: string;
+  featuredA: string;
+  featuredContext: string;
   pattern: string;
-  blobGradient: string;
-  blobShadow: string;
+  image: string;
+  // Halo tint behind the avatar, picked to harmonize with each pattern.
   haloColor: string;
-  reverse?: boolean;
 };
 
 const AGENTS: Agent[] = [
   {
-    name: "Roni",
-    heading: "Daily coaching for diabetes.",
-    body: "Adapts to each member's food, activity, and medication — built on motivational interviewing.",
+    name: "Roni AI",
+    condition: "Diabetes",
+    body: "Daily coaching for the habits that move A1C. Built on motivational interviewing.",
+    // Topic pills speak in member-voice moments, not clinical metrics —
+    // mirrors how Omada / Livongo / Welldoc actually market between-visit
+    // coaching, and the MI literature's emphasis on small wins, barriers,
+    // and ambivalence over lab values. "After-dinner walks" anchors the
+    // high-glucose window where post-meal coaching actually fires; "Habit
+    // stacking" echoes the featured exchange's MI lens; "Spikes and dips"
+    // is the member-facing read on glucose variability.
+    topics: ["Before meals", "Evening walks", "Habit stacking", "Midnight cravings", "Spikes and dips"],
+    // The single most cited high-value diabetes coaching moment in the MI
+    // literature (ADA Clinical Diabetes, NIDDK): medication ambivalence.
+    // It's the moment where a generic chatbot would lecture and an
+    // MI-trained coach reflects, opens, and reframes adherence as
+    // fitment, not willpower.
+    featuredQ: "I keep skipping my evening dose.",
+    featuredA:
+      "Sounds like the evening dose isn't fitting your life right now. Tell me what gets in the way: the timing, the way it sits with you, or something else? We can move it before we fight it.",
+    featuredContext: "Roni AI · Adherence · MI informed",
     pattern: "/roni-pattern.webp",
-    blobGradient:
-      "radial-gradient(circle at 32% 28%, #FCB58A 0%, #F9904D 38%, #E45A1C 100%)",
-    blobShadow:
-      "0 24px 44px -14px rgba(228, 90, 28, 0.55), 0 4px 12px -4px rgba(228, 90, 28, 0.35)",
+    image: "/roni.png",
     haloColor: "#F9904D",
   },
   {
-    name: "Millie",
-    heading: "Therapeutic coaching for mental health.",
-    body: "Supports stress, mood, and crisis — with 988 escalation built in.",
+    name: "Millie AI",
+    condition: "Mental Health",
+    body: "Therapeutic coaching for the moments between appointments. 988 escalation built in.",
+    // Same moment-language framing as Roni — the kinds of things a
+    // member actually opens the app for between therapy sessions. The
+    // five together map the full surface: anticipatory anxiety, rumination,
+    // negative self-talk, interpersonal stress, and limit-setting. "Inner
+    // critic" is the pop-psych member label for self-criticism that shows
+    // up across Wysa / Woebot / Headspace coaching surfaces; "Racing
+    // thoughts" pairs with the featured exchange.
+    topics: ["Anxiety waves", "Racing thoughts", "Inner critic", "Hard conversations", "Boundaries"],
+    // Late-night racing thoughts is the single most common reason members
+    // open a mental-health app outside of scheduled sessions. The
+    // response uses 3-3-3 grounding — a validated MI-friendly variant of
+    // 5-4-3-2-1 sensory grounding.
+    featuredQ: "I can't get my mind to slow down.",
+    featuredA:
+      "Racing thoughts aren't yours to solve at midnight. Try this with me. Name three things you can see, three you can hear, three you can feel. Your body lands first, the mind follows.",
+    featuredContext: "Millie AI · Grounding (3 3 3) · MI informed",
     pattern: "/millie-pattern.webp",
-    blobGradient:
-      "radial-gradient(circle at 32% 28%, #E89AAE 0%, #B8617C 38%, #7A3553 100%)",
-    blobShadow:
-      "0 24px 44px -14px rgba(122, 53, 83, 0.55), 0 4px 12px -4px rgba(122, 53, 83, 0.35)",
+    image: "/millie.png",
     haloColor: "#B8617C",
-    reverse: true,
   },
 ];
 
@@ -99,38 +106,58 @@ export function Solution() {
       className="relative overflow-hidden rounded-[28px] bg-paper-warm pt-24 pb-24 md:pt-32 md:pb-32 lg:pt-40 lg:pb-40"
     >
       <div className="container-page">
-        <h2 className="max-w-3xl text-display font-serif font-normal tracking-tight text-ink">
+        <p className="eyebrow">The agents</p>
+        <h2 className="mt-4 max-w-3xl text-display font-serif font-normal text-ink">
           Two coaches.
           <br />
-          One way of listening.
+          <span className="text-ink-muted">One way of listening.</span>
         </h2>
 
-        <div className="mt-8 space-y-5 md:mt-12 md:space-y-6">
+        <div className="mt-10 grid gap-5 md:mt-14 md:gap-6 lg:grid-cols-2">
           {AGENTS.map((agent) => (
-            <AgentStrip key={agent.name} agent={agent} />
+            <AgentCard key={agent.name} agent={agent} />
           ))}
         </div>
 
+        {/* Section-level CTA — sits below the agent cards so readers
+            can weigh both coaches first, then click through to the
+            deeper product page. The cards are exploration; this is
+            the action that follows once both have been considered. */}
+        <div className="mt-10 flex justify-center md:mt-12">
+          <a
+            href="/product"
+            className="group/cta inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white px-6 py-3 text-[14.5px] font-medium text-ink transition-all duration-300 ease-out motion-reduce:transition-none hover:border-brand-accent hover:bg-brand-accent hover:text-white hover:shadow-[0_6px_24px_-8px_rgba(255,116,52,0.45)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 focus-visible:ring-offset-2"
+          >
+            Learn more about the product
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              aria-hidden
+              className="transition-transform duration-300 ease-out motion-reduce:transition-none group-hover/cta:translate-x-1"
+            >
+              <path
+                d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
+        </div>
+
         <div className="mt-20 md:mt-28">
-          <h3 className="max-w-2xl font-serif text-2xl font-normal leading-tight tracking-tight text-ink md:text-3xl lg:text-[2.25rem]">
-            Three patterns. Every session.
-          </h3>
-          <div className="mt-8 grid gap-6 md:mt-12 md:gap-7 lg:grid-cols-3 lg:gap-8">
-            {STEPS.map((s, i) => (
-              <StepCard key={s.label} step={s} index={i} />
-            ))}
-          </div>
+          <SessionWalkthrough />
         </div>
       </div>
     </section>
   );
 }
 
-function AgentStrip({ agent }: { agent: Agent }) {
+function AgentCard({ agent }: { agent: Agent }) {
   const { ref, inView } = useInView<HTMLDivElement>(0.2);
-
-  const textOrder = agent.reverse ? "md:order-2" : "md:order-1";
-  const blobOrder = agent.reverse ? "md:order-1" : "md:order-2";
 
   return (
     <article
@@ -140,546 +167,280 @@ function AgentStrip({ agent }: { agent: Agent }) {
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? "translateY(0)" : "translateY(28px)",
-        transition: "opacity 800ms ease-out, transform 800ms ease-out",
+        transition:
+          "opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1)",
       }}
     >
-      {/* Full-bleed pattern */}
+      {/* Full-bleed pattern, masked from the bottom up so the color rises
+          from the bottom edge and dissolves into white near the top. A
+          strong blur dissolves the source dither pattern into a smooth
+          color wash so the individual pixels never read at card scale. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={agent.pattern}
         alt=""
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full scale-110 object-cover"
         draggable={false}
         style={{
+          filter: "blur(32px) saturate(0.4) brightness(1.06)",
+          WebkitFilter: "blur(32px) saturate(0.4) brightness(1.06)",
+          maskImage:
+            "linear-gradient(to top, #000 0%, rgba(0,0,0,0.55) 55%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to top, #000 0%, rgba(0,0,0,0.55) 55%, transparent 100%)",
           opacity: inView ? 1 : 0,
-          transform: inView ? "scale(1)" : "scale(1.04)",
+          transform: inView ? "scale(1.1)" : "scale(1.15)",
           transition:
-            "opacity 900ms ease-out, transform 1400ms ease-out",
+            "opacity 900ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 1200ms cubic-bezier(0.22, 0.61, 0.36, 1)",
         }}
       />
-      {/* Soft cream wash on the text side so body copy stays legible against
-          the saturated pattern; pattern bleeds full-strength behind the blob. */}
+      {/* Soft milky wash over the (already-masked) pattern — keeps the
+          bottom-anchored texture quiet enough that the type stays the
+          hero. */}
       <div
         aria-hidden
-        className={`absolute inset-0 ${
-          agent.reverse
-            ? "bg-gradient-to-l from-paper-warm via-paper-warm/65 to-transparent"
-            : "bg-gradient-to-r from-paper-warm via-paper-warm/65 to-transparent"
-        }`}
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to top, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.75) 55%, #FFFFFF 100%)",
+        }}
       />
 
-      <div className="relative grid grid-cols-1 gap-6 md:min-h-[380px] md:grid-cols-[1.1fr_1fr] md:gap-0 lg:min-h-[420px]">
-        {/* Text */}
+      <div className="relative flex flex-col gap-7 p-7 md:gap-9 md:p-9 lg:p-10">
+        {/* Header — chip + name + one-line dek. */}
         <div
-          className={`flex flex-col justify-center gap-3 p-7 md:gap-4 md:p-10 lg:p-14 ${textOrder}`}
+          className="flex flex-col gap-3"
           style={{
             opacity: inView ? 1 : 0,
-            transform: inView
-              ? "translateX(0)"
-              : agent.reverse
-                ? "translateX(24px)"
-                : "translateX(-24px)",
+            transform: inView ? "translateY(0)" : "translateY(12px)",
             transition:
-              "opacity 700ms ease-out 180ms, transform 800ms ease-out 180ms",
+              "opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1) 120ms, transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1) 120ms",
           }}
         >
-          <h3 className="text-[28px] font-serif font-normal leading-[1.05] tracking-tight text-ink md:text-[36px] lg:text-[42px]">
-            {agent.heading}
+          <span
+            className="inline-flex w-fit items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.08em]"
+            style={{
+              backgroundColor: "#FFFFFF",
+              borderColor: "rgba(15, 20, 25, 0.10)",
+              color: "#B84614",
+              boxShadow:
+                "0 1px 2px rgba(15, 20, 25, 0.05), 0 4px 12px -4px rgba(15, 20, 25, 0.08)",
+            }}
+          >
+            <span
+              aria-hidden
+              className="block h-1.5 w-1.5 rounded-full"
+              style={{ backgroundColor: agent.haloColor }}
+            />
+            {agent.condition} Coach
+          </span>
+          <h3 className="text-hero font-serif font-normal leading-[1.02] text-ink">
+            {agent.name}
           </h3>
-          <p className="max-w-[44ch] text-[15px] leading-relaxed text-ink-muted md:text-base">
+          <p className="max-w-[36ch] text-[14.5px] leading-[1.55] text-ink-muted md:text-[15px]">
             {agent.body}
           </p>
         </div>
 
-        {/* Blob */}
-        <div
-          className={`flex items-center justify-center py-8 md:py-0 ${blobOrder}`}
-        >
-          <AgentBlob
-            name={agent.name}
-            active={inView}
-            gradient={agent.blobGradient}
-            shadow={agent.blobShadow}
-            haloColor={agent.haloColor}
-          />
-        </div>
+        {/* Centerpiece — avatar with concentric rings + topic chips that
+            sit ON the orbit rings (not just floating arbitrarily). */}
+        <AgentOrbit agent={agent} active={inView} />
+
+        {/* Featured Q&A — single high-stakes coaching exchange that shows
+            the agent's voice on a common, real member statement. */}
+        <FeaturedExchange agent={agent} active={inView} />
       </div>
     </article>
   );
 }
 
-function AgentBlob({
-  name,
-  active,
-  gradient,
-  shadow,
-  haloColor,
-}: {
-  name: string;
-  active: boolean;
-  gradient: string;
-  shadow: string;
-  haloColor: string;
-}) {
-  // 8s cycle: ~3.6s of slow expand-and-fade, then ~4.4s of rest before the
-  // next pulse begins. The "rest" is encoded in the keyframe (45% → 100%
-  // sits at opacity 0), so a standard CSS animation gives a natural pause.
-  const HALO_DURATION = 8;
+function AgentOrbit({ agent, active }: { agent: Agent; active: boolean }) {
+  // Five topics: three sit ON the orbit rings (visible, spatially anchored),
+  // and the rest live in an SR-only overflow line so the API stays full.
+  const visibleTopics = agent.topics.slice(0, 3);
+  const overflowTopics = agent.topics.slice(3);
+
+  // Each chip is parked at a polar angle (degrees from 12 o'clock,
+  // clockwise) on a given ring radius (percent of the orbit container).
+  // The asymmetry is intentional — three angles that don't form a tidy
+  // triangle so the orbit reads as motion rather than a fixed pattern.
+  const chipPolars: Array<{ angle: number; radius: number }> = [
+    { angle: 305, radius: 38 }, // upper-left, outer ring
+    { angle: 80, radius: 34 }, // middle-right, middle ring
+    { angle: 200, radius: 40 }, // lower-left, outer ring
+  ];
 
   return (
+    <div className="relative mx-auto flex aspect-square w-full max-w-[360px] items-center justify-center">
+      {/* Three concentric dashed rings, gently more visible as they
+          approach the avatar. Provides true orbital depth. */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute aspect-square w-full rounded-full border border-dashed border-ink/8"
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute aspect-square w-[78%] rounded-full border border-dashed border-ink/12"
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute aspect-square w-[56%] rounded-full border border-dashed border-ink/16"
+      />
+
+      {/* Avatar at center. */}
+      <CoachAvatar agent={agent} active={active} />
+
+      {/* Floating topic chips — parked at polar coords so each one sits
+          on (or near) one of the orbit rings. */}
+      {visibleTopics.map((topic, i) => {
+        const { angle, radius } = chipPolars[i];
+        const rad = ((angle - 90) * Math.PI) / 180; // 12 o'clock = -90°
+        const x = 50 + radius * Math.cos(rad);
+        const y = 50 + radius * Math.sin(rad);
+        return (
+          <span
+            key={topic}
+            className="absolute inline-flex -translate-x-1/2 -translate-y-1/2 items-center whitespace-nowrap rounded-full border px-3 py-1 text-[12px] font-medium text-ink"
+            style={{
+              left: `${x}%`,
+              top: `${y}%`,
+              backgroundColor: "rgba(255, 255, 255, 0.92)",
+              borderColor: "rgba(15, 20, 25, 0.08)",
+              backdropFilter: "blur(6px)",
+              WebkitBackdropFilter: "blur(6px)",
+              boxShadow: "0 1px 2px rgba(15, 20, 25, 0.04), 0 6px 18px -6px rgba(15, 20, 25, 0.10)",
+              opacity: active ? 1 : 0,
+              transform: active
+                ? "translate(-50%, -50%) scale(1)"
+                : "translate(-50%, -50%) scale(0.92)",
+              transition: `opacity 600ms cubic-bezier(0.22, 0.61, 0.36, 1) ${400 + i * 120}ms, transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1) ${400 + i * 120}ms`,
+            }}
+          >
+            {topic}
+          </span>
+        );
+      })}
+
+      {/* Overflow topics for screen readers. */}
+      {overflowTopics.length > 0 && (
+        <span className="sr-only">
+          Also handles: {overflowTopics.join(", ")}.
+        </span>
+      )}
+    </div>
+  );
+}
+
+function FeaturedExchange({ agent, active }: { agent: Agent; active: boolean }) {
+  return (
     <div
-      className="relative aspect-square w-[78%] max-w-[300px]"
+      className="relative flex flex-col gap-3"
       style={{
         opacity: active ? 1 : 0,
-        transform: active ? "scale(1)" : "scale(0.88)",
+        transform: active ? "translateY(0)" : "translateY(14px)",
         transition:
-          "opacity 700ms ease-out 320ms, transform 900ms cubic-bezier(0.34, 1.4, 0.64, 1) 320ms",
+          "opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1) 360ms, transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1) 360ms",
       }}
     >
-      {/* Outer hairline ring — static identity, tinted with the agent color. */}
-      <span
-        aria-hidden
-        className="absolute inset-0 rounded-full border"
-        style={{ borderColor: `${haloColor}40` }}
-      />
+      {/* Member bubble — right-aligned, italic serif quote. Matches the
+          conventional "user" position in messenger UIs (right side, tail
+          at bottom-right). Uses surface-glass-inner so the bubble reads
+          lighter than the coach reply that follows. */}
+      <div className="surface-glass-inner relative max-w-[88%] self-end overflow-hidden rounded-[18px] rounded-br-[6px] px-4 py-3 md:px-5">
+        <p className="relative font-serif text-[16px] italic leading-[1.34] tracking-[-0.01em] text-ink md:text-[17.5px]">
+          {agent.featuredQ}
+        </p>
+      </div>
 
-      {/* Middle dashed ring — static, neutral ink so it reads the same on
-          both agent patterns. */}
-      <span
-        aria-hidden
-        className="absolute inset-[14%] rounded-full border border-dashed border-ink/25"
-      />
-
-      {/* Filled halo, rendered behind the solid blob. Starts at the blob's
-          exact size so the blob occludes it at scale=1; becomes visible only
-          as it scales past 1, fades out, then rests. */}
-      <span
-        aria-hidden
-        className="halo-fill absolute inset-[30%] rounded-full"
+      {/* Coach bubble — left-aligned, primary frosted-glass treatment
+          with a softened drop shadow so the pair sits as a conversation,
+          not as a stacked pair of heavy cards. The top-edge shine keeps
+          it in the same family as the session / capability glass cards. */}
+      <div
+        className="surface-glass relative max-w-[92%] self-start overflow-hidden rounded-[18px] rounded-bl-[6px] px-4 py-3 md:px-5 md:py-4"
         style={{
-          backgroundColor: haloColor,
-          animation: active
-            ? `haloFill ${HALO_DURATION}s ease-out infinite`
-            : "none",
+          boxShadow:
+            "inset 0 1px 0 rgba(255,255,255,0.92), inset 0 -1px 0 rgba(15,20,25,0.03), 0 1px 2px rgba(15,20,25,0.03), 0 6px 18px -10px rgba(15,20,25,0.10)",
+        }}
+      >
+        <span
+          aria-hidden
+          className="surface-glass-shine absolute inset-x-0 top-0 h-1/2 rounded-t-[18px]"
+        />
+        <p className="relative text-[14.5px] leading-[1.6] text-ink md:text-[15px]">
+          {agent.featuredA}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function CoachAvatar({ agent, active }: { agent: Agent; active: boolean }) {
+  // 8s pulse cycle (matches the original AgentBlob halo).
+  const HALO_DURATION = 8;
+  // Envelope is bigger now so the avatar reads as the unambiguous focal
+  // point of each card. The outer orbit rings live in AgentOrbit; this
+  // component is just the photo + halo + agent-tinted hairline.
+  return (
+    <div
+      className="relative z-10 aspect-square shrink-0 w-[150px] md:w-[170px] lg:w-[180px]"
+      style={{
+        opacity: active ? 1 : 0,
+        transform: active ? "scale(1)" : "scale(0.9)",
+        transition:
+          "opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1) 360ms, transform 800ms cubic-bezier(0.22, 0.61, 0.36, 1) 360ms",
+      }}
+    >
+      {/* Tight hairline ring tinted with the agent color — frames the
+          photo without competing with the orbit rings outside. */}
+      <span
+        aria-hidden
+        className="absolute inset-[10%] rounded-full border-2"
+        style={{ borderColor: `${agent.haloColor}33` }}
+      />
+
+      {/* Pulsing halo behind the avatar. Same 8s cycle as the original
+          blob — slow expand + fade, long rest. */}
+      <span
+        aria-hidden
+        className="halo-fill absolute inset-[16%] rounded-full"
+        style={{
+          backgroundColor: agent.haloColor,
+          animation: active ? `haloFill ${HALO_DURATION}s ease-out infinite` : "none",
           opacity: 0,
           willChange: "transform, opacity",
         }}
       />
 
-      <span
-        className="absolute inset-[30%] flex items-center justify-center rounded-full text-white"
-        style={{ background: gradient, boxShadow: shadow }}
-      >
-        <span className="font-serif text-[clamp(20px,3vw,28px)] font-normal leading-none tracking-tight">
-          {name}
-        </span>
-      </span>
-    </div>
-  );
-}
-
-function StepCard({
-  step,
-  index,
-}: {
-  step: {
-    label: string;
-    title: string;
-    Visual: React.ComponentType<{ active: boolean }>;
-    Icon: React.ComponentType<{ className?: string }>;
-  };
-  index: number;
-}) {
-  const { Visual, Icon } = step;
-  const num = String(index + 1).padStart(2, "0");
-  const { ref, inView } = useInView<HTMLElement>(0.2);
-
-  return (
-    <article ref={ref}>
-      <div className="mb-5 flex items-baseline gap-4">
-        <span className="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-muted">
-          {num}
-        </span>
+      {/* The photo itself — sits inside the rings, with a soft drop
+          shadow tinted toward the agent's color. */}
+      <div className="absolute inset-[16%]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={agent.image}
+          alt={`${agent.name} avatar`}
+          draggable={false}
+          className="h-full w-full rounded-full object-cover"
+          style={{
+            boxShadow: `0 2px 4px rgba(15,20,25,0.08), 0 20px 40px -14px ${agent.haloColor}60`,
+          }}
+        />
+        {/* Always-on indicator — small green dot signals the coach is
+            available 24/7 (mirrors the hero "24/7" narrative). */}
         <span
-          className="h-px flex-1 origin-left bg-ink/10"
+          aria-hidden
+          className="absolute rounded-full"
           style={{
-            transform: inView ? "scaleX(1)" : "scaleX(0)",
-            transition: "transform 700ms ease-out",
+            right: "4%",
+            bottom: "4%",
+            width: "16%",
+            aspectRatio: "1 / 1",
+            background: "#34C759",
+            border: "3px solid #FFFFFF",
+            boxShadow: "0 1px 2px rgba(15,20,25,0.10)",
           }}
         />
       </div>
-      <div
-        className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-white"
-        style={{
-          opacity: inView ? 1 : 0,
-          transform: inView ? "translateY(0)" : "translateY(20px)",
-          transition: "opacity 700ms ease-out, transform 800ms ease-out",
-        }}
-      >
-        <Visual active={inView} />
-      </div>
-      <div
-        className="mt-6 md:mt-7"
-        style={{
-          opacity: inView ? 1 : 0,
-          transform: inView ? "translateY(0)" : "translateY(10px)",
-          transition:
-            "opacity 600ms ease-out 200ms, transform 600ms ease-out 200ms",
-        }}
-      >
-        <div className="flex items-center gap-2.5">
-          <Icon className="h-[18px] w-[18px] text-brand-600" />
-          <p className="text-base font-medium text-ink">{step.label}</p>
-        </div>
-        <p className="mt-2 max-w-[36ch] text-[15px] leading-relaxed text-ink-muted">
-          {step.title}
-        </p>
-      </div>
-    </article>
-  );
-}
-
-function WaveIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 18 18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      aria-hidden
-    >
-      <path d="M2 9h1M5.5 6v6M9 3.5v11M12.5 6v6M16 9h-1" />
-    </svg>
-  );
-}
-
-function ChatIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 18 18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M3 7a2.5 2.5 0 0 1 2.5-2.5h7A2.5 2.5 0 0 1 15 7v3.5a2.5 2.5 0 0 1-2.5 2.5H8l-3 2.5v-2.5h-.5A2.5 2.5 0 0 1 2 10.5V7z" />
-      <circle cx="9" cy="8.75" r="0.6" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function ClockIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 18 18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <circle cx="9" cy="9" r="6.5" />
-      <path d="M9 5.5V9l2.25 1.5" />
-    </svg>
-  );
-}
-
-const INTAKE_ITEMS = [
-  "Values & motivation",
-  "Cultural context",
-  "Stress patterns",
-  "Daily rhythms",
-  "Goals & barriers",
-];
-const REVEAL_BASE = 500;
-const REVEAL_GAP = 650;
-const REVEAL_DUR = 700;
-
-function IntakeVisual({ active }: { active: boolean }) {
-  const lastReveal =
-    REVEAL_BASE + (INTAKE_ITEMS.length - 1) * REVEAL_GAP + REVEAL_DUR;
-  const playState = active ? "running" : "paused";
-
-  return (
-    <div className="absolute inset-0">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/card-1-bg.jpg"
-        alt=""
-        className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
-      />
-      <div className="absolute inset-0 bg-paper/55" />
-      <div className="relative flex h-full flex-col items-start justify-center p-6 md:p-8">
-        <BrainProgress
-          duration={lastReveal - REVEAL_BASE}
-          playState={playState}
-        />
-        <ul className="mt-6 space-y-3 md:mt-7 md:space-y-4">
-          {INTAKE_ITEMS.map((label, i) => (
-            <IntakeItem
-              key={label}
-              label={label}
-              delay={REVEAL_BASE + i * REVEAL_GAP}
-              playState={playState}
-            />
-          ))}
-        </ul>
-      </div>
     </div>
-  );
-}
-
-function BrainProgress({
-  duration,
-  playState,
-}: {
-  duration: number;
-  playState: "running" | "paused";
-}) {
-  return (
-    <span
-      className="relative inline-block h-9 w-9 shrink-0 md:h-10 md:w-10"
-      aria-hidden
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/brain-empty.svg"
-        alt=""
-        className="absolute inset-0 h-full w-full"
-      />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/brain-loading.svg"
-        alt=""
-        className="absolute inset-0 h-full w-full"
-        style={{
-          clipPath: "inset(100% 0 0 0)",
-          animation: `brainFill ${duration}ms linear ${REVEAL_BASE}ms forwards`,
-          animationPlayState: playState,
-        }}
-      />
-    </span>
-  );
-}
-
-function IntakeItem({
-  label,
-  delay,
-  playState,
-}: {
-  label: string;
-  delay: number;
-  playState: "running" | "paused";
-}) {
-  return (
-    <li
-      className="flex items-center gap-3 text-[15px] leading-snug text-ink md:text-base"
-      style={{
-        animation: `revealItem ${REVEAL_DUR}ms ease-out ${delay}ms forwards`,
-        animationPlayState: playState,
-        filter: "blur(5px)",
-        opacity: 0.45,
-      }}
-    >
-      <span className="relative h-5 w-5 shrink-0 md:h-[22px] md:w-[22px]">
-        <span className="absolute inset-0 rounded-full border border-ink/15 bg-white/45" />
-        <span
-          className="absolute inset-0 flex items-center justify-center rounded-full bg-white ring-[1.5px] ring-brand-600"
-          style={{
-            animation: `fadeIn 500ms ease-out ${delay + 180}ms forwards`,
-            animationPlayState: playState,
-            opacity: 0,
-          }}
-        >
-          <svg
-            width="11"
-            height="11"
-            viewBox="0 0 9 9"
-            fill="none"
-            aria-hidden
-          >
-            <path
-              d="M1.5 4.5 3.5 6.5 7.5 2.5"
-              stroke="#F9904D"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </span>
-      </span>
-      <span>{label}</span>
-    </li>
-  );
-}
-
-function SessionVisual({ active }: { active: boolean }) {
-  const [idx, setIdx] = useState(0);
-
-  useEffect(() => {
-    if (!active) return;
-    const t = setInterval(
-      () => setIdx((i) => (i + 1) % SESSION_MESSAGES.length),
-      3500,
-    );
-    return () => clearInterval(t);
-  }, [active]);
-
-  return (
-    <div className="absolute inset-0">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/pattern.png"
-        alt=""
-        className="absolute left-0 top-0 h-full w-auto max-w-none select-none"
-        draggable={false}
-      />
-      <div aria-hidden className="absolute inset-0 bg-paper-warm/35" />
-      <div className="relative flex h-full flex-col items-start justify-center gap-5 p-8 md:gap-6 md:p-10">
-        <div
-          key={idx}
-          className="w-full rounded-[28px] border border-white/15 bg-[#2a0e05]/40 px-7 py-6 text-lg font-medium leading-snug text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_14px_36px_-10px_rgba(20,8,2,0.55)] backdrop-blur-xl backdrop-saturate-150 md:px-8 md:py-7 md:text-xl"
-          style={{
-            animation: "fadeUp 600ms ease-out forwards",
-            animationPlayState: active ? "running" : "paused",
-            opacity: 0,
-          }}
-        >
-          {SESSION_MESSAGES[idx]}
-        </div>
-        <AIOrb size={44} />
-      </div>
-    </div>
-  );
-}
-
-function MemoryVisual({ active }: { active: boolean }) {
-  const memories = [
-    { when: "Two weeks ago", text: "Sundays are the hardest." },
-    { when: "Last session", text: "Cooking grounds me." },
-    {
-      when: "Today",
-      text: "Building on both insights.",
-      current: true,
-    },
-  ];
-
-  const STEP_MS = 1100;
-  const LINE_MS = 700;
-  const playState = active ? "running" : "paused";
-
-  return (
-    <div className="absolute inset-0">
-      <img
-        src="/card-3-bg.jpg"
-        alt=""
-        className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
-      />
-      <div className="absolute inset-0 bg-paper/55" />
-      <div className="relative flex h-full items-center justify-center p-7 md:p-10">
-        <div className="w-full max-w-[380px]">
-          <div className="flex items-center">
-            {memories.map((m, i) => (
-              <Fragment key={i}>
-                <PipelineNode
-                  current={m.current}
-                  delay={i * STEP_MS}
-                  playState={playState}
-                />
-                {i < memories.length - 1 && (
-                  <div className="mx-1.5 h-px flex-1 bg-brand-600/15">
-                    <span
-                      className="block h-full origin-left bg-brand-600"
-                      style={{
-                        animation: `scaleXFromLeft ${LINE_MS}ms ease-out ${i * STEP_MS + 500}ms forwards`,
-                        animationPlayState: playState,
-                        transform: "scaleX(0)",
-                      }}
-                    />
-                  </div>
-                )}
-              </Fragment>
-            ))}
-          </div>
-
-          <div className="mt-7 grid grid-cols-3 gap-3 md:mt-8">
-            {memories.map((m, i) => (
-              <div
-                key={i}
-                className="text-center"
-                style={{
-                  animation: `fadeUp 500ms ease-out ${i * STEP_MS + 250}ms forwards`,
-                  animationPlayState: playState,
-                  opacity: 0,
-                }}
-              >
-                <p
-                  className={`text-[12px] font-medium leading-tight ${
-                    m.current ? "text-brand-700" : "text-ink-muted"
-                  }`}
-                >
-                  {m.when}
-                </p>
-                <p className="mt-2 text-[13px] leading-snug text-ink">
-                  “{m.text}”
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function PipelineNode({
-  current,
-  delay,
-  playState,
-}: {
-  current?: boolean;
-  delay: number;
-  playState: "running" | "paused";
-}) {
-  if (current) {
-    return (
-      <span
-        className="shrink-0"
-        style={{
-          animation: `circlePop 700ms cubic-bezier(0.34, 1.6, 0.64, 1) ${delay}ms forwards`,
-          animationPlayState: playState,
-          opacity: 0,
-        }}
-      >
-        <AIOrb size={22} />
-      </span>
-    );
-  }
-  return (
-    <span
-      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-600 ring-4 ring-brand-50"
-      style={{
-        animation: `circlePop 700ms cubic-bezier(0.34, 1.6, 0.64, 1) ${delay}ms forwards`,
-        animationPlayState: playState,
-        opacity: 0,
-      }}
-    >
-      <svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden>
-        <path
-          d="M1.5 4.5 3.5 6.5 7.5 2.5"
-          stroke="white"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </span>
   );
 }

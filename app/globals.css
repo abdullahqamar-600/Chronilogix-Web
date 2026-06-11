@@ -7,6 +7,11 @@
   to { stroke-dashoffset: 0; }
 }
 
+@keyframes chronologixListeningPulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.85; }
+}
+
 @keyframes loaderProgress {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
@@ -75,6 +80,57 @@
   .halo-fill { animation: none !important; opacity: 0 !important; }
 }
 
+/* Soft rise-into-view used widely by step + capability visuals. */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* Notification toast that slides in from the top-right with subtle scale. */
+@keyframes toastIn {
+  0%   { opacity: 0; transform: translate(6px, -6px) scale(0.96); }
+  100% { opacity: 1; transform: translate(0, 0)      scale(1);    }
+}
+
+/* Two-state toast swap used by the Oversight escalation flow. */
+@keyframes toastSwapIn {
+  0%   { opacity: 0; transform: translateY(8px)  scale(0.96); }
+  100% { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+@keyframes toastSwapOut {
+  0%   { opacity: 1; transform: translateY(0)    scale(1);    }
+  100% { opacity: 0; transform: translateY(-6px) scale(0.96); }
+}
+
+/* Small pulsing dot used in live status pills. */
+@keyframes livePulse {
+  0%, 100% { transform: scale(1);   opacity: 1;    }
+  50%      { transform: scale(1.4); opacity: 0.55; }
+}
+
+/* Vertical tally stroke rising from the baseline — used by the goal-tracking
+   weekly habit row and the oversight horizon. transform-origin must be
+   bottom for the rise to read. */
+@keyframes tallyRise {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+/* Thin connector line that "draws downward" from a top point — used by the
+   Method visual to connect the big challenge to the small goal. */
+@keyframes scaleYFromTop {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-pulse { animation: none !important; }
+  [data-cc-pulse],
+  [data-cc-alert-pulse] {
+    animation: none !important;
+  }
+}
+
 /* Progressive-disclosure rows used by Problem.tsx facts.
    Initial state lives in CSS (not inline style) so Tailwind data-attribute
    variants can override transform/opacity once the parent flips data-revealed. */
@@ -103,6 +159,132 @@
   }
 }
 
+/* CustomerStories — pull-quote letter rise + staggered stat tiles.
+   Lives here so children inherit the [data-revealed] state from the card. */
+.reveal-quote {
+  opacity: 0;
+  transform: translateY(10px);
+  filter: blur(4px);
+  transition: opacity 900ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              filter 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition-delay: 180ms;
+}
+[data-revealed="true"] .reveal-quote {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.reveal-tile {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 600ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              transform 600ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition-delay: calc(140ms + var(--i, 0) * 110ms);
+}
+[data-revealed="true"] .reveal-tile {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-quote,
+  .reveal-tile {
+    transition: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+/* Core Capabilities section animations */
+@keyframes methodLine {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes methodChip {
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes availabilityPulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  70% { transform: scale(2.6); opacity: 0; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+@keyframes availabilityRow {
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes oversightLine {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes oversightDot {
+  to { opacity: 1; }
+}
+@keyframes oversightAlertPulse {
+  0%   { transform: scale(1);   opacity: 0.5; }
+  70%  { transform: scale(1.8); opacity: 0;   }
+  100% { transform: scale(1.8); opacity: 0;   }
+}
+
+/* WhoWeServe progress-knob pulse — a soft brand-orange ring emanates from
+   the active position knob, fades out, then rests. Keeps the eye anchored
+   to the current persona without distracting from the surrounding content. */
+@keyframes knobPulse {
+  0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.55; }
+  70%  { transform: translate(-50%, -50%) scale(3.4); opacity: 0;    }
+  100% { transform: translate(-50%, -50%) scale(3.4); opacity: 0;    }
+}
+@media (prefers-reduced-motion: reduce) {
+  .knob-pulse { animation: none !important; opacity: 0 !important; }
+}
+
+/* SectionGuide first-mount entry — the widget settles up from the
+   bottom-left corner on its first reveal (after the visitor scrolls past
+   the hero). A small upward translate plus a slight scale-up reads as
+   the panel rising into place rather than popping in. */
+@keyframes guideReveal {
+  from { opacity: 0; transform: translateY(14px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* SectionGuide dwell progress — a 1px brand-gradient bar pinned to the
+   bottom edge sweeps left-to-right across each rotation, ticking the
+   one-liner cadence in a way that's visible but never demanding. The
+   `scaleX` keeps the animation off CSS layout properties. */
+@keyframes guideDwell {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Footer carousel marquee — slow leftward drift, looped via duplicated track.
+   Track contains 2 copies of the items joined by a flex gap of 24px. To land
+   item N+1 exactly where item 1 was, we shift by 50% of the track plus half
+   the gap (the gap between the two copies isn't part of either copy's width). */
+@keyframes footerMarquee {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(calc(-50% - 12px), 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [style*="footerMarquee"] { animation: none !important; }
+}
+
+/* Product hero — agent avatar gentle float. The avatar lifts while its
+   ground shadow simultaneously shrinks and fades, selling the lift
+   physics: the higher the body, the smaller and softer the cast. The
+   two keyframes share the same duration / easing so the shadow stays
+   in perfect sync with the body it belongs to. */
+@keyframes agentFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes agentShadow {
+  0%, 100% { transform: translateX(-50%) scale(1);    opacity: 0.22; }
+  50%      { transform: translateX(-50%) scale(0.82); opacity: 0.10; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .agent-float,
+  .agent-shadow { animation: none !important; }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -122,27 +304,147 @@
 
 @layer components {
   .container-page {
-    @apply mx-auto w-full max-w-page px-6 md:px-12 lg:px-20;
+    @apply mx-auto w-full max-w-page px-5 md:px-10 lg:px-16;
   }
 
+  /* ── Typography utilities ─────────────────────────────────────────
+     One shared vocabulary so every section sounds in the same voice.
+     The audit found eyebrows, body copy, and stat numerals in 4+ flavors
+     each; these utilities collapse that drift into a single source. */
+
+  /* Eyebrow — a sentence-case label above a section heading.
+     Calmer than the typical uppercase-mono treatment: medium-weight sans,
+     14px, brand-orange. No horizontal bar, no all-caps, no wide tracking.
+     The job is to introduce the heading, not to compete with it. */
   .eyebrow {
-    @apply text-xs font-medium uppercase tracking-[0.16em] text-ink-muted;
+    @apply text-[14px] font-medium tracking-[-0.005em] text-brand-700;
+  }
+  /* Variant — quieter, for nested sections or rows where orange would be
+     too loud. Same weight and size as .eyebrow so rhythm stays unified. */
+  .eyebrow-muted {
+    @apply text-[14px] font-medium tracking-[-0.005em] text-ink-muted;
+  }
+  /* Variant — for footnotes and source attributions. Smaller, sentence
+     case still, italic serif so it reads as scholarly rather than UI chrome. */
+  .eyebrow-subtle {
+    @apply font-serif text-[13px] italic font-normal text-ink-muted;
   }
 
+  /* Body — the standard paragraph treatment used everywhere except inside
+     small cards. Replaces the text-base / text-[14.5px] / text-[15px] /
+     text-[15.5px] sprawl with one ramp: base on mobile, lg on desktop. */
+  .body-prose {
+    @apply text-base leading-relaxed text-ink-soft md:text-lg;
+  }
+  /* Body — quieter, used inside cards/rows where the surrounding context
+     already does the loud talking and the prose should sit back. */
+  .body-quiet {
+    @apply text-[15px] leading-relaxed text-ink-muted md:text-base;
+  }
+
+  /* Source / provenance footnote — used under stat blocks and under quotes.
+     Sentence-case sans, slightly larger than the eyebrow scale so the
+     attribution is comfortably readable at body distance. The dot in
+     front is set inline next to the text. */
+  .source-line {
+    @apply flex items-center gap-2 text-[14px] font-medium text-ink-soft;
+  }
+
+  /* Canonical CTA — used site-wide. Dark ink pill at rest, brand-accent
+     orange on hover with a soft orange glow shadow. The transition runs
+     on a 300ms ease-out so the color shift feels deliberate. */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 px-6 py-3 text-sm font-medium text-white shadow-soft transition hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2;
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-medium text-white shadow-soft transition-all duration-300 ease-out motion-reduce:transition-none hover:bg-brand-accent hover:shadow-[0_6px_24px_-8px_rgba(255,116,52,0.55)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 focus-visible:ring-offset-2;
   }
 
+  /* Secondary CTA — same shape and transition as the primary, but a
+     white surface with a subtle border for use as a companion action
+     next to the primary. Also lifts to brand-accent on hover so the
+     two CTAs stay in the same family. */
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink/15 bg-white px-6 py-3 text-sm font-medium text-ink transition hover:border-ink/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 focus-visible:ring-offset-2;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink/15 bg-white px-6 py-3 text-sm font-medium text-ink transition-all duration-300 ease-out motion-reduce:transition-none hover:border-brand-accent hover:bg-brand-accent hover:text-white hover:shadow-[0_6px_24px_-8px_rgba(255,116,52,0.55)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 focus-visible:ring-offset-2;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center gap-1 text-sm font-medium text-ink transition hover:text-brand-600;
+    @apply inline-flex items-center gap-1 text-sm font-medium text-ink transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-brand-600;
   }
 
   .badge {
     @apply inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white px-3 py-1.5 text-xs font-medium text-ink-soft;
+  }
+
+  /* ── Frosted-glass surfaces ─────────────────────────────────────────
+     Translucent cards used by the Solution + CoreCapabilities product
+     visuals. They sit over a soft, blurred background image and let the
+     underlying color cast through, while applying their own backdrop blur
+     so the imagery reads as out-of-focus glass — not just paper.
+
+     Three tiers:
+     - .surface-glass        — primary product card (large)
+     - .surface-glass-inner  — nested card / sub-row inside a glass card
+     - .surface-glass-toast  — small floating notification toast
+     The bright inset top-edge + soft inset bottom-edge mimic the way light
+     hits a piece of frosted plastic / glass from above. */
+  .surface-glass {
+    background-color: rgba(255, 255, 255, 0.62);
+    background-image: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(255, 255, 255, 0)    45%
+    );
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.92),
+      inset 0 -1px 0 rgba(15, 20, 25, 0.04),
+      0 1px 2px rgba(15, 20, 25, 0.04),
+      0 8px 24px -8px rgba(15, 20, 25, 0.16),
+      0 28px 64px -22px rgba(15, 20, 25, 0.22);
+  }
+
+  .surface-glass-inner {
+    background-color: rgba(255, 255, 255, 0.45);
+    background-image: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0)    50%
+    );
+    backdrop-filter: blur(14px) saturate(150%);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.85),
+      0 1px 2px rgba(15, 20, 25, 0.03);
+  }
+
+  .surface-glass-toast {
+    background-color: rgba(255, 255, 255, 0.78);
+    background-image: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0)    55%
+    );
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      0 2px 6px rgba(15, 20, 25, 0.05),
+      0 14px 36px -10px rgba(15, 20, 25, 0.28);
+  }
+
+  /* Subtle "shine" band — drop inside a glass card with rounded-top to
+     get the second, broader highlight visible in the references. Anchor
+     it with absolute positioning + matching corner radius via inline class. */
+  .surface-glass-shine {
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.12) 40%,
+      rgba(255, 255, 255, 0)    100%
+    );
+    pointer-events: none;
   }
 
   .divider-soft {
