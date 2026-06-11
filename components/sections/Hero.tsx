@@ -1,31 +1,106 @@
 "use client";
 
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { AIOrb } from "@/components/AIOrb";
 // Hidden for now — restore by un-commenting the import and the <HeroPhoneMockup /> render below.
 // import { HeroPhoneMockup } from "@/components/HeroPhoneMockup";
 
-const HEADLINE_LINE_1 = "Helping chronic care reach every member, 24/7";
-const HEADLINE_LINE_2 = "with AI that knows how people change.";
-const SUB =
-  "Built on Motivational Interviewing — the method clinicians have trusted for forty years to help people change behavior. Now always on.";
-const PERSONAS = ["Employers", "Universities", "Health Plans", "App Partners"];
+const HEADLINE_LINE_1 = "Filling the gaps in chronic care";
+const HEADLINE_LINE_2 = "through AI health coaching agents. 24/7";
+
+// 2:04 AM. Maria reaches out first — she can't sleep, the week
+// collapsed. The exchange follows MI cadence: open question, reflect
+// the member's words back, name what they're feeling, ask a grounded
+// safety check, then move into what's underneath. Member lines stay
+// lowercase + casual — the rhythm of a real late-night text — while
+// Millie's reflections do the careful clinical work.
+type ChatTurn = { who: "member" | "roni"; text: string };
+type ChatPhase = "idle" | "running" | "exiting" | "resetting";
+const CHAT: ChatTurn[] = [
+  {
+    who: "member",
+    text: "cant sleep",
+  },
+  {
+    who: "roni",
+    text: "What's going on?",
+  },
+  {
+    who: "member",
+    text: "everything just collapsed this week. i've been holding it together for so long",
+  },
+  {
+    who: "roni",
+    text: "That sounds like you, Maria, you carry it quietly until you can't. What does “can't hold it together” feel like right now?",
+  },
+  {
+    who: "member",
+    text: "like i'm standing still but falling at the same time",
+  },
+  {
+    who: "roni",
+    text: "Standing still and falling. Are you safe right now?",
+  },
+  {
+    who: "member",
+    text: "yeah. just exhausted. my relationship. i feel invisible in it",
+  },
+  {
+    who: "roni",
+    text: "Invisible to someone you're still showing up for, that's its own kind of lonely. What was your last conversation with Smith?",
+  },
+];
 
 const REVEAL_DURATION_MS = 2400;
 const REVEAL_WINDOW_RATIO = 4;
 
-// Hardcoded asset URL is used as the fallback when Sanity is unreachable
-// at build time (network blip, missing env vars, etc.) so the homepage never
-// renders without a hero video. To swap the video permanently, upload a new
-// one in Sanity Studio → Site Settings → Hero Video and publish.
-const HERO_VIDEO_FALLBACK =
-  "https://cdn.sanity.io/files/q1nckxts/production/aa702253c4350f53d0117201982fbb1d8d68cf4f.mp4";
+// Chat flow — discrete-step ticker. Every tick a new message enters at
+// the bottom slot and every prior message shifts up by one slot. CSS
+// transitions handle the in-between motion, so the loop reads as smooth
+// scrolling regardless of frame timing (no per-frame JS).
+const CHAT_TICK_MS = 1900;            // dwell between message advances
+const CHAT_START_DELAY_MS = 80;       // chat opens almost immediately — first bubble rises with the headline
+const CHAT_HOLD_END_MS = 9000;        // hold the full conversation in view — long enough to read it all
+const CHAT_EXIT_DURATION_MS = 380;    // fast clean fade-out, no theatrics
+const CHAT_EXIT_STAGGER_MS = 0;       // all bubbles clear together for a crisp reset
+const CHAT_EXIT_LIFT_PX = 0;          // fade in place, no upward drift
+const CHAT_LOOP_RESTART_MS = 180;     // minimal beat before the new "Hey" rises from behind the hill
+const CHAT_GAP_PX = 12;               // gap between stacked bubbles
+const CHAT_RISE_PX = 130;             // entry deep in the opaque hill so the bubble truly emerges from behind it
 
-export function Hero({ videoUrl }: { videoUrl?: string | null } = {}) {
-  const resolvedVideoUrl = videoUrl ?? HERO_VIDEO_FALLBACK;
+export function Hero() {
   const runwayRef = useRef<HTMLDivElement>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [revealProgress, setRevealProgress] = useState(0);
+  // activeIndex = which message is currently the "newest" (bottom slot).
+  // -1 means the chat hasn't started yet (all messages pending below the
+  // hill line). Wraps past CHAT.length so older messages keep scrolling
+  // out before the loop quietly resets.
+  const [activeIndex, setActiveIndex] = useState(-1);
+  // Phase governs how each bubble's translateY + opacity + transition is
+  // computed. 'idle' — pre-cycle, every bubble parked beneath the hill.
+  // 'running' — walking through the conversation. 'exiting' — the whole
+  // stack drifts up out of frame on a slower curve. 'resetting' — single
+  // frame with transitions disabled to snap bubbles back below the hill
+  // before the next cycle begins, so there's no visible whiplash.
+  const [chatPhase, setChatPhase] = useState<ChatPhase>("idle");
   const [reducedMotion, setReducedMotion] = useState(false);
+  // Measured heights of each bubble. Roni messages are 2–4 lines and
+  // member messages are 1 line, so we can't use a fixed slot height —
+  // each bubble reports its own height via ResizeObserver and the stack
+  // positions itself off cumulative heights of the messages below it.
+  const [bubbleHeights, setBubbleHeights] = useState<number[]>(() =>
+    new Array(CHAT.length).fill(0),
+  );
+  const reportHeight = useMemo(
+    () => (index: number, height: number) =>
+      setBubbleHeights((prev) => {
+        if (Math.abs((prev[index] ?? 0) - height) < 0.5) return prev;
+        const next = prev.slice();
+        next[index] = height;
+        return next;
+      }),
+    [],
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -54,48 +129,90 @@ export function Hero({ videoUrl }: { videoUrl?: string | null } = {}) {
     return () => cancelAnimationFrame(rafId);
   }, [reducedMotion]);
 
-  // Scroll-driven exit — preserves the graceful handoff into Section 2.
+  // Chat ticker — walks the chat once, holds the full stack on screen
+  // for a long beat so the conversation can actually be read, then
+  // gracefully drifts the whole thing up and out before silently
+  // resetting beneath the hill for the next cycle. CSS transitions
+  // handle the in-between motion; React only re-renders on phase /
+  // index changes.
   useEffect(() => {
     if (reducedMotion) {
-      setScrollProgress(0);
+      setChatPhase("running");
+      setActiveIndex(CHAT.length - 1);
       return;
     }
-    let rafId = 0;
-    const onScroll = () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        const el = runwayRef.current;
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const runway = el.offsetHeight - window.innerHeight;
-        const scrolled = Math.min(Math.max(-rect.top, 0), runway);
-        setScrollProgress(runway > 0 ? scrolled / runway : 0);
-      });
+    let timerId: number | undefined;
+    let rafId1: number | undefined;
+    let rafId2: number | undefined;
+    let cancelled = false;
+    let isFirstPass = true;
+
+    const stepTo = (i: number) => {
+      if (cancelled) return;
+      setChatPhase("running");
+      setActiveIndex(i);
+      if (i < CHAT.length - 1) {
+        timerId = window.setTimeout(() => stepTo(i + 1), CHAT_TICK_MS);
+      } else {
+        // Park the conversation on screen for a long beat — long enough
+        // that a viewer can read through every line before the chat
+        // begins its drift out.
+        timerId = window.setTimeout(beginExit, CHAT_HOLD_END_MS);
+      }
     };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
+
+    const beginExit = () => {
+      if (cancelled) return;
+      // Fade each bubble in place with a small upward grace, staggered
+      // so the oldest message leaves first and the newest last — reads
+      // as the conversation closing itself rather than a curtain lift.
+      setChatPhase("exiting");
+      const totalExitMs =
+        CHAT_EXIT_DURATION_MS + (CHAT.length - 1) * CHAT_EXIT_STAGGER_MS;
+      timerId = window.setTimeout(() => {
+        if (cancelled) return;
+        // Snap back beneath the hill with transitions disabled — the
+        // bubbles are already invisible from the exit, so this is the
+        // moment to teleport them home without anyone seeing.
+        setChatPhase("resetting");
+        setActiveIndex(-1);
+        rafId1 = requestAnimationFrame(() => {
+          rafId2 = requestAnimationFrame(() => {
+            if (cancelled) return;
+            runCycle();
+          });
+        });
+      }, totalExitMs);
+    };
+
+    const runCycle = () => {
+      if (cancelled) return;
+      setChatPhase("idle");
+      setActiveIndex(-1);
+      const delay = isFirstPass ? CHAT_START_DELAY_MS : CHAT_LOOP_RESTART_MS;
+      isFirstPass = false;
+      timerId = window.setTimeout(() => stepTo(0), delay);
+    };
+
+    runCycle();
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (rafId) cancelAnimationFrame(rafId);
+      cancelled = true;
+      if (timerId !== undefined) window.clearTimeout(timerId);
+      if (rafId1 !== undefined) cancelAnimationFrame(rafId1);
+      if (rafId2 !== undefined) cancelAnimationFrame(rafId2);
     };
   }, [reducedMotion]);
 
-  // Bottom cluster fades out from progress 0.35 → 0.80, eased for smooth disappearance
-  const bottomFadeRaw = clamp01((scrollProgress - 0.35) / (0.8 - 0.35));
-  const bottomFade = 1 - easeInOutCubic(bottomFadeRaw);
-  const bottomTranslate = (1 - bottomFade) * 16;
-
   const headlineLine1Words = useMemo(() => HEADLINE_LINE_1.split(" "), []);
   const headlineLine2Words = useMemo(() => HEADLINE_LINE_2.split(" "), []);
-  const subWords = useMemo(() => SUB.split(" "), []);
 
   const totalWords =
-    headlineLine1Words.length + headlineLine2Words.length + subWords.length;
+    headlineLine1Words.length + headlineLine2Words.length;
   const stride = 1 / (totalWords - 1 + REVEAL_WINDOW_RATIO);
   const wordWindow = stride * REVEAL_WINDOW_RATIO;
   const easedReveal = easeOutCubic(revealProgress);
 
-  // Tail elements (CTA + personas) join in the final stretch of the reveal.
+  // Tail elements (CTA + persona block) join in the final stretch of the reveal.
   const tailReveal = clamp01((easedReveal - 0.78) / 0.22);
 
   // Shared word-renderer — uses a counter ref so headline + sub share one timeline.
@@ -129,99 +246,295 @@ export function Hero({ videoUrl }: { videoUrl?: string | null } = {}) {
     <div ref={runwayRef} className="relative h-[130vh]">
       <section
         className="sticky top-2 h-[calc(100svh-1rem)] overflow-hidden rounded-[28px] md:top-3 md:h-[calc(100svh-1.5rem)]"
-        style={{ backgroundColor: "#D8C9BC" }}
+        style={{ backgroundColor: "#E9EAEB", isolation: "isolate" }}
       >
-        <video
-          className="absolute inset-0 h-full w-full object-cover"
-          src={resolvedVideoUrl}
-          poster="/hero-landscape.jpeg"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
+        {/* Pastel landscape, layered ABOVE the info card so the hills
+            visibly crop the lower portion of the card — the card reads
+            as tucked behind the scenery. The image uses a vertical mask
+            (transparent at the top, opaque at the bottom) so its sky
+            portion lets the headline + card show through while its
+            grass portion covers everything beneath it. The headline +
+            CTA column sits on a higher z-index than the image, so they
+            stay legible even where the mask becomes opaque.
+            The image is intentionally static (no parallax, no scale) —
+            it holds its position as the user scrolls past. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[78%] w-full select-none object-cover object-bottom"
+          src="/hero-bg-enhanced.png"
+          alt=""
           aria-hidden
+          draggable={false}
+          style={{
+            maskImage:
+              "linear-gradient(to bottom, transparent 0%, transparent 36%, rgba(0,0,0,0.4) 48%, #000 62%, #000 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, transparent 0%, transparent 36%, rgba(0,0,0,0.4) 48%, #000 62%, #000 100%)",
+          }}
         />
 
-        {/* Cinematic left-anchored darkening — provides text contrast without reading as a UI scrim. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/65 via-black/25 to-transparent"
-        />
-        {/* Soft bottom darkening so the lower cluster stays legible across any video frame. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/55 via-black/15 to-transparent"
-        />
+        {/* Content layer.
+            Horizontal padding + max-width come from `container-page`, the
+            shared layout primitive used by Nav, Outcome, WhoWeServe,
+            CoreCapabilities, Footer, etc. This keeps the hero's headline
+            and info card vertically aligned with the section content on
+            every other page (and with the nav links above), instead of
+            having a bespoke padding scale that drifted at large viewports.
+            Vertical rhythm stays inline (mt-24/28) since the section is
+            a fixed viewport height, not driven by intrinsic content. */}
+        <div className="relative flex h-full w-full flex-col">
+          <div className="container-page mt-40 grid grid-cols-1 gap-10 md:mt-52 lg:mt-60 lg:grid-cols-[minmax(0,1fr)_28rem] lg:items-start lg:gap-14 xl:gap-20">
+            {/* Left column — the message and the call to action. Sits
+                at z-20 so the masked landscape (z-10) never crops the
+                headline or the CTA. The headline reads as the section's
+                anchor against the pastel sky. */}
+            <div className="relative z-20 flex flex-col">
+              <h1
+                className="max-w-[28ch] font-serif font-normal leading-[1.04] tracking-[-0.02em] text-ink text-[2.25rem] sm:text-[2.5rem] md:text-[2.875rem] lg:text-[3.125rem] xl:text-[3.5rem]"
+                style={{ textWrap: "balance" } as React.CSSProperties}
+              >
+                {renderWords(headlineLine1Words, "h1")}{" "}
+                {renderWords(headlineLine2Words, "h2")}
+              </h1>
 
-        <div className="relative flex h-full w-full flex-col p-8 sm:p-10 md:p-14 lg:p-16 xl:p-20">
-          <div
-            className="mt-auto flex w-full flex-col gap-0"
-            style={{
-              opacity: bottomFade,
-              transform: `translateY(${bottomTranslate}px)`,
-              willChange: "opacity, transform",
-              pointerEvents: bottomFade < 0.05 ? "none" : "auto",
-            }}
-          >
-            <h1 className="max-w-4xl font-serif font-normal leading-[1.08] tracking-[-0.02em] text-white text-[2.25rem] md:text-[2.75rem] lg:text-[3.25rem]">
-              {renderWords(headlineLine1Words, "h1")}{" "}
-              {renderWords(headlineLine2Words, "h2")}
-            </h1>
-
-            <div className="flex w-full flex-col gap-8 md:flex-row md:items-end md:justify-between md:gap-12">
               {/* TODO: Calendly URL */}
               <a
                 href="#book-a-demo"
-                className="inline-flex w-fit items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-medium text-ink shadow-soft transition hover:bg-white/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black/40"
+                className="group/herocta btn-primary mt-10 w-fit"
                 style={{
                   opacity: tailReveal,
                   transform: `translateY(${(1 - tailReveal) * 8}px)`,
                   willChange: "opacity, transform",
                 }}
               >
-                Book a Demo
+                Book A Demo
                 <Arrow />
               </a>
-
-              <div className="flex flex-col gap-4 md:items-end md:text-right">
-                <p className="max-w-md text-lg leading-relaxed text-white/80 md:text-xl">
-                  {renderWords(subWords, "sub")}
-                </p>
-
-                <div
-                  className="flex flex-wrap items-center gap-x-2.5 gap-y-2 whitespace-nowrap text-[14.5px] font-medium uppercase tracking-[0.16em] text-white/75 md:flex-nowrap md:justify-end"
-                  style={{
-                    opacity: tailReveal,
-                    transform: `translateY(${(1 - tailReveal) * 8}px)`,
-                    willChange: "opacity, transform",
-                  }}
-                >
-                  {PERSONAS.map((p, i) => (
-                    <Fragment key={p}>
-                      <span>{p}</span>
-                      {i < PERSONAS.length - 1 && (
-                        <span aria-hidden className="text-white/35">
-                          ·
-                        </span>
-                      )}
-                    </Fragment>
-                  ))}
-                </div>
-              </div>
             </div>
+
+            {/* Right column — conversational chat. Acts as a vertical
+                ticker: each message is absolutely positioned by slot, so
+                a new one entering at the bottom shifts every prior one
+                up. CSS transitions interpolate position + opacity so the
+                motion stays smooth (no per-frame JS). z-0 keeps the
+                stack beneath the masked landscape (z-10) — new lines
+                rise out from behind the hills. */}
+            <aside
+              className="relative z-0 lg:w-full lg:max-w-[28rem] lg:justify-self-end"
+              style={{
+                // Sized so the aside's bottom edge lands inside the
+                // hill mask's fade zone — bubbles rest with their lower
+                // edge dissolving into the meadow silhouette, and their
+                // entry origin (CHAT_RISE_PX below rest) sits deep in
+                // the fully-opaque terrain. Each new message visibly
+                // rises out of the landscape rather than floating in
+                // above it.
+                minHeight: "280px",
+                // Soft fade across the top so older messages dissolve into
+                // the sky rather than getting cut off at a hard edge as the
+                // stack grows.
+                maskImage:
+                  "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.25) 8%, #000 22%, #000 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.25) 8%, #000 22%, #000 100%)",
+              }}
+              aria-label="Sample coaching conversation"
+            >
+              {CHAT.map((turn, i) => {
+                const slot = activeIndex - i;
+                // Cumulative offset of the messages stacked between this
+                // one and the bottom of the stack — drives translateY so
+                // a tall Roni bubble pushes its older neighbour further
+                // up than a short member bubble would.
+                let stackOffset = 0;
+                if (slot > 0) {
+                  for (let k = 0; k < slot; k++) {
+                    const belowIndex = activeIndex - k;
+                    stackOffset += (bubbleHeights[belowIndex] ?? 0) + CHAT_GAP_PX;
+                  }
+                }
+                return (
+                  <ChatLine
+                    key={i}
+                    index={i}
+                    turn={turn}
+                    slot={slot}
+                    stackOffset={stackOffset}
+                    phase={chatPhase}
+                    onMeasure={reportHeight}
+                  />
+                );
+              })}
+            </aside>
           </div>
         </div>
-
-        {/* <HeroPhoneMockup progress={scrollProgress} /> */}
       </section>
+    </div>
+  );
+}
+
+function ChatLine({
+  turn,
+  index,
+  slot,
+  stackOffset,
+  phase,
+  onMeasure,
+}: {
+  turn: ChatTurn;
+  index: number;
+  // slot 0 = newest (bottom). 1, 2, … = older messages stacked upward.
+  // slot < 0 = not yet entered (hidden beneath the hill mask).
+  slot: number;
+  stackOffset: number;
+  phase: ChatPhase;
+  onMeasure: (index: number, height: number) => void;
+}) {
+  const isRoni = turn.who === "roni";
+  const measureRef = useRef<HTMLDivElement>(null);
+
+  // Report rendered height back to the parent so the stack can position
+  // every other slot relative to this bubble's actual size. ResizeObserver
+  // catches font-load reflows and width changes.
+  useEffect(() => {
+    const node = measureRef.current;
+    if (!node) return;
+    const update = () => onMeasure(index, node.getBoundingClientRect().height);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(node);
+    return () => ro.disconnect();
+  }, [index, onMeasure]);
+
+  // Slot → translateY + opacity. Position is anchored at the container's
+  // bottom; older slots stack upward by the heights of the bubbles below
+  // them. CSS transition interpolates between states so each tick reads
+  // as a smooth shift up. Once a message has landed it stays visible —
+  // older slots only get a gentle opacity dip for visual depth, never
+  // fully fade out.
+  let translateY: number;
+  let opacity: number;
+  // Oldest-first exit stagger — slot 0 is the newest, so larger slot
+  // numbers leave first. Newest message gets the full stagger delay.
+  const exitOrder = Math.max(0, CHAT.length - 1 - Math.max(slot, 0));
+  if (phase === "exiting" && slot >= 0) {
+    // Fade each bubble in place with a small upward grace — the
+    // conversation closes itself, no full-stack curtain lift.
+    translateY = -stackOffset - CHAT_EXIT_LIFT_PX;
+    opacity = 0;
+  } else if (slot < 0) {
+    translateY = CHAT_RISE_PX;
+    opacity = 0;
+  } else {
+    translateY = -stackOffset;
+    // Every landed message stays fully present — older lines lose only
+    // a hair of opacity for depth, never enough to dim the conversation.
+    if (slot === 0) opacity = 1;
+    else if (slot === 1) opacity = 0.98;
+    else if (slot === 2) opacity = 0.96;
+    else opacity = Math.max(0.9, 0.96 - (slot - 2) * 0.02);
+  }
+
+  // Two glass-mist bubble treatments — Roni reads as cool dawn glass
+  // (the AI side), member as a sunlit cream haze (the person speaking).
+  // Low opacity + heavy blur + ghosted borders so the bubbles feel like
+  // a part of the pastel meadow weather, not UI panels stacked on top.
+  // No shadows — the atmosphere carries the depth.
+  const bubbleStyle: React.CSSProperties = isRoni
+    ? {
+        background:
+          "linear-gradient(to bottom, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.48) 100%)",
+        backdropFilter: "blur(16px) saturate(135%)",
+        WebkitBackdropFilter: "blur(16px) saturate(135%)",
+        border: "1px solid rgba(255, 255, 255, 0.5)",
+      }
+    : {
+        background:
+          "linear-gradient(to bottom, rgba(252, 232, 208, 0.66) 0%, rgba(248, 218, 188, 0.5) 100%)",
+        backdropFilter: "blur(16px) saturate(135%)",
+        WebkitBackdropFilter: "blur(16px) saturate(135%)",
+        border: "1px solid rgba(232, 196, 158, 0.4)",
+      };
+
+  // 850ms ease-out-quart for the per-tick rise. The exit phase stretches
+  // that to ~1600ms so the final drift-out reads as a relaxed scroll,
+  // not a snap. The single resetting frame disables transitions entirely
+  // so we can silently teleport bubbles back to their start position
+  // without animating across the entire viewport.
+  const exitDelay = exitOrder * CHAT_EXIT_STAGGER_MS;
+  const transition =
+    phase === "resetting"
+      ? "none"
+      : phase === "exiting"
+        ? `transform ${CHAT_EXIT_DURATION_MS}ms cubic-bezier(0.22, 1, 0.36, 1) ${exitDelay}ms, opacity ${CHAT_EXIT_DURATION_MS}ms cubic-bezier(0.22, 1, 0.36, 1) ${exitDelay}ms`
+        : "transform 620ms cubic-bezier(0.22, 1, 0.36, 1), opacity 620ms cubic-bezier(0.22, 1, 0.36, 1)";
+
+  if (isRoni) {
+    return (
+      <div
+        ref={measureRef}
+        className="absolute bottom-0 left-0 flex max-w-[94%] items-end gap-2.5"
+        style={{
+          opacity,
+          transform: `translateY(${translateY}px)`,
+          transition,
+          willChange: "opacity, transform",
+        }}
+      >
+        <span className="mb-[6px] shrink-0" style={{ opacity: 0.55 }}>
+          <AIOrb size={14} />
+        </span>
+        <div
+          className="rounded-[16px] rounded-bl-[6px] px-3.5 py-2 text-[12.5px] leading-[1.5] text-ink-soft md:text-[13px]"
+          style={bubbleStyle}
+        >
+          {turn.text}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={measureRef}
+      className="absolute bottom-0 right-0 flex max-w-[94%] items-end justify-end gap-2.5"
+      style={{
+        opacity,
+        transform: `translateY(${translateY}px)`,
+        transition,
+        willChange: "opacity, transform",
+      }}
+    >
+      <div
+        className="rounded-[16px] rounded-br-[6px] px-3.5 py-2 font-serif text-[12.5px] italic leading-[1.5] text-ink-soft md:text-[13px]"
+        style={bubbleStyle}
+      >
+        {turn.text}
+      </div>
+      <span
+        aria-hidden
+        className="mb-[6px] inline-block shrink-0 rounded-full"
+        style={{
+          width: 10,
+          height: 10,
+          background: "rgba(168, 139, 110, 0.55)",
+          boxShadow: "inset 0 1px 1px rgba(255,255,255,0.25)",
+        }}
+      />
     </div>
   );
 }
 
 function Arrow() {
   return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      aria-hidden
+      className="transition-transform duration-300 ease-out motion-reduce:transition-none group-hover/herocta:translate-x-1"
+    >
       <path
         d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
         stroke="currentColor"
@@ -235,10 +548,6 @@ function Arrow() {
 
 function clamp01(n: number) {
   return Math.min(Math.max(n, 0), 1);
-}
-
-function easeInOutCubic(t: number) {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
 function easeOutCubic(t: number) {

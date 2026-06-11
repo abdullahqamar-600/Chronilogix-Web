@@ -30,8 +30,7 @@ export function AIOrb({
       style={{
         width: size,
         height: size,
-        boxShadow:
-          "inset 0 1px 1px rgba(255,255,255,0.45), 0 10px 26px -8px rgba(255,116,52,0.5)",
+        boxShadow: "inset 0 1px 1px rgba(255,255,255,0.45)",
       }}
     >
       {/* Primary linear gradient — half bright, half deep, rotates clockwise.

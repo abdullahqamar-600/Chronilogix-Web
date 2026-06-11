@@ -26,7 +26,7 @@ export function Pricing() {
             Priced for scale. Built around the people you serve.
           </h2>
           <p className="max-w-md text-base leading-relaxed text-ink-soft">
-            Pricing is based on member or student volume — not seat count. The
+            Pricing is based on member or student volume, not seat count. The
             more people you serve, the better the unit economics get.
           </p>
         </div>
@@ -43,7 +43,7 @@ export function Pricing() {
                     : "border-ink/10 bg-white"
                 }`}
               >
-                <p className="text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">
+                <p className="text-[14px] font-medium tracking-[-0.005em] text-brand-700">
                   {c.audience}
                 </p>
                 <p className="mt-6 text-3xl font-medium tracking-tight text-ink md:text-4xl">

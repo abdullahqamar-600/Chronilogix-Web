@@ -118,7 +118,7 @@ export function Statement() {
             {wordsBySentence.map((words, si) => (
               <p
                 key={si}
-                className="text-[1.625rem] font-serif font-normal leading-snug text-ink md:text-3xl lg:text-[2.5rem]"
+                className="text-row font-serif font-normal text-ink"
               >
                 {words.map((word, wi) => {
                   const idx = globalIdx++;
@@ -163,7 +163,7 @@ export function Statement() {
 // ─── Scene 3: reasoning cards ───────────────────────────────────────────────
 // Three cards in an asymmetric triangle around the phone: one above,
 // one mid-left overlapping the phone, one mid-right overlapping the phone.
-// Each card has its own typographic personality driven by what it shows.
+// Each card names a pillar of how Chronilogix coaches differently.
 
 function SceneThreeCards({ sceneThree }: { sceneThree: number }) {
   const r1 = clamp01((sceneThree - 0.24) / 0.16);
@@ -172,9 +172,7 @@ function SceneThreeCards({ sceneThree }: { sceneThree: number }) {
 
   return (
     <div className="pointer-events-none absolute inset-0 hidden lg:block">
-      {/* Card 1 — crown. Top center, behind phone, bottom edge tucked
-          lightly under the phone's notch. Quotes the AI's question and
-          names the technique. Anchors the triangle's apex. */}
+      {/* Card 1 — crown. Top center, behind phone. Pillar: clinical research. */}
       <FloatingCard
         positionStyle={{
           top: "12%",
@@ -186,20 +184,19 @@ function SceneThreeCards({ sceneThree }: { sceneThree: number }) {
         reveal={r1}
         enter="down"
       >
-        <p className="font-serif text-[20px] leading-snug text-ink">
-          &ldquo;What would make this time worth finishing?&rdquo;
+        <p className="text-[13px] font-medium tracking-[-0.005em] text-brand-700">
+          Clinically grounded
         </p>
-        <p className="mt-3 text-[13px] font-semibold text-ink">
-          Evocative open question
+        <p className="mt-3 font-serif text-[20px] leading-[1.18] tracking-[-0.012em] text-ink">
+          30+ years of Motivational Interviewing.
         </p>
-        <p className="mt-1 text-[12.5px] leading-relaxed text-ink-soft">
-          Asks Marcus for his own reason — not ours.
+        <p className="mt-2 text-[12.5px] leading-relaxed text-ink-soft">
+          Every reply is shaped by the method Dr. Ken Resnicow has spent his
+          career proving works.
         </p>
       </FloatingCard>
 
-      {/* Card 2 — left wing. Mid-phone height, behind phone, slight
-          right-edge tuck behind phone's left side. Symmetric outward
-          offset with Card 3. Anchor moment, Marcus's own words. */}
+      {/* Card 2 — left wing. Pillar: whole-person context awareness. */}
       <FloatingCard
         positionStyle={{
           top: "36%",
@@ -210,23 +207,19 @@ function SceneThreeCards({ sceneThree }: { sceneThree: number }) {
         reveal={r2}
         enter="left"
       >
-        <p className="text-[12.5px] font-semibold text-ink">
-          Anchor identified
+        <p className="text-[13px] font-medium tracking-[-0.005em] text-brand-700">
+          Whole-person aware
         </p>
-        <p className="mt-3 font-serif text-[22px] leading-[1.2] text-ink">
-          &ldquo;On the sideline next fall.&rdquo;
+        <p className="mt-3 font-serif text-[20px] leading-[1.18] tracking-[-0.012em] text-ink">
+          Knows what matters outside the chart.
         </p>
-        <div className="mt-4 flex items-center gap-2 text-[11px] text-ink-muted">
-          <MarcusGlyph />
-          <span>Marcus · Tuesday 8:41</span>
-        </div>
+        <p className="mt-2 text-[12.5px] leading-relaxed text-ink-soft">
+          Tracks family, goals, culture, and daily life: the context that
+          makes change actually stick.
+        </p>
       </FloatingCard>
 
-      {/* Card 3 — right wing, focal. Lower than Card 2 (pairs with the
-          closing chat turn at the bottom of the conversation). IN FRONT
-          of phone (zIndex 20), pure white bg makes it the visual punch.
-          Pushed outward at 130px to mirror Card 2's offset — sits beside
-          the phone, never over the chat. */}
+      {/* Card 3 — right wing, focal. IN FRONT of phone. Pillar: tone. */}
       <FloatingCard
         positionStyle={{
           top: "60%",
@@ -238,15 +231,16 @@ function SceneThreeCards({ sceneThree }: { sceneThree: number }) {
         enter="right"
         bgClassName="bg-white"
       >
-        <p className="text-[13px] font-semibold text-ink">Next step</p>
-        <p className="mt-2 text-[12.5px] leading-relaxed text-ink-soft">
-          Week 1: under 10 minutes a day. Small enough to survive a hard
-          week.
+        <p className="text-[13px] font-medium tracking-[-0.005em] text-brand-700">
+          Always supportive
         </p>
-        <div className="mt-4 flex items-center gap-2 text-[11px] text-ink-muted">
-          <ChronilogixGlyph />
-          <span>Chronilogix · Tuesday 8:42</span>
-        </div>
+        <p className="mt-3 font-serif text-[20px] leading-[1.18] tracking-[-0.012em] text-ink">
+          Never judges. Never preaches.
+        </p>
+        <p className="mt-2 text-[12.5px] leading-relaxed text-ink-soft">
+          Reads emotion in plain text and meets people where they are —
+          especially on the hard days.
+        </p>
       </FloatingCard>
     </div>
   );
@@ -301,28 +295,6 @@ function FloatingCard({
         {children}
       </div>
     </div>
-  );
-}
-
-function ChronilogixGlyph() {
-  return (
-    <span
-      aria-hidden
-      className="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[3px] bg-brand-600"
-    >
-      <span className="block h-1.5 w-[2px] rounded-full bg-white" />
-    </span>
-  );
-}
-
-function MarcusGlyph() {
-  return (
-    <span
-      aria-hidden
-      className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-ink/[0.08] text-[8.5px] font-semibold text-ink"
-    >
-      M
-    </span>
   );
 }
 

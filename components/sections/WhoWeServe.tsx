@@ -2,60 +2,162 @@
 
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 
+type Metric = {
+  lead: string;
+  caption: string;
+  comparison: string;
+};
+
+type Signal = {
+  label: string;
+  body: string;
+};
+
 type Persona = {
   key: string;
   label: string;
+  intro: string;
   headline: [string, string];
   description: string;
-  image: string | null;
-  imageAlt: string;
+  metrics?: Metric[];
+  signals?: Signal[];
 };
 
 const PERSONAS: Persona[] = [
   {
     key: "employers",
-    label: "Employers & HR",
+    label: "Employers",
+    intro: "For HR leaders & benefits owners",
     headline: ["Reach every employee.", "Not just the few who ask."],
     description:
-      "Chronilogix integrates into your benefits stack. Every employee gets a clinically trained coaching experience, available the moment they need it, culturally tailored to who they are.",
-    image: "/for-employees.png",
-    imageAlt:
-      "A group of coworkers laughing together against a bright sky.",
+      "Reach the roughly 250 in 1,000 employees living with chronic conditions before they become high-cost claims. Chronilogix lowers PEPM costs, improves adherence, and reduces sick days, saving an estimated $300 to $700 per engaged member, per year.",
+    metrics: [
+      {
+        lead: "8×",
+        caption: "Engagement vs. typical EAPs",
+        comparison: "3% utilization → 25% engaged",
+      },
+      {
+        lead: "~50%",
+        caption: "Lower cost than live coaching",
+        comparison: "$60–70 PMPM → $20–30 PMPM",
+      },
+      {
+        lead: "24/7",
+        caption: "Available the moment it's needed",
+        comparison: "Business hours → every hour",
+      },
+    ],
   },
   {
-    key: "universities",
-    label: "Universities",
-    headline: ["Built for the students", "who never raise their hand."],
+    key: "brokers",
+    label: "Benefits Brokers",
+    intro: "For benefits consultants & brokers",
+    headline: ["Defensible ROI.", "Not another point solution."],
     description:
-      "Available the moment a student needs it. 3am before exams. After a hard call home. Culturally tailored, completely private, built on Dr. Resnicow's MI methodology.",
-    image: "/for-universities.png",
-    imageAlt: "A student studying alone in a campus library.",
+      "Chronilogix gives brokers a story that ends in measurable cost-curve impact, not a fragmented add-on. AI health coaching moves clients upstream on the spend curve, differentiates beyond plan design, and retains self-funded accounts through proactive, continuous member engagement.",
+    signals: [
+      {
+        label: "Defensible ROI in renewal conversations",
+        body: "Not a feature to demo. A measurable shift in the cost curve clients can put in front of their CFO.",
+      },
+      {
+        label: "Upstream on the spend curve",
+        body: "Members engaged weeks before they show up in claims data, replacing reactive triage with proactive outreach.",
+      },
+      {
+        label: "Stickier self-funded accounts",
+        body: "Value-led retention beyond plan design: the book of business that doesn't compete on premium alone.",
+      },
+    ],
   },
   {
     key: "health-plans",
-    label: "Health Plans & Brokers",
-    headline: ["Member coaching that scales", "with your network."],
+    label: "Health Plans & ACOs",
+    intro: "For health plans & accountable care organizations",
+    headline: ["Claims mitigation,", "before the claim."],
     description:
-      "Every member in your plan gets ongoing, evidence-based coaching at a fraction of the cost of live care. A real coaching relationship, available 24 hours a day.",
-    image: null,
-    imageAlt: "",
+      "A first-line claims-mitigation strategy. Chronilogix engages members before issues escalate, replacing up to 70% of routine human coaching at roughly one-twentieth the cost, while improving access and member experience.",
+    metrics: [
+      {
+        lead: "70%",
+        caption: "Of routine coaching, replaceable",
+        comparison: "Human coach required → Chronilogix covers",
+      },
+      {
+        lead: "1/20",
+        caption: "Of live-coaching cost",
+        comparison: "Baseline → ~5% of baseline",
+      },
+      {
+        lead: "Pre-",
+        caption: "Engagement, before escalation",
+        comparison: "Reactive triage → proactive outreach",
+      },
+    ],
   },
   {
-    key: "app-partners",
-    label: "App Partners",
-    headline: ["30 years of clinical research,", "embedded in your product."],
+    key: "wellness-platforms",
+    label: "Wellness Platforms",
+    intro: "For consumer & enterprise wellness apps",
+    headline: ["The engagement layer", "your platform is missing."],
     description:
-      "Chronilogix drops in as the clinical coaching intelligence inside your product. Dr. Resnicow's 30-year methodology, with no development overhead on your side.",
-    image: null,
-    imageAlt: "",
+      "Embed Chronilogix as a white-labeled coach to drive longer sessions, deeper retention, and more upgrade moments, without expanding staff or building clinical IP in-house.",
+    signals: [
+      {
+        label: "Longer sessions, deeper retention",
+        body: "An engagement layer designed for return visits: more upgrade moments without re-acquiring users.",
+      },
+      {
+        label: "White-labeled by design",
+        body: "Your brand stays the surface; Chronilogix runs the coaching loop quietly underneath.",
+      },
+      {
+        label: "No new staff, no clinical IP to build",
+        body: "Skip the years of methodology work and the headcount that comes with it. Plug in, ship.",
+      },
+    ],
+  },
+  {
+    key: "underserved",
+    label: "Underserved & Uninsured",
+    intro: "For public-health & community-care programs",
+    headline: ["Care without the gate.", "Reachable at population scale."],
+    description:
+      "For people who often have no support alternative at all (the uninsured, underserved communities, and those who cannot afford repeated sessions), Chronilogix is an accessible, judgment-free entry point to behavioral support at population scale.",
+    signals: [
+      {
+        label: "An entry point where there isn't one",
+        body: "For the uninsured and underserved, often the only behavioral support available at all.",
+      },
+      {
+        label: "Judgment-free, no scheduling, no cost barrier",
+        body: "Help that arrives in the moment, on a phone, without the friction that turns people away.",
+      },
+      {
+        label: "Population-scale reach",
+        body: "Picks up where staffed community programs cap out. Every member, every hour, every language.",
+      },
+    ],
   },
 ];
 
+const STEP_COUNT = PERSONAS.length;
+// Auto-advance dwell per persona. ~80 words of readable content per panel
+// (header bar, headline, description, three argument rows). 12 s lands
+// between a 250-wpm careful read and a 400-wpm skim, so the rail acts as
+// a pacing aid without overtaking the reader.
+const DWELL_MS = 12000;
+
 export function WhoWeServe() {
-  const wrapRef = useRef<HTMLElement | null>(null);
-  const stepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [active, setActive] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [inView, setInView] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  // Once the visitor takes manual control of the rail, auto-advance steps
+  // back. Their click is the strongest signal that they're reading on
+  // their own pace; the timer should not yank focus away again.
+  const userTookOverRef = useRef(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -65,365 +167,607 @@ export function WhoWeServe() {
     return () => mq.removeEventListener?.("change", onChange);
   }, []);
 
+  // Hold the auto-advance until the section is actually being read.
+  // Visitors who land mid-page should not sprint past personas before
+  // they've seen them.
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            const idx = Number(
-              (entry.target as HTMLElement).dataset.step,
-            );
-            setActive((prev) => (prev === idx ? prev : idx));
-          }
-        }
-      },
-      { rootMargin: "-50% 0px -50% 0px", threshold: 0 },
+    const el = sectionRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.35 },
     );
-    stepRefs.current.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
+    obs.observe(el);
+    return () => obs.disconnect();
   }, []);
 
-  const handleNavClick = (i: number) => {
-    const step = stepRefs.current[i];
-    if (!step) return;
-    const y = step.getBoundingClientRect().top + window.scrollY + 8;
-    window.scrollTo({
-      top: y,
-      behavior: reducedMotion ? "auto" : "smooth",
-    });
+  // Auto-advance timer. Restarts whenever `active` or `inView` changes.
+  // Stops at the last persona — auto-rotation is a guided tour, not an
+  // endless carousel. Also stops once the user has clicked a tab.
+  useEffect(() => {
+    if (reducedMotion || !inView) return;
+    if (userTookOverRef.current) return;
+    if (active >= STEP_COUNT - 1) return;
+    const t = setTimeout(() => setActive((a) => a + 1), DWELL_MS);
+    return () => clearTimeout(t);
+  }, [active, inView, reducedMotion]);
+
+  const handleSelect = (idx: number) => {
+    userTookOverRef.current = true;
+    setActive(idx);
   };
+
+  const persona = PERSONAS[active];
+  const autoAdvancing =
+    !reducedMotion &&
+    inView &&
+    !userTookOverRef.current &&
+    active < STEP_COUNT - 1;
 
   return (
     <section
-      ref={wrapRef}
+      ref={sectionRef}
       id="who-we-serve"
       aria-labelledby="who-we-serve-label"
-      data-nav-tone="dark"
-      className="relative"
-      style={{ height: `calc(100svh * ${PERSONAS.length})` }}
+      className="relative bg-paper-warm"
     >
-      {/* Scroll-step markers — IO drives `active` from these */}
-      {PERSONAS.map((p, i) => (
-        <div
-          key={`step-${p.key}`}
-          ref={(el) => {
-            stepRefs.current[i] = el;
-          }}
-          data-step={i}
-          aria-hidden
-          className="pointer-events-none absolute left-0 right-0 h-[100svh]"
-          style={{ top: `calc(100svh * ${i})` }}
-        />
-      ))}
+      <h2 id="who-we-serve-label" className="sr-only">
+        Who we serve
+      </h2>
 
-      <div className="sticky top-2 h-[calc(100svh-1rem)] overflow-hidden rounded-[28px] text-white md:top-3 md:h-[calc(100svh-1.5rem)]">
-        {/* Background image layers — opacity-only crossfade. Blur was the
-            jank source: animating filter:blur on a full-bleed image forces
-            expensive repaints every frame. Static scale gives a soft anchor;
-            transition is opacity-only on a long, gentle curve. */}
-        <div className="absolute inset-0" aria-hidden>
-          {PERSONAS.map((p, i) => {
-            const isActive = i === active;
-            return (
-              <div
-                key={p.key}
-                className="absolute inset-0"
-                style={{
-                  opacity: isActive ? 1 : 0,
-                  transform: "translate3d(0,0,0) scale(1.04)",
-                  transition: reducedMotion
-                    ? "none"
-                    : "opacity 1100ms cubic-bezier(0.4, 0, 0.2, 1)",
-                  willChange: "opacity",
-                }}
-              >
-                {p.image ? (
-                  <img
-                    src={p.image}
-                    alt=""
-                    className="h-full w-full select-none object-cover"
-                    draggable={false}
-                    loading={i === 0 ? "eager" : "lazy"}
-                  />
-                ) : (
-                  <PlaceholderBackdrop label={p.label} />
-                )}
-              </div>
-            );
-          })}
-          {/* Bottom darkening for legibility, sits above all image layers */}
-          <div
-            aria-hidden
-            className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/55 via-black/25 to-transparent"
-          />
-        </div>
+      {/* Lighter-cream gradient at the top edge — softens the boundary
+          with the Outcome section above. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 z-20"
+        style={{
+          height: "min(180px, 18vh)",
+          background:
+            "linear-gradient(to bottom, #FFFFFF 0%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0) 100%)",
+        }}
+      />
 
-        {/* Content — bottom-anchored. The persona list IS the accordion now;
-            headline + description live INSIDE each item and expand only when
-            that persona is active. */}
-        <div className="relative flex h-full flex-col justify-end p-8 sm:p-10 md:p-14 lg:p-16 xl:p-20">
-          <h2 id="who-we-serve-label" className="sr-only">
-            Who we serve
-          </h2>
+      {/* Lighter-cream gradient at the bottom edge — softens the boundary
+          with the next section. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-20"
+        style={{
+          height: "min(180px, 18vh)",
+          background:
+            "linear-gradient(to top, #FFFFFF 0%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0) 100%)",
+        }}
+      />
 
-          <PersonaAccordion
+      <div className="container-page py-24 md:py-28 lg:py-32">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[300px_1fr] lg:gap-16 xl:grid-cols-[340px_1fr] xl:gap-24">
+          <PersonaTabs
             active={active}
-            onSelect={handleNavClick}
+            onSelect={handleSelect}
             reducedMotion={reducedMotion}
+            autoAdvancing={autoAdvancing}
           />
-
-          <a
-            href="#book-a-demo"
-            className="mt-8 inline-flex w-fit items-center rounded-full bg-white px-6 py-3 text-sm font-medium text-ink shadow-soft transition hover:bg-paper-warm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 md:mt-10"
-          >
-            Book a Demo
-          </a>
+          <div className="min-w-0">
+            <PersonaPanel
+              persona={persona}
+              reducedMotion={reducedMotion}
+            />
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-function PersonaAccordion({
+function PersonaTabs({
   active,
   onSelect,
   reducedMotion,
+  autoAdvancing,
 }: {
   active: number;
   onSelect: (i: number) => void;
   reducedMotion: boolean;
+  autoAdvancing: boolean;
 }) {
+  // Progress rail math. Each row occupies an equal slice of the list
+  // height; the rail track spans from the center of the first row to the
+  // center of the last row, and the gradient fill grows top-down to the
+  // center of the currently active row.
+  const segment = 100 / STEP_COUNT;
+  const trackTop = segment / 2;
+  const trackHeight = 100 - segment;
+  const fillHeight =
+    STEP_COUNT > 1 ? (active / (STEP_COUNT - 1)) * trackHeight : 0;
+  const knobTop = trackTop + segment * active;
+
+  const fillRef = useRef<HTMLSpanElement>(null);
+  const knobRef = useRef<HTMLSpanElement>(null);
+
+  // When the rail is auto-advancing, drive the fill height and knob
+  // position with the Web Animations API so the visual progress is
+  // smooth and linear across the entire dwell, not a discrete jump on
+  // each step. Cancel cleanly on tab change so user clicks snap and a
+  // fresh dwell animation starts from the new resting position.
+  useEffect(() => {
+    if (!autoAdvancing) return;
+    const fillEl = fillRef.current;
+    const knobEl = knobRef.current;
+    if (!fillEl || !knobEl) return;
+
+    const startFill = (active / (STEP_COUNT - 1)) * trackHeight;
+    const endFill = ((active + 1) / (STEP_COUNT - 1)) * trackHeight;
+    const startKnob = trackTop + segment * active;
+    const endKnob = trackTop + segment * (active + 1);
+
+    const fillAnim = fillEl.animate(
+      [{ height: `${startFill}%` }, { height: `${endFill}%` }],
+      { duration: DWELL_MS, easing: "linear", fill: "forwards" },
+    );
+    const knobAnim = knobEl.animate(
+      [{ top: `${startKnob}%` }, { top: `${endKnob}%` }],
+      { duration: DWELL_MS, easing: "linear", fill: "forwards" },
+    );
+
+    return () => {
+      fillAnim.cancel();
+      knobAnim.cancel();
+    };
+  }, [active, autoAdvancing, segment, trackHeight, trackTop]);
+
   return (
-    <nav aria-label="Who we serve" className="min-w-0 max-w-3xl">
-      <ul className="flex flex-col">
-        {PERSONAS.map((p, i) => (
-          <PersonaItem
-            key={p.key}
-            persona={p}
-            index={i}
-            isActive={i === active}
-            onSelect={onSelect}
-            reducedMotion={reducedMotion}
-          />
-        ))}
+    <nav
+      aria-label="Who we serve"
+      className="relative lg:sticky lg:top-28 lg:self-start"
+    >
+      <ul className="relative">
+        {/* Track — quiet base line aligned to the text centers, top to
+            bottom of the list. Lives one pixel left of the labels so it
+            reads as a margin marker, not a column edge. */}
+        <span
+          aria-hidden
+          className="absolute left-0 block w-px bg-ink/12"
+          style={{
+            top: `${trackTop}%`,
+            height: `${trackHeight}%`,
+          }}
+        />
+        {/* Fill — the progress indicator itself. Sits centered on the
+            track, wider, with a vertical gradient and a soft brand glow.
+            Height is driven by the dwell animation when auto-advancing;
+            otherwise the inline value (the static resting height for the
+            current persona) takes over. */}
+        <span
+          ref={fillRef}
+          aria-hidden
+          className="absolute left-[-1.5px] block w-[4px] rounded-full"
+          style={{
+            top: `${trackTop}%`,
+            height: `${fillHeight}%`,
+            background:
+              "linear-gradient(180deg, #FFB088 0%, #FF7434 55%, #E45A1C 100%)",
+            boxShadow:
+              "0 0 0 1px rgba(255,116,52,0.08), 0 6px 18px -6px rgba(255,116,52,0.5)",
+          }}
+        />
+        {/* Knob — a brighter dot resting at the active row's center so
+            even at active=0, when the fill has no height, the rail still
+            anchors a visible marker. A soft brand-orange ring pulses out
+            from the knob continuously, drawing the eye to "you are here"
+            without nagging. Position moves linearly with the dwell. */}
+        <span
+          ref={knobRef}
+          aria-hidden
+          className="pointer-events-none absolute left-[1px]"
+          style={{
+            top: `${knobTop}%`,
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          <span className="relative block">
+            {/* The pulse ring — rendered behind the solid knob. */}
+            <span
+              aria-hidden
+              className="knob-pulse absolute left-1/2 top-1/2 block h-[9px] w-[9px] rounded-full"
+              style={{
+                backgroundColor: "#FF7434",
+                animation: reducedMotion
+                  ? "none"
+                  : "knobPulse 2400ms cubic-bezier(0.22, 0.61, 0.36, 1) infinite",
+              }}
+            />
+            {/* The solid knob. */}
+            <span
+              className="relative block h-[9px] w-[9px] rounded-full bg-brand-accent"
+              style={{
+                boxShadow:
+                  "0 0 0 3px rgba(255,116,52,0.15), 0 4px 10px -2px rgba(255,116,52,0.45)",
+              }}
+            />
+          </span>
+        </span>
+        {PERSONAS.map((p, i) => {
+          const isActive = i === active;
+          return (
+            <li key={p.key}>
+              <button
+                type="button"
+                onClick={() => onSelect(i)}
+                aria-current={isActive ? "true" : undefined}
+                className="group relative flex w-full items-center py-3.5 pl-6 pr-2 text-left md:py-4"
+              >
+                <span
+                  className="text-[15px] font-medium leading-snug md:text-[16px]"
+                  style={{
+                    color: isActive
+                      ? "rgba(15,20,25,0.95)"
+                      : "rgba(15,20,25,0.48)",
+                    transition: reducedMotion
+                      ? "none"
+                      : "color 300ms ease-out",
+                  }}
+                >
+                  {p.label}
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );
 }
 
-function PersonaItem({
+function PersonaPanel({
   persona,
-  index,
-  isActive,
-  onSelect,
   reducedMotion,
 }: {
   persona: Persona;
-  index: number;
-  isActive: boolean;
-  onSelect: (i: number) => void;
   reducedMotion: boolean;
 }) {
-  const panelId = `persona-panel-${persona.key}`;
-  const buttonId = `persona-button-${persona.key}`;
-
   return (
-    <li className="min-w-0">
-      <button
-        type="button"
-        id={buttonId}
-        onClick={() => onSelect(index)}
-        aria-expanded={isActive}
-        aria-controls={panelId}
-        className="group flex w-full items-center gap-4 py-4 text-left md:py-5"
-      >
-        <span
-          aria-hidden
-          className="block w-[2px] shrink-0 rounded-full transition-all duration-500 ease-out"
-          style={{
-            height: isActive ? 28 : 0,
-            opacity: isActive ? 1 : 0,
-            backgroundColor: "rgba(255,255,255,0.95)",
-          }}
-        />
-        <span
-          className="text-base font-medium leading-snug transition-colors duration-500 md:text-lg"
-          style={{
-            color: isActive
-              ? "rgba(255,255,255,0.98)"
-              : "rgba(255,255,255,0.55)",
-          }}
-        >
-          {persona.label}
-        </span>
-      </button>
+    <div key={persona.key} className="flex flex-col">
+      <PersonaHeadline
+        lines={persona.headline}
+        reducedMotion={reducedMotion}
+      />
 
-      {/* Collapsible panel — grid-rows trick gives smooth height animation
-          without measuring content. Inner div clips overflow during transit. */}
-      <div
-        id={panelId}
-        role="region"
-        aria-labelledby={buttonId}
-        className="grid"
+      <p
+        className="mt-6 max-w-2xl body-prose md:mt-8"
         style={{
-          gridTemplateRows: isActive ? "1fr" : "0fr",
-          transition: reducedMotion
+          opacity: 0,
+          animation: reducedMotion
             ? "none"
-            : "grid-template-rows 700ms cubic-bezier(0.4, 0, 0.2, 1)",
+            : "wordReveal 600ms cubic-bezier(0.22, 0.61, 0.36, 1) 540ms forwards",
         }}
       >
-        <div className="overflow-hidden">
-          <div className="pb-6 pl-6 pr-2 md:pb-8 md:pl-7">
-            <WordReveal
-              isActive={isActive}
-              reducedMotion={reducedMotion}
-              personaKey={persona.key}
-              headline={persona.headline}
-              description={persona.description}
-            />
-          </div>
+        {persona.description}
+      </p>
+
+      {persona.metrics?.length ? (
+        <MetricsStrip
+          metrics={persona.metrics}
+          reducedMotion={reducedMotion}
+        />
+      ) : null}
+
+      {persona.signals?.length ? (
+        <SignalsList
+          signals={persona.signals}
+          reducedMotion={reducedMotion}
+        />
+      ) : null}
+
+      <a
+        href="#book-a-demo"
+        className="group/cta btn-primary mt-12 w-fit md:mt-14"
+        style={{
+          opacity: 0,
+          animation: reducedMotion
+            ? "none"
+            : "wordReveal 500ms cubic-bezier(0.22, 1, 0.36, 1) 980ms forwards",
+        }}
+      >
+        Talk to our team
+        <span
+          aria-hidden
+          className="transition-transform duration-300 ease-out group-hover/cta:translate-x-1"
+        >
+          <ArrowRight />
+        </span>
+      </a>
+    </div>
+  );
+}
+
+function PersonaHeadline({
+  lines,
+  reducedMotion,
+}: {
+  lines: [string, string];
+  reducedMotion: boolean;
+}) {
+  const wordsByLine = useMemo(
+    () => lines.map((line) => line.split(" ")),
+    [lines],
+  );
+
+  const BASE_DELAY = 120;
+  const STRIDE = 55;
+  let idx = 0;
+
+  return (
+    <h3 className="text-display font-serif font-normal">
+      {wordsByLine.map((words, li) => (
+        <Fragment key={li}>
+          {words.map((word, wi) => {
+            const delay = BASE_DELAY + idx * STRIDE;
+            idx += 1;
+            const lineColor = li === 0 ? "#0F1419" : "#5B6470";
+            return (
+              <Fragment key={wi}>
+                <span
+                  className="inline-block"
+                  style={
+                    reducedMotion
+                      ? { color: lineColor, opacity: 1 }
+                      : {
+                          color: lineColor,
+                          opacity: 0.12,
+                          filter: "blur(3.5px)",
+                          animation: `wordReveal 700ms cubic-bezier(0.22, 0.61, 0.36, 1) ${delay}ms forwards`,
+                          willChange: "filter, opacity",
+                        }
+                  }
+                >
+                  {word}
+                </span>
+                {wi < words.length - 1 && " "}
+              </Fragment>
+            );
+          })}
+          {li < wordsByLine.length - 1 && <br />}
+        </Fragment>
+      ))}
+    </h3>
+  );
+}
+
+const ROMAN = ["I", "II", "III", "IV", "V"];
+
+function MetricsStrip({
+  metrics,
+  reducedMotion,
+}: {
+  metrics: Metric[];
+  reducedMotion: boolean;
+}) {
+  const range =
+    metrics.length === 1
+      ? ROMAN[0]
+      : `${ROMAN[0]} — ${ROMAN[metrics.length - 1]}`;
+  return (
+    <div className="mt-14 md:mt-16">
+      <SectionLabel
+        eyebrow="By the numbers"
+        meta={range}
+        reducedMotion={reducedMotion}
+      />
+      <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 sm:gap-x-7">
+        {metrics.map((m, i) => (
+          <MetricColumn
+            key={`${m.lead}-${i}`}
+            metric={m}
+            index={i}
+            total={metrics.length}
+            reducedMotion={reducedMotion}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MetricColumn({
+  metric,
+  index,
+  total,
+  reducedMotion,
+}: {
+  metric: Metric;
+  index: number;
+  total: number;
+  reducedMotion: boolean;
+}) {
+  const enterDelay = 720 + index * 120;
+  const underlineDelay = enterDelay + 220;
+  const isFirst = index === 0;
+  const numeral = ROMAN[index] ?? String(index + 1);
+
+  // Split the comparison into before / after so the argument shape reads
+  // typographically: muted before-state → brand arrow → resolved after-state.
+  // Falls back to the raw string if no arrow is present.
+  const parts = metric.comparison.split(/\s*→\s*/);
+  const hasArrow = parts.length === 2;
+
+  return (
+    <div
+      className={`flex flex-col gap-5 py-6 sm:py-2 ${
+        index > 0 ? "border-t border-ink/10 sm:border-t-0" : ""
+      } ${!isFirst ? "sm:border-l sm:border-ink/12 sm:pl-7" : ""}`}
+      style={{
+        opacity: 0,
+        animation: reducedMotion
+          ? "none"
+          : `wordReveal 600ms cubic-bezier(0.22, 1, 0.36, 1) ${enterDelay}ms forwards`,
+      }}
+    >
+      <div className="flex flex-col gap-3">
+        <span className="font-serif text-[12px] italic tracking-[0.04em] text-brand-700/80">
+          {numeral}.
+        </span>
+        <div className="relative w-fit pb-3">
+          <p className="font-serif text-stat-md font-normal text-ink">
+            {metric.lead}
+          </p>
+          {/* Brand-orange underline that draws in beneath the lead number,
+              giving each stat a tactile finish without competing with the
+              hairlines between columns. */}
+          <span
+            aria-hidden
+            className="absolute bottom-0 left-0 block h-[2px] origin-left rounded-full"
+            style={{
+              width: "44%",
+              background:
+                "linear-gradient(90deg, #FF7434 0%, #FFB088 100%)",
+              transform: "scaleX(0)",
+              animation: reducedMotion
+                ? "none"
+                : `barGrow 600ms cubic-bezier(0.22, 1, 0.36, 1) ${underlineDelay}ms forwards`,
+            }}
+          />
         </div>
       </div>
+
+      <div>
+        <p className="text-[15px] font-medium leading-snug text-ink md:text-base">
+          {metric.caption}
+        </p>
+        {hasArrow ? (
+          <p className="mt-2 font-serif text-[13px] italic leading-snug">
+            <span className="text-ink/45">{parts[0]}</span>
+            <span aria-hidden className="mx-1.5 not-italic text-brand-700">
+              →
+            </span>
+            <span className="text-ink-soft">{parts[1]}</span>
+          </p>
+        ) : (
+          <p className="mt-2 font-serif text-[13px] italic text-ink-muted">
+            {metric.comparison}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SignalsList({
+  signals,
+  reducedMotion,
+}: {
+  signals: Signal[];
+  reducedMotion: boolean;
+}) {
+  const range =
+    signals.length === 1
+      ? ROMAN[0]
+      : `${ROMAN[0]} — ${ROMAN[signals.length - 1]}`;
+  return (
+    <div className="mt-14 md:mt-16">
+      <SectionLabel
+        eyebrow="What changes"
+        meta={range}
+        reducedMotion={reducedMotion}
+      />
+      <ol className="mt-8 flex flex-col">
+        {signals.map((s, i) => (
+          <SignalRow
+            key={`${s.label}-${i}`}
+            signal={s}
+            index={i}
+            total={signals.length}
+            reducedMotion={reducedMotion}
+          />
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+function SignalRow({
+  signal,
+  index,
+  total,
+  reducedMotion,
+}: {
+  signal: Signal;
+  index: number;
+  total: number;
+  reducedMotion: boolean;
+}) {
+  const enterDelay = 720 + index * 140;
+  const numeral = ROMAN[index] ?? String(index + 1);
+  const isLast = index === total - 1;
+
+  return (
+    <li
+      className={`grid grid-cols-[2.25rem_1fr] gap-x-5 gap-y-2 py-5 md:py-6 ${
+        !isLast ? "border-b border-ink/10" : ""
+      }`}
+      style={{
+        opacity: 0,
+        animation: reducedMotion
+          ? "none"
+          : `wordReveal 600ms cubic-bezier(0.22, 1, 0.36, 1) ${enterDelay}ms forwards`,
+      }}
+    >
+      <span className="font-serif text-[15px] italic leading-[1.55] text-brand-700">
+        {numeral}.
+      </span>
+      <p className="text-[17px] font-medium leading-snug text-ink md:text-[18px]">
+        {signal.label}
+      </p>
+      <span aria-hidden />
+      <p className="max-w-xl body-quiet">
+        {signal.body}
+      </p>
     </li>
   );
 }
 
-/**
- * Per-word blur reveal — same visual treatment as the Statement section
- * (Section 2). Words resolve in sequence from blur(3.5px)+opacity(0.12) to
- * blur(0)+opacity(1) with a staggered animation-delay. Headline gets a
- * slightly longer per-word stride for drama; description follows tighter so
- * it doesn't drag. Re-keyed by persona so the animation restarts cleanly on
- * every persona change.
- */
-function WordReveal({
-  isActive,
+function SectionLabel({
+  eyebrow,
+  meta,
   reducedMotion,
-  personaKey,
-  headline,
-  description,
 }: {
-  isActive: boolean;
+  eyebrow: string;
+  meta: string;
   reducedMotion: boolean;
-  personaKey: string;
-  headline: [string, string];
-  description: string;
 }) {
-  const headlineLines = useMemo(
-    () => headline.map((line) => line.split(" ")),
-    [headline],
-  );
-  const descriptionWords = useMemo(
-    () => description.split(" "),
-    [description],
-  );
-
-  const HEADLINE_BASE_DELAY = 120;
-  const HEADLINE_STRIDE = 55;
-  const DESCRIPTION_STRIDE = 18;
-  const DESCRIPTION_GAP = 180;
-
-  // Total time the headline words take to finish reveal, so description can
-  // start as headline lands rather than competing for attention.
-  const headlineWordCount = headlineLines.reduce(
-    (acc, line) => acc + line.length,
-    0,
-  );
-  const descriptionStart =
-    HEADLINE_BASE_DELAY + headlineWordCount * HEADLINE_STRIDE + DESCRIPTION_GAP;
-
-  let headlineIdx = 0;
-
   return (
     <div
-      // Re-key so the animation restarts every time a different persona
-      // becomes active. Without the key flip, React would reuse spans and
-      // CSS animations wouldn't re-run.
-      key={`${personaKey}-${isActive ? "on" : "off"}`}
+      className="flex items-baseline justify-between gap-4 border-t border-ink/15 pt-5"
+      style={{
+        opacity: 0,
+        animation: reducedMotion
+          ? "none"
+          : "wordReveal 500ms cubic-bezier(0.22, 1, 0.36, 1) 640ms forwards",
+      }}
     >
-      <h3
-        className="font-serif font-normal tracking-[-0.015em] text-white"
-        style={{
-          fontSize: "clamp(1.625rem, 2.2vw + 0.55rem, 3rem)",
-          lineHeight: 1.08,
-        }}
-      >
-        {headlineLines.map((words, li) => (
-          <Fragment key={li}>
-            {words.map((word, wi) => {
-              const delay =
-                HEADLINE_BASE_DELAY + headlineIdx * HEADLINE_STRIDE;
-              headlineIdx += 1;
-              return (
-                <Fragment key={wi}>
-                  <span
-                    className="inline-block"
-                    style={
-                      reducedMotion || !isActive
-                        ? { opacity: isActive ? 1 : 0 }
-                        : {
-                            opacity: 0.12,
-                            filter: "blur(3.5px)",
-                            animation: `wordReveal 700ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms forwards`,
-                            willChange: "filter, opacity",
-                          }
-                    }
-                  >
-                    {word}
-                  </span>
-                  {wi < words.length - 1 && " "}
-                </Fragment>
-              );
-            })}
-            {li < headlineLines.length - 1 && <br />}
-          </Fragment>
-        ))}
-      </h3>
-
-      <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/75 md:mt-5 md:text-base">
-        {descriptionWords.map((word, wi) => {
-          const delay = descriptionStart + wi * DESCRIPTION_STRIDE;
-          return (
-            <Fragment key={wi}>
-              <span
-                className="inline-block"
-                style={
-                  reducedMotion || !isActive
-                    ? { opacity: isActive ? 1 : 0 }
-                    : {
-                        opacity: 0.12,
-                        filter: "blur(3.5px)",
-                        animation: `wordReveal 600ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms forwards`,
-                        willChange: "filter, opacity",
-                      }
-                }
-              >
-                {word}
-              </span>
-              {wi < descriptionWords.length - 1 && " "}
-            </Fragment>
-          );
-        })}
+      <p className="eyebrow-muted">{eyebrow}</p>
+      <p className="font-serif text-[13px] italic text-ink/45">
+        {meta}
       </p>
     </div>
   );
 }
 
-function PlaceholderBackdrop({ label }: { label: string }) {
+function ArrowRight() {
   return (
-    <div className="relative h-full w-full bg-[linear-gradient(135deg,#3A424D_0%,#2A3038_55%,#1A1F25_100%)]">
-      <div
-        aria-hidden
-        className="absolute inset-0 opacity-[0.16] mix-blend-overlay"
-        style={{
-          backgroundImage:
-            "radial-gradient(rgba(255,255,255,0.55) 1px, transparent 1px)",
-          backgroundSize: "20px 20px",
-        }}
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      aria-hidden
+    >
+      <path
+        d="M2.5 7h9M8 3.5 11.5 7 8 10.5"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
-      <div className="absolute bottom-6 right-6 text-[10px] font-medium uppercase tracking-[0.24em] text-white/25">
-        Imagery — {label}
-      </div>
-    </div>
+    </svg>
   );
 }
