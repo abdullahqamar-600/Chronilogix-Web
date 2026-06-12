@@ -52,3 +52,6 @@ next-env.d.ts
 /sanity/node_modules
 /sanity/dist
 /sanity/.sanity
+
+# Working / reference assets — kept locally, never pushed
+/Do Not Push/
