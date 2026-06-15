@@ -1,5 +1,6 @@
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
+import { PageLoader } from "@/components/PageLoader";
 import { SectionGuide } from "@/components/widget/SectionGuide";
 import { Hero } from "@/components/sections/Hero";
 import { Statement } from "@/components/sections/Statement";
@@ -16,6 +17,7 @@ import { CustomerStories } from "@/components/sections/CustomerStories";
 export default function HomePage() {
   return (
     <>
+      <PageLoader />
       <Nav />
       <main className="flex flex-col">
         <div className="flex flex-col gap-2 p-2 md:gap-3 md:p-3">

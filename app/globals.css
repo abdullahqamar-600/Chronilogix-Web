@@ -7,6 +7,17 @@
   to { stroke-dashoffset: 0; }
 }
 
+/* Initial page loader — soft logo breathing + three-dot bounce. */
+@keyframes loaderLogoPulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.02); }
+}
+
+@keyframes loaderDot {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.45; }
+  40%           { transform: scale(1);   opacity: 1;    }
+}
+
 @keyframes chronologixListeningPulse {
   0%, 100% { opacity: 0.45; }
   50% { opacity: 0.85; }
