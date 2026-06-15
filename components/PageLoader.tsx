@@ -19,12 +19,27 @@ const CRITICAL_IMAGES = [
 
 const MIN_DISPLAY_MS = 650;
 const HARD_TIMEOUT_MS = 6000;
+const SESSION_KEY = "chronilogix:loader-shown";
 
 export function PageLoader() {
   const [done, setDone] = useState(false);
   const [removed, setRemoved] = useState(false);
 
+  // Skip the loader on subsequent visits within the same tab session.
+  // We do this in an effect (not useState initializer) because the loader
+  // is SSR'd and React won't honor a client-only initial value during
+  // hydration — the effect runs synchronously enough to clear before
+  // anything past the first paint.
   useEffect(() => {
+    try {
+      if (window.sessionStorage.getItem(SESSION_KEY) === "1") {
+        setRemoved(true);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (removed) return;
     const start = performance.now();
     let cancelled = false;
 
@@ -48,37 +63,38 @@ export function PageLoader() {
       img.onload = tick;
       img.onerror = tick;
       img.src = src;
-      // If the browser already has it cached, onload may have fired
-      // synchronously before we wired the handler in some engines.
       if (img.complete) tick();
     });
 
     const hardTimeout = window.setTimeout(finish, HARD_TIMEOUT_MS);
 
-    document.body.style.overflow = "hidden";
-
     return () => {
       cancelled = true;
       window.clearTimeout(hardTimeout);
-      document.body.style.overflow = "";
     };
-  }, []);
+  }, [removed]);
 
   useEffect(() => {
     if (!done) return;
-    document.body.style.overflow = "";
+    try {
+      window.sessionStorage.setItem(SESSION_KEY, "1");
+    } catch {}
     const t = window.setTimeout(() => setRemoved(true), 500);
     return () => window.clearTimeout(t);
   }, [done]);
 
   if (removed) return null;
 
+  // pointer-events-none on the wrapper means the overlay is purely visual:
+  // clicks fall through to the Nav and other interactive elements
+  // underneath, so navigation never feels stuck even on the very first
+  // paint while images are still decoding.
   return (
     <div
       aria-hidden={done}
       role="status"
-      className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-paper-warm transition-opacity duration-500 ease-out ${
-        done ? "pointer-events-none opacity-0" : "opacity-100"
+      className={`pointer-events-none fixed inset-0 z-[100] flex flex-col items-center justify-center bg-paper-warm transition-opacity duration-500 ease-out ${
+        done ? "opacity-0" : "opacity-100"
       }`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
