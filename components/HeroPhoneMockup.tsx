@@ -52,16 +52,27 @@ export function HeroPhoneMockup({
   shiftXPercent = 0,
   scale = 1,
   chatProgress = 0,
+  riseStart = 0.12,
+  riseEnd = 0.65,
 }: {
   progress: number;
   maxRisePercent?: number;
   shiftXPercent?: number;
   scale?: number;
   chatProgress?: number;
+  /**
+   * Scroll-progress thresholds (0–1) bounding the phone's rise. Below
+   * `riseStart` the phone is fully tucked off-screen; at `riseEnd` it has
+   * fully risen. Defaults preserve the original choreography; the
+   * Statement section overrides these to hold the phone down until the
+   * headline reveal is complete.
+   */
+  riseStart?: number;
+  riseEnd?: number;
 }) {
   // Phone is hidden at page load and rises into view as the scroll
   // progresses. At peak `maxRisePercent` of the phone is visible.
-  const phoneRiseLinear = clamp01((progress - 0.12) / (0.65 - 0.12));
+  const phoneRiseLinear = clamp01((progress - riseStart) / (riseEnd - riseStart));
   const phoneRise = easeInOutCubic(phoneRiseLinear);
   const phoneTranslateY = 100 - phoneRise * maxRisePercent;
 

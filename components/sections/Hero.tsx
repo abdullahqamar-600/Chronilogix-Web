@@ -5,8 +5,8 @@ import { AIOrb } from "@/components/AIOrb";
 // Hidden for now — restore by un-commenting the import and the <HeroPhoneMockup /> render below.
 // import { HeroPhoneMockup } from "@/components/HeroPhoneMockup";
 
-const HEADLINE_LINE_1 = "Filling the gaps in chronic care";
-const HEADLINE_LINE_2 = "through AI health coaching agents. 24/7";
+const HEADLINE_LINE_1 = "Filling the gaps in mental health and chronic care";
+const HEADLINE_LINE_2 = "through AI coaching agents. 24/7";
 
 // 2:04 AM. Maria reaches out first — she can't sleep, the week
 // collapsed. The exchange follows MI cadence: open question, reflect

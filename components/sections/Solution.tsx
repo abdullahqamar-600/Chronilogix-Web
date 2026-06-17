@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { SessionWalkthrough } from "@/components/sections/SessionWalkthrough";
+import { LevelsOfCare } from "@/components/sections/LevelsOfCare";
 
 type Agent = {
   name: string;
@@ -148,9 +149,23 @@ export function Solution() {
           </a>
         </div>
 
+        {/* Three Levels of Care — the IP framing of where Chronilogix
+            sits in the care continuum. Sits between the agent cards
+            (who the coaches are) and SessionWalkthrough (how a single
+            session is run), so the narrative arc reads:
+            two coaches → three places they show up → here's a session. */}
+        <div className="mt-20 md:mt-28">
+          <LevelsOfCare />
+        </div>
+
+        {/* SessionWalkthrough temporarily hidden during the LevelsOfCare
+            iteration (Pass 2-D). Restore when the levels section and
+            its illustrations are signed off. */}
+        {/*
         <div className="mt-20 md:mt-28">
           <SessionWalkthrough />
         </div>
+        */}
       </div>
     </section>
   );

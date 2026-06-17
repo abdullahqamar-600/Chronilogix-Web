@@ -14,19 +14,36 @@ type Fact = {
 };
 
 const FACTS: Fact[] = [
+  // Lead with the structural shortage — this is the new framing the client
+  // asked for: human care cannot scale, so AI is the only viable answer.
   {
-    lead: "38.4M",
+    lead: "15M+",
     body: (
       <>
-        Americans have diabetes.{" "}
+        global shortage of behavioral health and chronic-care coaches.{" "}
         <em className="font-normal not-italic text-ink">
-          97.6M more have prediabetes
+          The world cannot hire its way out of the gap.
         </em>
-        {" "}— and{" "}
+      </>
+    ),
+    source: "WHO Mental Health Atlas",
+  },
+  // Diabetes — numbers updated to Steven's latest pull. The 11M
+  // undiagnosed line is the wedge: even when care exists, the people who
+  // most need it haven't been reached.
+  {
+    lead: "40M",
+    body: (
+      <>
+        Americans live with diabetes —{" "}
         <em className="font-normal not-italic text-ink">
-          70% will progress
+          11M of them undiagnosed
         </em>
-        {" "}without intervention.
+        . Another{" "}
+        <em className="font-normal not-italic text-ink">
+          115M have prediabetes
+        </em>
+        , at risk of progressing without intervention.
       </>
     ),
     source: "CDC",
@@ -45,17 +62,6 @@ const FACTS: Fact[] = [
     ),
     source: "WHO",
   },
-  {
-    lead: "64%",
-    body: (
-      <>
-        higher diabetes rate among Hispanic men, who make up just{" "}
-        <em className="font-normal not-italic text-ink">2%</em> of
-        participants in the CDC's national prevention program.
-      </>
-    ),
-    source: "JAMA Network Open",
-  },
 ];
 
 const OBSERVATIONS = [
@@ -68,7 +74,10 @@ const OBSERVATIONS = [
   // care. The "bill arrives as an ER visit" close ties the gap back to
   // the section's headline cost framing.
   "Coaching and behavioral support rarely get reimbursed, so people wait until things worsen and the bill arrives as an ER visit, not an appointment.",
-  "The people who need help most are reached least.",
+  // Equity wedge — the Hispanic-men stat was previously its own fact tile;
+  // moved into observations because the shortage framing now leads the
+  // numerical section. Same JAMA / CDC source.
+  "Diabetes hits Hispanic men 64% harder than average — yet they make up just 2% of the people the CDC's national prevention program reaches.",
   "Human care fluctuates with burnout, caseloads, and turnover.",
 ];
 
@@ -98,24 +107,36 @@ export function Problem() {
 
         {/* Right — scrolling content */}
         <div className="flex flex-col px-8 py-14 md:px-14 md:py-16 lg:px-16 lg:py-20 xl:px-20">
-          {/* Intro */}
+          {/* Intro — leads with the structural shortage (the new "AI is
+              the only viable alternative" framing from the June 16 client
+              feedback), then folds the original "moments between
+              appointments" thread underneath it as the human consequence. */}
           <div>
             <h2
               className="max-w-2xl text-hero font-serif font-normal text-ink"
               style={{ textWrap: "balance" } as React.CSSProperties}
             >
-              The most expensive mental health and chronic care moments{" "}
+              Human care cannot scale{" "}
               <span className="text-ink-muted">
-                happen between appointments.
+                to the moments that matter most.
               </span>
             </h2>
 
             <p className="mt-8 max-w-md body-prose">
-              A member sees a coach once a month and a physician twice a
-              year. But the moments that decide outcomes happen in between:
-              the 11 PM stress eating, the skipped medication, the quiet
-              slide back into old habits when no one is watching. That gap
-              is where avoidable cost accumulates.
+              The world is short more than{" "}
+              <span className="text-ink">15 million</span> behavioral and
+              chronic-care coaches. Wait times stretch into weeks. Costs put
+              live coverage out of reach. And the moments that decide
+              outcomes — the 11 PM stress eating, the skipped medication,
+              the quiet slide back into old habits when no one is watching —
+              don&rsquo;t wait for the next appointment.
+            </p>
+
+            <p className="mt-5 max-w-md body-prose">
+              At population scale, only one intervention can be there at the
+              moment it&rsquo;s needed. Chronilogix is built to fill that
+              gap — at clinical fidelity, at a fraction of the cost of live
+              care.
             </p>
           </div>
 
