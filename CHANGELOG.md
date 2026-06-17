@@ -137,6 +137,45 @@ section rewrite, and the new Three Levels of Care section.
   illustration brief: brand orange as a fill rather than an accent, and
   they didn't sit visually with the SessionWalkthrough siblings.
 
+### LevelsOfCare — layout audit + polish (Pass 2-G, in-canvas)
+**Trigger:** user direction — *"audit the layout, polish the layout so
+it takes less height. and the layout should feel balanced and well
+designed."*
+
+**Audit findings:**
+- Per-row imbalance: left column (identity + artifact at
+  `aspect-[4/5]`) ran ~770px tall; right column varied from ~170px
+  (L02) to ~360px (L01). Delta averaged 500px+.
+- Heading hierarchy was broken: section h3 at `text-hero` and per-row
+  h4 at `text-section` produced equal-weight headings (parent same
+  size as child).
+- Vertical margins were generous across the board: `mt-16/20` to
+  rows, `gap-16/20/24` between rows, `mt-10/12` between identity and
+  artifact, `mt-20/24/28` to the closing tagline.
+
+**Polish moves:**
+- **Section h3 size** `text-hero` → `text-section` so it matches
+  SessionWalkthrough (its sibling under Solution's `text-display`
+  h2) and doesn't compete with the page-level headings above it.
+- **Per-row h4 size** `text-section` → `text-row` so the parent → child
+  hierarchy holds (h3 > h4).
+- **Artifact aspect** `aspect-[4/5]` → `aspect-[5/4]` (landscape) +
+  new `max-w-[440px]` constraint so the artifact block stops filling
+  the full column. Block height drops from ~605px to ~352px.
+- **Identity → artifact gap** `mt-10 md:mt-12` → `mt-8 md:mt-10`.
+- **Header → rows margin** `mt-16 md:mt-20` → `mt-12 md:mt-14`.
+- **Between-row gap** `gap-16 md:gap-20 lg:gap-24` →
+  `gap-12 md:gap-16 lg:gap-20`.
+- **Subhead margin under h4** `mt-4` → `mt-3` for a tighter identity
+  block.
+- **Lead → bullets** `mt-6/7` + `space-y-4` → `mt-5/6` +
+  `space-y-3`. Each bullet step gets 4px less; saves ~30px on Level
+  01's 7-bullet column.
+- **Closing tagline margin** `mt-20/24/28` → `mt-16/20`.
+
+Expected net effect: section overall ~30% shorter, per-row L/R
+imbalance dropped from ~500px to ~150px.
+
 ### LevelsOfCare — artifact frames adopt SessionWalkthrough block pattern (Pass 2-F, in-canvas)
 **Trigger:** user direction — *"The artifacts will be designed in the
 same design pattern as we have the block design with illustration in

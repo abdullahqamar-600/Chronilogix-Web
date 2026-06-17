@@ -176,7 +176,7 @@ export function LevelsOfCare({
           <p className="eyebrow">Three Levels of Care</p>
         )}
         <h3
-          className={`${hideEyebrow ? "" : "mt-4"} max-w-4xl text-hero font-serif font-normal text-ink`.trim()}
+          className={`${hideEyebrow ? "" : "mt-3"} max-w-4xl text-section font-serif font-normal text-ink`.trim()}
           style={{ textWrap: "balance" } as React.CSSProperties}
         >
           Chronilogix meets people where they are, across every gap in the
@@ -184,10 +184,12 @@ export function LevelsOfCare({
         </h3>
       </div>
 
-      {/* Vertical level stack — one full-width row per level. Generous
-          vertical rhythm (gap-16/20/24) does the separating; no hairline
-          dividers between rows. */}
-      <div className="mt-16 flex flex-col gap-16 md:mt-20 md:gap-20 lg:gap-24">
+      {/* Vertical level stack — one full-width row per level. Spacing
+          tuned in the layout audit (Pass 2-G): tighter row gaps and
+          tighter header-to-rows margin so the section reads as a
+          single coherent block rather than three loosely-spaced
+          ones. */}
+      <div className="mt-12 flex flex-col gap-12 md:mt-14 md:gap-16 lg:gap-20">
         {LEVELS.map((level, i) => (
           <LevelRow key={level.ordinal} level={level} index={i} />
         ))}
@@ -196,7 +198,7 @@ export function LevelsOfCare({
       {/* Closing tagline — the short anchor from the bottom of the IP
           one-sheet. Sits as the section's punctuation, not a separate
           heading. Centered to read as a closing beat. */}
-      <div className="mt-20 md:mt-24 lg:mt-28">
+      <div className="mt-16 md:mt-20">
         <p
           className="mx-auto max-w-3xl text-center font-serif text-section font-normal text-ink"
           style={{ textWrap: "balance" } as React.CSSProperties}
@@ -223,25 +225,26 @@ function LevelRow({ level, index }: { level: Level; index: number }) {
       }}
     >
       {/* LEFT column — identity above, artifact below. The two share
-          the same column so they read as one editorial block. */}
+          the same column so they read as one editorial block.
+          Per-row h4 sized one step below the section h3 (text-row vs.
+          text-section) so the heading hierarchy is parent→child, not
+          equal-weight. */}
       <div className="md:col-span-5">
         {/* Identity */}
         <div>
           <p className="eyebrow">{level.ordinal}</p>
-          <h4 className="mt-3 text-section font-serif font-normal text-ink">
+          <h4 className="mt-3 text-row font-serif font-normal text-ink">
             {level.label}
           </h4>
-          <p className="mt-4 body-quiet">{level.subhead}</p>
+          <p className="mt-3 body-quiet">{level.subhead}</p>
         </div>
 
         {/* Framed artifact block — same outer treatment as
-            SessionWalkthrough's step cards: aspect-locked rounded
-            frame, blurred pattern backdrop, paper gradient wash, and a
-            centered white figure-card holding the contextual artifact.
-            Aspect 4:5 (slightly portrait) sits comfortably inside the
-            5-col left column without overshooting the right column's
-            content height. */}
-        <div className="mt-10 md:mt-12">
+            SessionWalkthrough's step cards. Layout audit (Pass 2-G):
+            aspect-[5/4] (landscape) and max-w-[440px] keep the block
+            from dominating the left column's height; figure-card
+            inside stays the same. */}
+        <div className="mt-8 md:mt-10">
           <ArtifactBlock
             artifact={level.artifact}
             bg={level.visualBg}
@@ -251,10 +254,12 @@ function LevelRow({ level, index }: { level: Level; index: number }) {
       </div>
 
       {/* RIGHT column — lead-in + bullets. Offset by 1 col on md+ for
-          breathing room. */}
+          breathing room. Bullet spacing tightened in the layout audit
+          (space-y-3, mt-5/6) so the right column lines up closer to
+          the left's height. */}
       <div className="md:col-span-6 md:col-start-7">
         <p className="body-prose text-ink-soft">{level.lead}</p>
-        <ul className="mt-6 space-y-4 md:mt-7">
+        <ul className="mt-5 space-y-3 md:mt-6">
           {level.bullets.map((bullet) => (
             <li
               key={bullet}
@@ -304,7 +309,7 @@ function ArtifactBlock({
   const playState = active ? "running" : "paused";
 
   return (
-    <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-white">
+    <div className="relative aspect-[5/4] w-full max-w-[440px] overflow-hidden rounded-2xl bg-white">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={bg}
