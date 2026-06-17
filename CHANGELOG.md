@@ -137,6 +137,56 @@ section rewrite, and the new Three Levels of Care section.
   illustration brief: brand orange as a fill rather than an accent, and
   they didn't sit visually with the SessionWalkthrough siblings.
 
+### LevelsOfCare — true balance + distinct artifacts per level (Pass 2-H, in-canvas)
+**Trigger:** user feedback — *"the design doesnt seem to be balanced.
+the right side content should be of equal height as of the artifact
+block. the artifacts design for each 3 items seem to be similar. there
+is not distinction of message/design/pattern."*
+
+**Balance fix — row structure rewritten:**
+- Identity (eyebrow, h4, subhead) moved OUT of the left column and
+  into a full-width header at the top of each row. With identity gone
+  from the left column, both columns start at the same baseline.
+- 2-col grid below identity is `5/7` with `items-stretch`. The
+  artifact column uses `h-full` (not an aspect ratio) so it stretches
+  to the row height — which is set by whichever column is naturally
+  taller.
+- ArtifactFrame keeps `min-h-[300px]` so the figure card always has
+  room when right content is short.
+- Result: per row, artifact block height equals right column content
+  height. L01 (~432px content) drives a taller block; L02/L03 land at
+  the min (~300px) and the right column has just enough content to
+  match.
+
+**Distinct artifacts — three different visual languages:**
+- The previous single `ArtifactPanel` (caption + key/value rows +
+  brand-highlighted row) read as one design × three labels. Replaced
+  with three purpose-built components, each mapping to its level's
+  story:
+  - **L01 `AvailabilityArtifact`** — a status comparison list. Four
+    rows of conventional care channels with their unavailable
+    statuses (Booked, 0 of 6 left, Closed, Waitlist), followed by a
+    brand-tinted box highlighting Chronilogix's `Available now`. The
+    list IS the gap; the highlight is the answer. Directly mirrors
+    the level's framing.
+  - **L02 `BriefingArtifact`** — a vertical timeline log. Day labels
+    in small-caps mono on the left, event entries on the right,
+    flowing from Tuesday's session through Wed/Thu check-ins to a
+    Friday `Ready for session` resolution row. The artifact IS the
+    handoff deliverable the doc bullet promises.
+  - **L03 `ConsistencyArtifact`** — a measurable-consistency
+    dashboard. Big serif `30 / 30` focal, supporting line, then a
+    stat grid mapping each Digital Only bullet (variance, bias,
+    cultural fit, cost) to a measured value. Cost tier carries the
+    brand accent.
+- All three share the same outer `ArtifactFrame` (blurred warm-cream
+  background, paper gradient, centered figure-card with the
+  SessionWalkthrough shadow + ring) so the family register stays
+  intact. Only the figure-card interior is different per level.
+- Per-artifact animation: figure card fades up at 120ms, then
+  interior rows / events / stats cascade in with a 60ms stagger,
+  gated by the row's `inView` state.
+
 ### LevelsOfCare — layout audit + polish (Pass 2-G, in-canvas)
 **Trigger:** user direction — *"audit the layout, polish the layout so
 it takes less height. and the layout should feel balanced and well

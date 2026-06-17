@@ -5,51 +5,30 @@ import { useEffect, useRef, useState } from "react";
 /**
  * Three Levels of Care
  *
- * Vertical-stack section. Each level is one full-width row split into
- * two columns:
- *   - Left: identity (eyebrow, serif title, supporting line) with an
- *     artifact stacked vertically below.
- *   - Right: lead-in sentence and bullet list.
+ * Layout (Pass 2-H):
+ *   - Per-row identity sits at the row's TOP (full width) — eyebrow,
+ *     serif level title, supporting line. Lifting identity out of the
+ *     left column lets the artifact column and content column start
+ *     at the same baseline.
+ *   - Below the identity: a 5/7 grid with `items-stretch`. The
+ *     artifact block uses `h-full` instead of an aspect ratio so it
+ *     stretches to the row height set by whichever column is naturally
+ *     taller. Result: artifact block height = right-column content
+ *     height, per row, automatically.
+ *   - Each artifact has its own internal design (status list, timeline
+ *     log, stat dashboard) so the three levels read as three different
+ *     stories, not three copies of the same pattern.
  *
- * Copy is sourced verbatim from the IP one-sheet (`Chronilogix Docx/IP.pdf`)
- * — same headers, same lead-in sentences, same bullet text, same order.
+ * Copy verbatim from `Chronilogix Docx/IP.pdf` — headers, lead-in
+ * sentences, and bullet text.
  *
- * Header structure mirrors the IP.pdf top-of-page:
- *   - Eyebrow: "Three Levels of Care"
- *   - Heading: "Chronilogix meets people where they are, across every
- *     gap in the care continuum."
- *
- * Closing tagline: "One engine. Three levels. Every gap covered." —
- * matches its position at the bottom of the IP one-sheet.
- *
- * Artifacts (one per level) are quiet typographic specimens — small
- * data panels rather than illustrated diagrams. Same panel structure
- * across all three (label → key/value rows → brand-highlighted row),
- * so they read as a coherent family. Each artifact is contextual to
- * its level:
- *   - L01: "Care available today" — every traditional channel
- *     unavailable / waitlisted; only Chronilogix is `Available now`.
- *   - L02: "Pre-session briefing for Dr. Chen" — the actual handoff
- *     document the therapist receives between sessions.
- *   - L03: "Consistency log · last 30 sessions" — the measurable
- *     uniformity only a digital coach can prove (no variance, no bias
- *     flags, cultural adaptation active, lowest cost tier).
- *
- * No italics, no hairline dividers, no card chrome — readability and
- * IP-section register.
+ * The shared outer frame is identical to SessionWalkthrough's step
+ * cards (blurred warm-cream background + paper gradient wash +
+ * centered white figure-card with the warm-brown shadow). Only the
+ * figure-card's internal composition differs per level.
  */
 
-type ArtifactRow = {
-  label: string;
-  value: string;
-};
-
-type Artifact = {
-  caption: string;
-  rows: ArtifactRow[];
-  /** Final row, highlighted with a brand dot + brand-700 value. */
-  highlight: ArtifactRow;
-};
+/* ── Level data ─────────────────────────────────────────────────────────── */
 
 type Level = {
   ordinal: string;
@@ -57,11 +36,8 @@ type Level = {
   subhead: string;
   lead: string;
   bullets: string[];
-  artifact: Artifact;
-  /** Background image used as the blurred backdrop behind the artifact's
-   *  framed figure-card. Pulled from existing site assets so the
-   *  artifact frames share visual language with SessionWalkthrough. */
   visualBg: string;
+  Artifact: React.ComponentType<{ active: boolean }>;
 };
 
 const LEVELS: Level[] = [
@@ -79,17 +55,8 @@ const LEVELS: Level[] = [
       "Bridges the typical 2–6 week wait for a human appointment",
       "Cost-efficient access for almost anyone",
     ],
-    artifact: {
-      caption: "Care available today",
-      rows: [
-        { label: "In-clinic appointment", value: "3 weeks out" },
-        { label: "Covered sessions", value: "0 of 6 left" },
-        { label: "After-hours support", value: "Closed" },
-        { label: "Sliding-scale therapist", value: "Waitlist" },
-      ],
-      highlight: { label: "Chronilogix", value: "Available now" },
-    },
     visualBg: "/card-1-bg.jpg",
+    Artifact: AvailabilityArtifact,
   },
   {
     ordinal: "Level 02",
@@ -101,17 +68,8 @@ const LEVELS: Level[] = [
       "Continuously collects information for the therapist so no progress is lost",
       "Delivers cost efficiency and scalability without sacrificing quality of care",
     ],
-    artifact: {
-      caption: "Pre-session briefing · Dr. Chen",
-      rows: [
-        { label: "Last session", value: "Tue, Sep 16" },
-        { label: "Check-ins since", value: "4" },
-        { label: "Practice maintained", value: "Breathing exercise" },
-        { label: "Open questions", value: "Med timing (×2)" },
-      ],
-      highlight: { label: "Status", value: "Ready for Friday" },
-    },
     visualBg: "/pattern.png",
+    Artifact: BriefingArtifact,
   },
   {
     ordinal: "Level 03",
@@ -124,19 +82,12 @@ const LEVELS: Level[] = [
       "Uniform, reliable treatment regardless of provider variability",
       "The most cost-efficient option available",
     ],
-    artifact: {
-      caption: "Consistency log · last 30 sessions",
-      rows: [
-        { label: "Same coach", value: "30 of 30" },
-        { label: "Tone variance", value: "None detected" },
-        { label: "Provider bias flags", value: "0" },
-        { label: "Cultural adaptation", value: "Active" },
-      ],
-      highlight: { label: "Cost tier", value: "Lowest available" },
-    },
     visualBg: "/card-3-bg.jpg",
+    Artifact: ConsistencyArtifact,
   },
 ];
+
+/* ── Hooks ─────────────────────────────────────────────────────────────── */
 
 function useInView<T extends HTMLElement>(threshold = 0.2) {
   const ref = useRef<T | null>(null);
@@ -162,15 +113,13 @@ function useInView<T extends HTMLElement>(threshold = 0.2) {
   return { ref, inView };
 }
 
+/* ── Section ───────────────────────────────────────────────────────────── */
+
 export function LevelsOfCare({
   hideEyebrow = false,
 }: { hideEyebrow?: boolean } = {}) {
   return (
     <div>
-      {/* Header — eyebrow + heading. The long sentence (was the subhead
-          in v2) now sits as the section heading at text-hero scale.
-          That's the IP.pdf hierarchy: the eyebrow is the doc title, the
-          long sentence is the editorial promise. */}
       <div className="max-w-5xl">
         {hideEyebrow ? null : (
           <p className="eyebrow">Three Levels of Care</p>
@@ -184,20 +133,12 @@ export function LevelsOfCare({
         </h3>
       </div>
 
-      {/* Vertical level stack — one full-width row per level. Spacing
-          tuned in the layout audit (Pass 2-G): tighter row gaps and
-          tighter header-to-rows margin so the section reads as a
-          single coherent block rather than three loosely-spaced
-          ones. */}
       <div className="mt-12 flex flex-col gap-12 md:mt-14 md:gap-16 lg:gap-20">
-        {LEVELS.map((level, i) => (
-          <LevelRow key={level.ordinal} level={level} index={i} />
+        {LEVELS.map((level) => (
+          <LevelRow key={level.ordinal} level={level} />
         ))}
       </div>
 
-      {/* Closing tagline — the short anchor from the bottom of the IP
-          one-sheet. Sits as the section's punctuation, not a separate
-          heading. Centered to read as a closing beat. */}
       <div className="mt-16 md:mt-20">
         <p
           className="mx-auto max-w-3xl text-center font-serif text-section font-normal text-ink"
@@ -210,13 +151,13 @@ export function LevelsOfCare({
   );
 }
 
-function LevelRow({ level, index }: { level: Level; index: number }) {
+function LevelRow({ level }: { level: Level }) {
   const { ref, inView } = useInView<HTMLElement>(0.15);
+  const { Artifact } = level;
 
   return (
     <article
       ref={ref}
-      className="grid gap-10 md:grid-cols-12 md:gap-10 lg:gap-14"
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? "translateY(0)" : "translateY(16px)",
@@ -224,92 +165,72 @@ function LevelRow({ level, index }: { level: Level; index: number }) {
           "opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1)",
       }}
     >
-      {/* LEFT column — identity above, artifact below. The two share
-          the same column so they read as one editorial block.
-          Per-row h4 sized one step below the section h3 (text-row vs.
-          text-section) so the heading hierarchy is parent→child, not
-          equal-weight. */}
-      <div className="md:col-span-5">
-        {/* Identity */}
-        <div>
-          <p className="eyebrow">{level.ordinal}</p>
-          <h4 className="mt-3 text-row font-serif font-normal text-ink">
-            {level.label}
-          </h4>
-          <p className="mt-3 body-quiet">{level.subhead}</p>
+      {/* Identity — sits at the row's top so the artifact and content
+          columns below start at the same baseline. */}
+      <header className="mb-8 md:mb-10">
+        <p className="eyebrow">{level.ordinal}</p>
+        <h4 className="mt-3 max-w-3xl text-row font-serif font-normal text-ink">
+          {level.label}
+        </h4>
+        <p className="mt-3 max-w-2xl body-quiet">{level.subhead}</p>
+      </header>
+
+      {/* 5/7 grid. items-stretch is the default for grid items; both
+          columns inherit the row height set by whichever side is
+          naturally taller. Artifact column uses h-full so the framed
+          block stretches to match the right column's content. */}
+      <div className="grid items-stretch gap-8 md:grid-cols-12 md:gap-10">
+        <div className="md:col-span-5">
+          <ArtifactFrame bg={level.visualBg} active={inView}>
+            <Artifact active={inView} />
+          </ArtifactFrame>
         </div>
 
-        {/* Framed artifact block — same outer treatment as
-            SessionWalkthrough's step cards. Layout audit (Pass 2-G):
-            aspect-[5/4] (landscape) and max-w-[440px] keep the block
-            from dominating the left column's height; figure-card
-            inside stays the same. */}
-        <div className="mt-8 md:mt-10">
-          <ArtifactBlock
-            artifact={level.artifact}
-            bg={level.visualBg}
-            active={inView}
-          />
+        <div className="md:col-span-7">
+          <p className="body-prose text-ink-soft">{level.lead}</p>
+          <ul className="mt-5 space-y-3 md:mt-6">
+            {level.bullets.map((bullet) => (
+              <li
+                key={bullet}
+                className="flex gap-4 body-prose text-ink-soft"
+              >
+                <span
+                  aria-hidden
+                  className="mt-[0.7em] inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-brand"
+                />
+                <span>{bullet}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-      </div>
-
-      {/* RIGHT column — lead-in + bullets. Offset by 1 col on md+ for
-          breathing room. Bullet spacing tightened in the layout audit
-          (space-y-3, mt-5/6) so the right column lines up closer to
-          the left's height. */}
-      <div className="md:col-span-6 md:col-start-7">
-        <p className="body-prose text-ink-soft">{level.lead}</p>
-        <ul className="mt-5 space-y-3 md:mt-6">
-          {level.bullets.map((bullet) => (
-            <li
-              key={bullet}
-              className="flex gap-4 body-prose text-ink-soft"
-            >
-              <span
-                aria-hidden
-                className="mt-[0.7em] inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-brand"
-              />
-              <span>{bullet}</span>
-            </li>
-          ))}
-        </ul>
       </div>
     </article>
   );
 }
 
-/* ── Artifact block ─────────────────────────────────────────────────────────
- * Visual treatment lifted from SessionWalkthrough's step cards so the
- * two sections read as a single design language:
+/* ── Shared artifact frame ─────────────────────────────────────────────── */
+/**
+ * Outer treatment matches SessionWalkthrough's step cards exactly:
+ * blurred warm-cream background, paper gradient wash, centered white
+ * figure-card with the warm-brown shadow + ink-tinted ring. The figure
+ * card's INTERIOR is provided by the per-level Artifact component.
  *
- *   1. Outer card: aspect-locked, rounded-2xl, overflow-hidden.
- *   2. Blurred background image (the same warm-cream pattern assets
- *      SessionWalkthrough uses — `card-1-bg.jpg`, `pattern.png`,
- *      `card-3-bg.jpg`) at scale-110 + blur-md.
- *   3. Paper-gradient legibility wash on top.
- *   4. Centered white figure-card with the same warm-brown shadow +
- *      `ring-1 ring-ink/[0.04]` SessionWalkthrough uses.
- *   5. Inside the figure-card: caption + 4 key/value rows + 1
- *      brand-highlighted final row.
- *
- * Brand orange appears only on the highlight row. Rows cascade in with
- * a 60ms stagger after the figure-card fades up — matching
- * SessionWalkthrough's animation grammar.
- * --------------------------------------------------------------------------*/
-
-function ArtifactBlock({
-  artifact,
+ * `h-full` + `min-h-[300px]` lets the block stretch to the grid row
+ * height (driven by the right column's content) while still containing
+ * the figure card when content is short.
+ */
+function ArtifactFrame({
   bg,
   active,
+  children,
 }: {
-  artifact: Artifact;
   bg: string;
   active: boolean;
+  children: React.ReactNode;
 }) {
   const playState = active ? "running" : "paused";
-
   return (
-    <div className="relative aspect-[5/4] w-full max-w-[440px] overflow-hidden rounded-2xl bg-white">
+    <div className="relative h-full min-h-[300px] overflow-hidden rounded-2xl bg-white">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={bg}
@@ -318,7 +239,7 @@ function ArtifactBlock({
       />
       <div className="absolute inset-0 bg-gradient-to-b from-paper/65 via-paper/55 to-paper/70" />
 
-      <div className="relative flex h-full items-center justify-center p-6 md:p-8">
+      <div className="relative flex h-full items-center justify-center p-6 md:p-7">
         <figure
           className="relative w-full max-w-[320px] rounded-[18px] bg-white/95 p-5 shadow-[0_18px_40px_-14px_rgba(40,25,15,0.22),0_2px_8px_-2px_rgba(40,25,15,0.08)] ring-1 ring-ink/[0.04]"
           style={{
@@ -327,79 +248,244 @@ function ArtifactBlock({
             opacity: 0,
           }}
         >
-          <figcaption className="text-[12px] font-medium tracking-tight text-ink-muted">
-            {artifact.caption}
-          </figcaption>
-          <dl className="mt-4 space-y-3 text-[13.5px] leading-normal">
-            {artifact.rows.map((row, i) => (
-              <ArtifactRow
-                key={row.label}
-                label={row.label}
-                value={row.value}
-                playState={playState}
-                delayMs={320 + i * 60}
-              />
-            ))}
-            <ArtifactRow
-              label={artifact.highlight.label}
-              value={artifact.highlight.value}
-              highlight
-              playState={playState}
-              delayMs={320 + artifact.rows.length * 60}
-            />
-          </dl>
+          {children}
         </figure>
       </div>
     </div>
   );
 }
 
-function ArtifactRow({
-  label,
-  value,
-  highlight = false,
-  playState,
-  delayMs,
-}: {
-  label: string;
-  value: string;
-  highlight?: boolean;
-  playState: "running" | "paused";
-  delayMs: number;
-}) {
+/* ── Artifact 01 — Availability comparison ─────────────────────────────── */
+/**
+ * A status list of conventional care channels — each closed, booked,
+ * waitlisted, or out — followed by a brand-tinted box that elevates
+ * Chronilogix's `Available now` row out of the comparison set.
+ *
+ * Maps directly to the level's framing: "For the people who fall
+ * through the cracks of traditional care." The list IS the gap; the
+ * highlight is the answer.
+ */
+
+const AVAILABILITY_UNAVAILABLE: { label: string; status: string }[] = [
+  { label: "In-clinic appointment", status: "3 weeks out" },
+  { label: "Covered counseling", status: "0 of 6 left" },
+  { label: "After-hours support", status: "Closed" },
+  { label: "Sliding-scale therapist", status: "Waitlist" },
+];
+
+function AvailabilityArtifact({ active }: { active: boolean }) {
+  const playState = active ? "running" : "paused";
   return (
-    <div
-      className="flex items-baseline justify-between gap-4"
-      style={{
-        animation: `fadeUp 460ms cubic-bezier(0.22, 0.61, 0.36, 1) ${delayMs}ms forwards`,
-        animationPlayState: playState,
-        opacity: 0,
-      }}
-    >
-      <dt
-        className={
-          highlight
-            ? "flex items-center gap-2 font-medium text-ink"
-            : "text-ink-muted"
-        }
+    <>
+      <p className="text-[12px] font-medium tracking-tight text-ink-muted">
+        Care available today
+      </p>
+
+      <ul className="mt-4 space-y-2.5">
+        {AVAILABILITY_UNAVAILABLE.map((item, i) => (
+          <li
+            key={item.label}
+            className="flex items-baseline justify-between gap-3 text-[13px]"
+            style={{
+              animation: `fadeUp 460ms cubic-bezier(0.22, 0.61, 0.36, 1) ${320 + i * 60}ms forwards`,
+              animationPlayState: playState,
+              opacity: 0,
+            }}
+          >
+            <span className="text-ink-muted">{item.label}</span>
+            <span className="text-ink-subtle tabular-nums">{item.status}</span>
+          </li>
+        ))}
+      </ul>
+
+      {/* Highlight — a subtle brand-tinted box lifts Chronilogix's row
+          out of the list above. No literal divider line. */}
+      <div
+        className="mt-4 -mx-2 flex items-baseline justify-between gap-3 rounded-lg bg-brand-50 px-2.5 py-2 text-[13px]"
+        style={{
+          animation: `fadeUp 460ms cubic-bezier(0.22, 0.61, 0.36, 1) ${320 + AVAILABILITY_UNAVAILABLE.length * 60}ms forwards`,
+          animationPlayState: playState,
+          opacity: 0,
+        }}
       >
-        {highlight ? (
+        <span className="flex items-center gap-2 font-medium text-ink">
           <span
             aria-hidden
-            className="inline-block h-1.5 w-1.5 rounded-full bg-brand"
+            className="inline-block h-1.5 w-1.5 rounded-full bg-brand-600"
           />
-        ) : null}
-        <span>{label}</span>
-      </dt>
-      <dd
-        className={
-          highlight
-            ? "font-medium text-brand-700"
-            : "text-ink-soft tabular-nums"
-        }
+          Chronilogix
+        </span>
+        <span className="font-medium text-brand-700">Available now</span>
+      </div>
+    </>
+  );
+}
+
+/* ── Artifact 02 — Briefing timeline ───────────────────────────────────── */
+/**
+ * A vertical log of what happened between Tuesday's session and
+ * Friday's, formatted as a clinical briefing for Dr. Chen. Day labels
+ * on the left in small caps; event text on the right. Final entry —
+ * "Ready for Friday" — carries the brand accent.
+ *
+ * Maps directly to the level's bullet: "Continuously collects
+ * information for the therapist so no progress is lost." The artifact
+ * IS the deliverable.
+ */
+
+const BRIEFING_EVENTS: { day: string; text: string; session?: boolean }[] = [
+  { day: "Tue", text: "Last session — anxiety + medication review", session: true },
+  { day: "Wed", text: "Check-in: felt heavy around 6pm" },
+  { day: "Thu", text: "Practiced 3-3-3 grounding, sustained" },
+  { day: "Thu", text: "Open question: timing of evening dose" },
+];
+
+function BriefingArtifact({ active }: { active: boolean }) {
+  const playState = active ? "running" : "paused";
+  return (
+    <>
+      <p className="text-[12px] font-medium tracking-tight text-ink-muted">
+        Pre-session briefing
+        <span className="text-ink-subtle"> · Dr. Chen</span>
+      </p>
+
+      <ol className="mt-4 space-y-2.5">
+        {BRIEFING_EVENTS.map((event, i) => (
+          <li
+            key={i}
+            className="flex gap-3 text-[13px]"
+            style={{
+              animation: `fadeUp 460ms cubic-bezier(0.22, 0.61, 0.36, 1) ${320 + i * 60}ms forwards`,
+              animationPlayState: playState,
+              opacity: 0,
+            }}
+          >
+            <span className="w-[34px] shrink-0 pt-[2px] font-mono text-[10.5px] font-medium uppercase tracking-[0.06em] text-ink-subtle">
+              {event.day}
+            </span>
+            <span
+              className={
+                event.session
+                  ? "flex-1 font-medium text-ink"
+                  : "flex-1 text-ink-soft"
+              }
+            >
+              {event.text}
+            </span>
+          </li>
+        ))}
+      </ol>
+
+      {/* Highlight — the readiness line as the timeline's resolution */}
+      <div
+        className="mt-4 flex items-baseline gap-3 text-[13px]"
+        style={{
+          animation: `fadeUp 460ms cubic-bezier(0.22, 0.61, 0.36, 1) ${320 + BRIEFING_EVENTS.length * 60}ms forwards`,
+          animationPlayState: playState,
+          opacity: 0,
+        }}
       >
-        {value}
-      </dd>
-    </div>
+        <span className="w-[34px] shrink-0 pt-[2px] font-mono text-[10.5px] font-medium uppercase tracking-[0.06em] text-brand-700">
+          Fri
+        </span>
+        <span className="flex flex-1 items-center gap-2 font-medium text-brand-700">
+          <span
+            aria-hidden
+            className="inline-block h-1.5 w-1.5 rounded-full bg-brand-600"
+          />
+          Ready for Friday&rsquo;s session
+        </span>
+      </div>
+    </>
+  );
+}
+
+/* ── Artifact 03 — Consistency dashboard ───────────────────────────────── */
+/**
+ * A measurable-consistency summary. Big serif "30 / 30" focal,
+ * supporting line, then a stat grid mapping each Digital Only bullet
+ * (variance, bias, cultural fit, cost) to a measured value. Cost tier
+ * carries the brand accent — the doc's "most cost-efficient option"
+ * promise made literal.
+ */
+
+const CONSISTENCY_ROWS: { label: string; value: string }[] = [
+  { label: "Tone variance", value: "None" },
+  { label: "Bias flags", value: "0" },
+  { label: "Cultural fit", value: "Active" },
+];
+
+function ConsistencyArtifact({ active }: { active: boolean }) {
+  const playState = active ? "running" : "paused";
+  return (
+    <>
+      <p className="text-[12px] font-medium tracking-tight text-ink-muted">
+        Last 30 sessions
+      </p>
+
+      {/* Big stat — the focal point */}
+      <div
+        className="mt-4 flex items-baseline gap-2"
+        style={{
+          animation: `fadeUp 540ms cubic-bezier(0.22, 0.61, 0.36, 1) 280ms forwards`,
+          animationPlayState: playState,
+          opacity: 0,
+        }}
+      >
+        <span className="font-serif text-[44px] font-normal leading-none tracking-tight text-brand-700">
+          30
+        </span>
+        <span className="font-serif text-[22px] font-normal leading-none text-ink-subtle">
+          / 30
+        </span>
+      </div>
+      <p
+        className="mt-1 text-[12px] text-ink-muted"
+        style={{
+          animation: `fadeUp 460ms cubic-bezier(0.22, 0.61, 0.36, 1) 440ms forwards`,
+          animationPlayState: playState,
+          opacity: 0,
+        }}
+      >
+        Same coach, every session
+      </p>
+
+      {/* Stat grid */}
+      <dl className="mt-5 space-y-2.5 text-[13px]">
+        {CONSISTENCY_ROWS.map((row, i) => (
+          <div
+            key={row.label}
+            className="flex items-baseline justify-between gap-3"
+            style={{
+              animation: `fadeUp 460ms cubic-bezier(0.22, 0.61, 0.36, 1) ${560 + i * 60}ms forwards`,
+              animationPlayState: playState,
+              opacity: 0,
+            }}
+          >
+            <dt className="text-ink-muted">{row.label}</dt>
+            <dd className="text-ink-soft">{row.value}</dd>
+          </div>
+        ))}
+        {/* Cost — the brand-highlighted row, matching the doc's
+            "most cost-efficient option" bullet */}
+        <div
+          className="flex items-baseline justify-between gap-3"
+          style={{
+            animation: `fadeUp 460ms cubic-bezier(0.22, 0.61, 0.36, 1) ${560 + CONSISTENCY_ROWS.length * 60}ms forwards`,
+            animationPlayState: playState,
+            opacity: 0,
+          }}
+        >
+          <dt className="flex items-center gap-2 font-medium text-ink">
+            <span
+              aria-hidden
+              className="inline-block h-1.5 w-1.5 rounded-full bg-brand-600"
+            />
+            Cost tier
+          </dt>
+          <dd className="font-medium text-brand-700">Lowest available</dd>
+        </div>
+      </dl>
+    </>
   );
 }
