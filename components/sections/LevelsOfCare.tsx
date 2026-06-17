@@ -58,6 +58,10 @@ type Level = {
   lead: string;
   bullets: string[];
   artifact: Artifact;
+  /** Background image used as the blurred backdrop behind the artifact's
+   *  framed figure-card. Pulled from existing site assets so the
+   *  artifact frames share visual language with SessionWalkthrough. */
+  visualBg: string;
 };
 
 const LEVELS: Level[] = [
@@ -85,6 +89,7 @@ const LEVELS: Level[] = [
       ],
       highlight: { label: "Chronilogix", value: "Available now" },
     },
+    visualBg: "/card-1-bg.jpg",
   },
   {
     ordinal: "Level 02",
@@ -106,6 +111,7 @@ const LEVELS: Level[] = [
       ],
       highlight: { label: "Status", value: "Ready for Friday" },
     },
+    visualBg: "/pattern.png",
   },
   {
     ordinal: "Level 03",
@@ -128,6 +134,7 @@ const LEVELS: Level[] = [
       ],
       highlight: { label: "Cost tier", value: "Lowest available" },
     },
+    visualBg: "/card-3-bg.jpg",
   },
 ];
 
@@ -227,11 +234,19 @@ function LevelRow({ level, index }: { level: Level; index: number }) {
           <p className="mt-4 body-quiet">{level.subhead}</p>
         </div>
 
-        {/* Artifact — a quiet typographic specimen, contextual to the
-            level. No card chrome, no border, no divider. Just label +
-            key/value rows + a single brand-highlighted final row. */}
+        {/* Framed artifact block — same outer treatment as
+            SessionWalkthrough's step cards: aspect-locked rounded
+            frame, blurred pattern backdrop, paper gradient wash, and a
+            centered white figure-card holding the contextual artifact.
+            Aspect 4:5 (slightly portrait) sits comfortably inside the
+            5-col left column without overshooting the right column's
+            content height. */}
         <div className="mt-10 md:mt-12">
-          <ArtifactPanel artifact={level.artifact} index={index} />
+          <ArtifactBlock
+            artifact={level.artifact}
+            bg={level.visualBg}
+            active={inView}
+          />
         </div>
       </div>
 
@@ -258,43 +273,79 @@ function LevelRow({ level, index }: { level: Level; index: number }) {
   );
 }
 
-/* ── Artifact panel ─────────────────────────────────────────────────────────
- * Shared visual treatment for all three levels' artifacts. Reads as a
- * piece of product notation rather than an illustration:
+/* ── Artifact block ─────────────────────────────────────────────────────────
+ * Visual treatment lifted from SessionWalkthrough's step cards so the
+ * two sections read as a single design language:
  *
- *   - Sentence-case caption at top (eyebrow-muted scale).
- *   - 4 rows of `label · value`, dot-leader spacing handled by
- *     justify-between. label = ink-muted; value = ink.
- *   - Final highlighted row: a 6px brand dot precedes the label,
- *     value is rendered in brand-700 medium weight.
+ *   1. Outer card: aspect-locked, rounded-2xl, overflow-hidden.
+ *   2. Blurred background image (the same warm-cream pattern assets
+ *      SessionWalkthrough uses — `card-1-bg.jpg`, `pattern.png`,
+ *      `card-3-bg.jpg`) at scale-110 + blur-md.
+ *   3. Paper-gradient legibility wash on top.
+ *   4. Centered white figure-card with the same warm-brown shadow +
+ *      `ring-1 ring-ink/[0.04]` SessionWalkthrough uses.
+ *   5. Inside the figure-card: caption + 4 key/value rows + 1
+ *      brand-highlighted final row.
  *
- * No card, no border, no shadow. Tonal contrast and weight do the
- * structuring. Brand orange only appears on the highlight row.
+ * Brand orange appears only on the highlight row. Rows cascade in with
+ * a 60ms stagger after the figure-card fades up — matching
+ * SessionWalkthrough's animation grammar.
  * --------------------------------------------------------------------------*/
 
-function ArtifactPanel({ artifact, index }: { artifact: Artifact; index: number }) {
+function ArtifactBlock({
+  artifact,
+  bg,
+  active,
+}: {
+  artifact: Artifact;
+  bg: string;
+  active: boolean;
+}) {
+  const playState = active ? "running" : "paused";
+
   return (
-    <figure>
-      <figcaption className="text-[12.5px] font-medium tracking-tight text-ink-muted">
-        {artifact.caption}
-      </figcaption>
-      <dl className="mt-4 space-y-3 text-[14.5px] leading-normal">
-        {artifact.rows.map((row, i) => (
-          <ArtifactRow
-            key={row.label}
-            label={row.label}
-            value={row.value}
-            delayMs={(index * 0) + 80 + i * 60}
-          />
-        ))}
-        <ArtifactRow
-          label={artifact.highlight.label}
-          value={artifact.highlight.value}
-          highlight
-          delayMs={(index * 0) + 80 + artifact.rows.length * 60}
-        />
-      </dl>
-    </figure>
+    <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-white">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={bg}
+        alt=""
+        className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-paper/65 via-paper/55 to-paper/70" />
+
+      <div className="relative flex h-full items-center justify-center p-6 md:p-8">
+        <figure
+          className="relative w-full max-w-[320px] rounded-[18px] bg-white/95 p-5 shadow-[0_18px_40px_-14px_rgba(40,25,15,0.22),0_2px_8px_-2px_rgba(40,25,15,0.08)] ring-1 ring-ink/[0.04]"
+          style={{
+            animation: "fadeUp 600ms ease-out 120ms forwards",
+            animationPlayState: playState,
+            opacity: 0,
+          }}
+        >
+          <figcaption className="text-[12px] font-medium tracking-tight text-ink-muted">
+            {artifact.caption}
+          </figcaption>
+          <dl className="mt-4 space-y-3 text-[13.5px] leading-normal">
+            {artifact.rows.map((row, i) => (
+              <ArtifactRow
+                key={row.label}
+                label={row.label}
+                value={row.value}
+                playState={playState}
+                delayMs={320 + i * 60}
+              />
+            ))}
+            <ArtifactRow
+              label={artifact.highlight.label}
+              value={artifact.highlight.value}
+              highlight
+              playState={playState}
+              delayMs={320 + artifact.rows.length * 60}
+            />
+          </dl>
+        </figure>
+      </div>
+    </div>
   );
 }
 
@@ -302,18 +353,22 @@ function ArtifactRow({
   label,
   value,
   highlight = false,
+  playState,
   delayMs,
 }: {
   label: string;
   value: string;
   highlight?: boolean;
+  playState: "running" | "paused";
   delayMs: number;
 }) {
   return (
     <div
       className="flex items-baseline justify-between gap-4"
       style={{
-        animation: `fadeUp 460ms cubic-bezier(0.22, 0.61, 0.36, 1) ${delayMs}ms both`,
+        animation: `fadeUp 460ms cubic-bezier(0.22, 0.61, 0.36, 1) ${delayMs}ms forwards`,
+        animationPlayState: playState,
+        opacity: 0,
       }}
     >
       <dt

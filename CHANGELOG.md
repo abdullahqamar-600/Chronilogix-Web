@@ -137,6 +137,39 @@ section rewrite, and the new Three Levels of Care section.
   illustration brief: brand orange as a fill rather than an accent, and
   they didn't sit visually with the SessionWalkthrough siblings.
 
+### LevelsOfCare — artifact frames adopt SessionWalkthrough block pattern (Pass 2-F, in-canvas)
+**Trigger:** user direction — *"The artifacts will be designed in the
+same design pattern as we have the block design with illustration in
+the middle."* The bare typographic artifacts from 2-E needed to live
+inside the same framed visual block SessionWalkthrough uses.
+
+- **New `ArtifactBlock` component.** Each artifact is now wrapped in
+  the exact outer treatment used by SessionWalkthrough's step cards:
+  - `aspect-[4/5]` rounded-2xl overflow-hidden outer card
+  - Blurred background image at `scale-110 blur-md`
+  - `bg-gradient-to-b from-paper/65 via-paper/55 to-paper/70`
+    legibility wash
+  - Centered white figure-card, `max-w-[320px]`, p-5, with the same
+    warm-brown shadow + `ring-1 ring-ink/[0.04]` SessionWalkthrough's
+    figure cards use
+  - Caption (12px ink-muted) + key/value rows (13.5px) + a
+    brand-highlighted final row inside the figure card
+- **Backgrounds re-used from existing assets** (`/card-1-bg.jpg`,
+  `/pattern.png`, `/card-3-bg.jpg`) — same warm-cream pattern set
+  SessionWalkthrough draws from, so the two sections share visual
+  language and require no new client assets.
+- **Animation grammar matched to SessionWalkthrough:** figure-card
+  fades up at 120ms, then internal rows cascade in starting at 320ms
+  with a 60ms stagger. `animationPlayState` tied to the row's `inView`
+  state so the cascade waits until the row scrolls into view.
+- **Typography re-scaled** to fit comfortably inside the figure card:
+  caption 12.5 → 12px, rows 14.5 → 13.5px. Highlight row still uses
+  medium weight + brand-700 for emphasis.
+- Aspect `4:5` chosen (not the 3:4 SessionWalkthrough uses) because
+  the artifact panel sits in a wider 5-of-12 column than
+  SessionWalkthrough's 1-of-4 column — 3:4 would have made the block
+  too tall relative to the adjacent right-column content.
+
 ### LevelsOfCare — contextual artifacts + layout swap (Pass 2-E, in-canvas)
 **Trigger:** the v2 illustrations (geometric diagrams) and v3 UI-fragment
 proposals (wait-time card, session timeline, tally grid) didn't read as
