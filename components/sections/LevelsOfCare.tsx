@@ -133,7 +133,14 @@ export function LevelsOfCare({
         </h3>
       </div>
 
-      <div className="mt-12 flex flex-col gap-12 md:mt-14 md:gap-16 lg:gap-20">
+      {/* Scroll-stacking column. Each row is `sticky top-...` with a
+          matching `bg-paper-warm` so as the user scrolls, the next
+          level rises from below and lands directly on top of the
+          previous one. No card chrome, no shadows — the matching
+          background makes the transition read as content flowing,
+          not as panels stacking. DOM order (row 1 → 2 → 3) naturally
+          places later rows on top of earlier rows. */}
+      <div className="mt-12 flex flex-col md:mt-14">
         {LEVELS.map((level) => (
           <LevelRow key={level.ordinal} level={level} />
         ))}
@@ -158,6 +165,7 @@ function LevelRow({ level }: { level: Level }) {
   return (
     <article
       ref={ref}
+      className="sticky top-20 bg-paper-warm py-8 md:top-24 md:py-10"
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? "translateY(0)" : "translateY(16px)",

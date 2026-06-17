@@ -104,7 +104,7 @@ export function Solution() {
   return (
     <section
       id="solution"
-      className="relative overflow-hidden rounded-[28px] bg-paper-warm pt-24 pb-24 md:pt-32 md:pb-32 lg:pt-40 lg:pb-40"
+      className="relative rounded-[28px] bg-paper-warm pt-24 pb-24 md:pt-32 md:pb-32 lg:pt-40 lg:pb-40"
     >
       <div className="container-page">
         <p className="eyebrow">The agents</p>

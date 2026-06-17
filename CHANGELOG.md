@@ -137,6 +137,42 @@ section rewrite, and the new Three Levels of Care section.
   illustration brief: brand orange as a fill rather than an accent, and
   they didn't sit visually with the SessionWalkthrough siblings.
 
+### LevelsOfCare — scroll-stacking on the three rows (Pass 2-I, in-canvas)
+**Trigger:** user direction — *"Add the scroll stacking animation to the
+3 pointers. It should not feel like a container stacking on top, just
+the next point coming on top of the previous one."*
+
+**Implementation:**
+- Each `LevelRow` is now `position: sticky` at `top-20 md:top-24`
+  (clear of the `h-16 md:h-20` fixed nav with a 16px breathing
+  margin).
+- Each row gets `bg-paper-warm` — the same color as the parent
+  Solution section — so when row 2 reaches the sticky position and
+  overlays row 1, the transition reads as content flowing rather
+  than a panel stacking. No card chrome, no shadow, no border between
+  rows. Matching background is the entire trick.
+- DOM order (row 1 → 2 → 3) naturally renders later rows on top of
+  earlier rows. No explicit z-index needed.
+- Container changed from `flex flex-col gap-12 md:gap-16 lg:gap-20`
+  to `flex flex-col` (no gap). Each row now carries its own `py-8
+  md:py-10` for vertical breathing — keeps the contained pacing while
+  letting sticky rows butt against each other in flow.
+- Row entry animation (opacity + translateY) preserved on the
+  article element — fires once when the row first scrolls into view
+  from below. Sticky behavior takes over after that.
+
+**Sticky scope unblocked in Solution:**
+- `Solution.tsx` had `overflow-hidden` on its outer `<section>` (for
+  the rounded 28px corners). `overflow: hidden` establishes a sticky
+  scroll-containing block, which would have constrained the
+  LevelsOfCare rows to stick within the section rather than to the
+  viewport. Removed.
+- Safe to remove because the AgentCards already have their own
+  `overflow-hidden`, the ArtifactFrames already have their own
+  `overflow-hidden`, and no other child element in Solution extends
+  past the section's rounded corners. The rounded corners themselves
+  still render via `border-radius`.
+
 ### LevelsOfCare — true balance + distinct artifacts per level (Pass 2-H, in-canvas)
 **Trigger:** user feedback — *"the design doesnt seem to be balanced.
 the right side content should be of equal height as of the artifact
