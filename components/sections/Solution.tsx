@@ -158,14 +158,9 @@ export function Solution() {
           <LevelsOfCare />
         </div>
 
-        {/* SessionWalkthrough temporarily hidden during the LevelsOfCare
-            iteration (Pass 2-D). Restore when the levels section and
-            its illustrations are signed off. */}
-        {/*
         <div className="mt-20 md:mt-28">
           <SessionWalkthrough />
         </div>
-        */}
       </div>
     </section>
   );
