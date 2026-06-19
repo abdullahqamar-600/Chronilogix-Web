@@ -38,6 +38,9 @@ type Level = {
   bullets: string[];
   visualBg: string;
   Artifact: React.ComponentType<{ active: boolean }>;
+  /** When set, the level renders this image in the visual column instead
+   *  of the abstract Artifact card. */
+  image?: { src: string; alt: string };
 };
 
 const LEVELS: Level[] = [
@@ -53,10 +56,14 @@ const LEVELS: Level[] = [
       "Anyone in between scheduled appointments",
       "Available 24/7 when live coaches are not",
       "Bridges the typical 2–6 week wait for a human appointment",
-      "Cost-efficient access for almost anyone",
+      "Cost efficient access for almost anyone",
     ],
     visualBg: "/card-1-bg.jpg",
     Artifact: AvailabilityArtifact,
+    image: {
+      src: "/generated-images/image.png",
+      alt: "A moment of first-line care — where Chronilogix steps in when no other coverage exists.",
+    },
   },
   {
     ordinal: "Level 02",
@@ -70,6 +77,10 @@ const LEVELS: Level[] = [
     ],
     visualBg: "/pattern.png",
     Artifact: BriefingArtifact,
+    image: {
+      src: "/generated-images/caregiver-senior-chronilogix-aesthetic.png",
+      alt: "A caregiver beside an older adult — the human-plus-AI hybrid Chronilogix supports.",
+    },
   },
   {
     ordinal: "Level 03",
@@ -80,10 +91,14 @@ const LEVELS: Level[] = [
       "Certain ethnic and cultural backgrounds where a digital coach reduces barriers",
       "No bias, no judgment — consistent every session",
       "Uniform, reliable treatment regardless of provider variability",
-      "The most cost-efficient option available",
+      "The most cost efficient option available",
     ],
     visualBg: "/card-3-bg.jpg",
     Artifact: ConsistencyArtifact,
+    image: {
+      src: "/generated-images/Felix%20Wittich%20_%20Emeis%20Deubel.jpeg",
+      alt: "A quiet portrait — for the members who get better outcomes with a fully digital coach.",
+    },
   },
 ];
 
@@ -165,54 +180,102 @@ function LevelRow({ level }: { level: Level }) {
   return (
     <article
       ref={ref}
-      className="sticky top-20 bg-paper-warm py-8 md:top-24 md:py-10"
+      className="sticky top-20 md:top-24"
       style={{
         opacity: inView ? 1 : 0,
-        transform: inView ? "translateY(0)" : "translateY(16px)",
+        // Use `none` rather than `translateY(0)` once revealed so the
+        // article doesn't carry a permanent transform — a stray
+        // transform on the article would create a containing block
+        // that prevents the fog drop-shadow from rendering above the
+        // body and clip the visual layering effect.
+        transform: inView ? "none" : "translateY(16px)",
         transition:
           "opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1)",
       }}
     >
-      {/* Identity — sits at the row's top so the artifact and content
-          columns below start at the same baseline. */}
-      <header className="mb-8 md:mb-10">
-        <p className="eyebrow">{level.ordinal}</p>
-        <h4 className="mt-3 max-w-3xl text-row font-serif font-normal text-ink">
-          {level.label}
-        </h4>
-        <p className="mt-3 max-w-2xl body-quiet">{level.subhead}</p>
-      </header>
+      {/* Card body — the row sits flush with the surrounding section
+          on the same paper-warm background. No fog veil, no hairline
+          highlight, no rounded corners — the three rows read as one
+          continuous paper surface as they stack, with the sticky
+          behaviour alone carrying the layering. */}
+      <div
+        className="relative bg-paper-warm pb-8 pt-10 md:pb-10 md:pt-[4.5rem]"
+      >
+        {/* Identity — sits at the row's top so the artifact and content
+            columns below start at the same baseline. */}
+        <header className="relative mb-8 md:mb-10">
+          <p className="eyebrow">{level.ordinal}</p>
+          <h4 className="mt-3 max-w-3xl text-row font-serif font-normal text-ink">
+            {level.label}
+          </h4>
+          <p className="mt-3 max-w-2xl body-quiet">{level.subhead}</p>
+        </header>
 
-      {/* 5/7 grid. items-stretch is the default for grid items; both
-          columns inherit the row height set by whichever side is
-          naturally taller. Artifact column uses h-full so the framed
-          block stretches to match the right column's content. */}
-      <div className="grid items-stretch gap-8 md:grid-cols-12 md:gap-10">
-        <div className="md:col-span-5">
-          <ArtifactFrame bg={level.visualBg} active={inView}>
-            <Artifact active={inView} />
-          </ArtifactFrame>
-        </div>
+        {/* 5/7 grid. items-stretch is the default for grid items; both
+            columns inherit the row height set by whichever side is
+            naturally taller. Artifact column uses h-full so the framed
+            block stretches to match the right column's content. */}
+        <div className="relative grid items-start gap-8 md:grid-cols-12 md:gap-10">
+          <div className="md:col-span-5">
+            {level.image ? (
+              <LevelImage image={level.image} active={inView} />
+            ) : (
+              <ArtifactFrame bg={level.visualBg} active={inView}>
+                <Artifact active={inView} />
+              </ArtifactFrame>
+            )}
+          </div>
 
-        <div className="md:col-span-7">
-          <p className="body-prose text-ink-soft">{level.lead}</p>
-          <ul className="mt-5 space-y-3 md:mt-6">
-            {level.bullets.map((bullet) => (
-              <li
-                key={bullet}
-                className="flex gap-4 body-prose text-ink-soft"
-              >
-                <span
-                  aria-hidden
-                  className="mt-[0.7em] inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-brand"
-                />
-                <span>{bullet}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="md:col-span-7">
+            <p className="body-prose text-ink-soft">{level.lead}</p>
+            <ul className="mt-5 space-y-3 md:mt-6">
+              {level.bullets.map((bullet) => (
+                <li
+                  key={bullet}
+                  className="flex gap-4 body-prose text-ink-soft"
+                >
+                  <span
+                    aria-hidden
+                    className="mt-[0.7em] inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-brand"
+                  />
+                  <span>{bullet}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </article>
+  );
+}
+
+/* ── Image card (replaces the abstract Artifact when a level has an
+ *    `image` field) ─────────────────────────────────────────────────────── */
+function LevelImage({
+  image,
+  active,
+}: {
+  image: { src: string; alt: string };
+  active: boolean;
+}) {
+  return (
+    <div
+      className="relative aspect-[4/5] min-h-[340px] overflow-hidden rounded-2xl bg-ink/5"
+      style={{
+        opacity: active ? 1 : 0,
+        transform: active ? "none" : "translateY(12px)",
+        transition:
+          "opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1)",
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={image.src}
+        alt={image.alt}
+        className="absolute inset-0 h-full w-full object-cover"
+        draggable={false}
+      />
+    </div>
   );
 }
 
@@ -238,7 +301,7 @@ function ArtifactFrame({
 }) {
   const playState = active ? "running" : "paused";
   return (
-    <div className="relative h-full min-h-[300px] overflow-hidden rounded-2xl bg-white">
+    <div className="relative min-h-[340px] overflow-hidden rounded-2xl bg-white">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={bg}
@@ -275,17 +338,17 @@ function ArtifactFrame({
  */
 
 const AVAILABILITY_UNAVAILABLE: { label: string; status: string }[] = [
-  { label: "In-clinic appointment", status: "3 weeks out" },
+  { label: "In clinic appointment", status: "3 weeks out" },
   { label: "Covered counseling", status: "0 of 6 left" },
-  { label: "After-hours support", status: "Closed" },
-  { label: "Sliding-scale therapist", status: "Waitlist" },
+  { label: "After hours support", status: "Closed" },
+  { label: "Sliding scale therapist", status: "Waitlist" },
 ];
 
 function AvailabilityArtifact({ active }: { active: boolean }) {
   const playState = active ? "running" : "paused";
   return (
     <>
-      <p className="text-[12px] font-medium tracking-tight text-ink-muted">
+      <p className="text-xs font-medium tracking-tight text-ink-muted">
         Care available today
       </p>
 
@@ -343,7 +406,7 @@ function AvailabilityArtifact({ active }: { active: boolean }) {
 
 const BRIEFING_EVENTS: { day: string; text: string; session?: boolean }[] = [
   { day: "Tue", text: "Last session — anxiety + medication review", session: true },
-  { day: "Wed", text: "Check-in: felt heavy around 6pm" },
+  { day: "Wed", text: "Check in: felt heavy around 6pm" },
   { day: "Thu", text: "Practiced 3-3-3 grounding, sustained" },
   { day: "Thu", text: "Open question: timing of evening dose" },
 ];
@@ -352,8 +415,8 @@ function BriefingArtifact({ active }: { active: boolean }) {
   const playState = active ? "running" : "paused";
   return (
     <>
-      <p className="text-[12px] font-medium tracking-tight text-ink-muted">
-        Pre-session briefing
+      <p className="text-xs font-medium tracking-tight text-ink-muted">
+        Pre session briefing
         <span className="text-ink-subtle"> · Dr. Chen</span>
       </p>
 
@@ -427,7 +490,7 @@ function ConsistencyArtifact({ active }: { active: boolean }) {
   const playState = active ? "running" : "paused";
   return (
     <>
-      <p className="text-[12px] font-medium tracking-tight text-ink-muted">
+      <p className="text-xs font-medium tracking-tight text-ink-muted">
         Last 30 sessions
       </p>
 
@@ -440,15 +503,15 @@ function ConsistencyArtifact({ active }: { active: boolean }) {
           opacity: 0,
         }}
       >
-        <span className="font-serif text-[44px] font-normal leading-none tracking-tight text-brand-700">
+        <span className="font-serif text-stat-md font-normal leading-none text-brand-700">
           30
         </span>
-        <span className="font-serif text-[22px] font-normal leading-none text-ink-subtle">
+        <span className="font-serif text-row font-normal leading-none text-ink-subtle">
           / 30
         </span>
       </div>
       <p
-        className="mt-1 text-[12px] text-ink-muted"
+        className="mt-1 text-xs text-ink-muted"
         style={{
           animation: `fadeUp 460ms cubic-bezier(0.22, 0.61, 0.36, 1) 440ms forwards`,
           animationPlayState: playState,

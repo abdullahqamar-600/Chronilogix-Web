@@ -101,33 +101,80 @@ function useInView<T extends HTMLElement>(threshold = 0.2) {
 }
 
 export function Solution() {
+  const handleTalkClick = () => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("open-coach-chat"));
+    }
+  };
+
   return (
     <section
       id="solution"
-      className="relative rounded-[28px] bg-paper-warm pt-24 pb-24 md:pt-32 md:pb-32 lg:pt-40 lg:pb-40"
+      className="relative rounded-[28px] bg-paper-warm pt-10 pb-12 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24"
     >
       <div className="container-page">
         <p className="eyebrow">The agents</p>
-        <h2 className="mt-4 max-w-3xl text-display font-serif font-normal text-ink">
-          Two coaches.
+        <h2 className="mt-4 max-w-4xl text-display font-serif font-normal text-ink">
+          Two contextually engineered AI coaches.
           <br />
-          <span className="text-ink-muted">One way of listening.</span>
+          <span className="text-ink-muted">Not just conversational AIs.</span>
         </h2>
 
-        <div className="mt-10 grid gap-5 md:mt-14 md:gap-6 lg:grid-cols-2">
+        {/* Contextually engineered framing — the whitepaper's central
+            thesis brought to the homepage. A conversational AI improvises
+            a reply each turn from a generic prompt; a contextually
+            engineered coach interprets each utterance against the
+            member's prior sessions, their cultural context, and the MI
+            fidelity rubric, then chooses its next move from that
+            interpretation. Personalization is engineered into the stack,
+            not added at the language layer. */}
+        <p className="mt-6 max-w-2xl body-prose md:mt-7">
+          Conversational AI replies. Contextually engineered AI{" "}
+          <span className="text-ink">reasons</span> — against the
+          member&rsquo;s prior sessions, their cultural context, and an MI
+          fidelity rubric. The result is engagement that{" "}
+          <span className="text-ink">compounds</span>, instead of
+          conversation that decays.
+        </p>
+
+        <div className="mt-8 grid gap-4 md:mt-10 md:gap-5 lg:grid-cols-2">
           {AGENTS.map((agent) => (
             <AgentCard key={agent.name} agent={agent} />
           ))}
         </div>
 
-        {/* Section-level CTA — sits below the agent cards so readers
-            can weigh both coaches first, then click through to the
-            deeper product page. The cards are exploration; this is
-            the action that follows once both have been considered. */}
-        <div className="mt-10 flex justify-center md:mt-12">
+        {/* Section-level CTAs — primary action opens the in-page coach
+            chat (singular "coach" so the surface stays agnostic to the
+            single live backend); secondary action routes to the deeper
+            product page. Sits below the cards so readers weigh both
+            coaches before acting. */}
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-3 md:mt-10">
+          <button
+            type="button"
+            onClick={handleTalkClick}
+            className="group/talk inline-flex items-center gap-2 rounded-full bg-brand-accent px-6 py-3 text-sm font-medium text-white transition-all duration-300 ease-out motion-reduce:transition-none hover:opacity-95 hover:shadow-[0_8px_28px_-8px_rgba(255,116,52,0.55)] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
+          >
+            Talk to Coach
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              aria-hidden
+              className="transition-transform duration-300 ease-out motion-reduce:transition-none group-hover/talk:translate-x-1"
+            >
+              <path
+                d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
           <a
             href="/product"
-            className="group/cta inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white px-6 py-3 text-[14.5px] font-medium text-ink transition-all duration-300 ease-out motion-reduce:transition-none hover:border-brand-accent hover:bg-brand-accent hover:text-white hover:shadow-[0_6px_24px_-8px_rgba(255,116,52,0.45)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 focus-visible:ring-offset-2"
+            className="group/cta inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white px-6 py-3 text-sm font-medium text-ink transition-all duration-300 ease-out motion-reduce:transition-none hover:border-ink/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 focus-visible:ring-offset-2"
           >
             Learn more about the product
             <svg
@@ -154,13 +201,18 @@ export function Solution() {
             (who the coaches are) and SessionWalkthrough (how a single
             session is run), so the narrative arc reads:
             two coaches → three places they show up → here's a session. */}
-        <div className="mt-20 md:mt-28">
+        <div className="mt-12 md:mt-28">
           <LevelsOfCare />
         </div>
 
-        <div className="mt-20 md:mt-28">
-          <SessionWalkthrough />
-        </div>
+        {/* SessionWalkthrough hidden — StatementV2's Engage/Focus/Evoke/
+            Plan grid now carries the same "frames-from-a-session" visual
+            beat. Re-enable if we need session cadence content separately. */}
+        {false && (
+          <div className="mt-12 md:mt-28">
+            <SessionWalkthrough />
+          </div>
+        )}
       </div>
     </section>
   );
@@ -216,8 +268,11 @@ function AgentCard({ agent }: { agent: Agent }) {
         }}
       />
 
-      <div className="relative flex flex-col gap-7 p-7 md:gap-9 md:p-9 lg:p-10">
-        {/* Header — chip + name + one-line dek. */}
+      <div className="relative flex flex-col p-6 md:p-7 lg:p-8">
+        {/* Header — chip + name. Body description moves below the
+            orbit so the card has three balanced beats (identity →
+            visual centerpiece → one-line context) instead of a
+            top-heavy stack. */}
         <div
           className="flex flex-col gap-3"
           style={{
@@ -244,21 +299,33 @@ function AgentCard({ agent }: { agent: Agent }) {
             />
             {agent.condition} Coach
           </span>
-          <h3 className="text-hero font-serif font-normal leading-[1.02] text-ink">
+          <h3 className="text-row font-serif font-normal text-ink">
             {agent.name}
           </h3>
-          <p className="max-w-[36ch] text-[14.5px] leading-[1.55] text-ink-muted md:text-[15px]">
-            {agent.body}
-          </p>
         </div>
 
-        {/* Centerpiece — avatar with concentric rings + topic chips that
-            sit ON the orbit rings (not just floating arbitrarily). */}
-        <AgentOrbit agent={agent} active={inView} />
+        {/* Centerpiece — avatar with concentric rings + topic chips.
+            flex-1 lets it claim the vertical middle of the card so
+            the layout feels intentionally centered rather than
+            top-heavy. */}
+        <div className="flex flex-1 items-center justify-center py-6 md:py-7">
+          <AgentOrbit agent={agent} active={inView} />
+        </div>
 
-        {/* Featured Q&A — single high-stakes coaching exchange that shows
-            the agent's voice on a common, real member statement. */}
-        <FeaturedExchange agent={agent} active={inView} />
+        {/* Footer — single-line agent description. Sits at the
+            bottom edge as a quiet caption that balances the chip +
+            name pair at the top. */}
+        <p
+          className="max-w-[40ch] body-quiet"
+          style={{
+            opacity: inView ? 1 : 0,
+            transform: inView ? "translateY(0)" : "translateY(10px)",
+            transition:
+              "opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1) 360ms, transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1) 360ms",
+          }}
+        >
+          {agent.body}
+        </p>
       </div>
     </article>
   );
@@ -281,7 +348,7 @@ function AgentOrbit({ agent, active }: { agent: Agent; active: boolean }) {
   ];
 
   return (
-    <div className="relative mx-auto flex aspect-square w-full max-w-[360px] items-center justify-center">
+    <div className="relative mx-auto flex aspect-square w-full max-w-[220px] items-center justify-center md:max-w-[240px]">
       {/* Three concentric dashed rings, gently more visible as they
           approach the avatar. Provides true orbital depth. */}
       <span
@@ -393,7 +460,7 @@ function CoachAvatar({ agent, active }: { agent: Agent; active: boolean }) {
   // component is just the photo + halo + agent-tinted hairline.
   return (
     <div
-      className="relative z-10 aspect-square shrink-0 w-[150px] md:w-[170px] lg:w-[180px]"
+      className="relative z-10 aspect-square shrink-0 w-[120px] md:w-[135px] lg:w-[145px]"
       style={{
         opacity: active ? 1 : 0,
         transform: active ? "scale(1)" : "scale(0.9)",

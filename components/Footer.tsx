@@ -82,7 +82,7 @@ export function Footer() {
         {/* Big closing CTA */}
         <div className="container-page mt-24 text-center md:mt-32 lg:mt-40">
           <h3 className="mx-auto text-display font-serif font-normal text-ink">
-            <span className="whitespace-nowrap">Human coaches cannot scale.</span>
+            <span className="md:whitespace-nowrap">Human coaches cannot scale.</span>
             <br />
             <span className="text-brand-700">Our AI can.</span>
           </h3>

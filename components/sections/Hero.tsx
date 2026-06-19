@@ -246,8 +246,10 @@ export function Hero() {
     <div ref={runwayRef} className="relative h-[130vh]">
       <section
         className="sticky top-2 h-[calc(100svh-1rem)] overflow-hidden rounded-[28px] md:top-3 md:h-[calc(100svh-1.5rem)]"
-        style={{ backgroundColor: "#E9EAEB", isolation: "isolate" }}
+        style={{ backgroundColor: "#F1EFEC", isolation: "isolate" }}
       >
+        <HeroBackgroundAtmosphere />
+
         {/* Pastel landscape, layered ABOVE the info card so the hills
             visibly crop the lower portion of the card — the card reads
             as tucked behind the scenery. The image uses a vertical mask
@@ -272,6 +274,7 @@ export function Hero() {
               "linear-gradient(to bottom, transparent 0%, transparent 36%, rgba(0,0,0,0.4) 48%, #000 62%, #000 100%)",
           }}
         />
+        <HeroForegroundDepth />
 
         {/* Content layer.
             Horizontal padding + max-width come from `container-page`, the
@@ -370,6 +373,77 @@ export function Hero() {
         </div>
       </section>
     </div>
+  );
+}
+
+function HeroBackgroundAtmosphere() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+      <div
+        className="absolute inset-0 opacity-[0.11]"
+        style={{
+          backgroundImage:
+            "radial-gradient(rgba(84,70,54,0.18) 0.55px, transparent 0.55px)",
+          backgroundSize: "7px 7px",
+          mixBlendMode: "multiply",
+        }}
+      />
+      <svg
+        className="absolute -left-[5%] bottom-[18%] h-[42%] w-[62%] opacity-[0.13]"
+        viewBox="0 0 900 420"
+        fill="none"
+        preserveAspectRatio="none"
+      >
+        <path d="M-40 330C90 250 198 252 330 306C474 364 626 330 768 254C842 214 906 204 968 224" stroke="rgba(77,92,72,0.58)" strokeWidth="1.2" />
+        <path d="M-34 285C94 216 214 216 352 262C482 306 598 292 734 218C830 166 908 154 986 180" stroke="rgba(117,94,72,0.5)" strokeWidth="1" />
+        <path d="M-20 238C118 184 240 178 368 214C510 254 612 234 744 166C846 114 936 110 1010 134" stroke="rgba(77,92,72,0.42)" strokeWidth="1" />
+        <path d="M8 196C142 146 262 144 396 174C526 204 632 186 756 128C858 82 948 78 1028 102" stroke="rgba(183,126,90,0.38)" strokeWidth="0.9" />
+        <path d="M34 154C160 112 292 104 424 130C548 154 658 142 786 92C886 54 974 48 1050 70" stroke="rgba(77,92,72,0.34)" strokeWidth="0.9" />
+      </svg>
+      <svg
+        className="absolute right-[-8%] top-[18%] h-[44%] w-[50%] opacity-[0.09]"
+        viewBox="0 0 720 420"
+        fill="none"
+        preserveAspectRatio="none"
+      >
+        <path d="M-28 92C88 50 178 56 300 116C422 176 548 162 750 72" stroke="rgba(89,106,84,0.58)" strokeWidth="1" />
+        <path d="M-6 144C120 100 224 108 342 158C468 212 566 196 744 126" stroke="rgba(201,132,90,0.42)" strokeWidth="0.9" />
+        <path d="M20 198C146 154 252 160 374 204C500 250 612 240 752 184" stroke="rgba(89,106,84,0.42)" strokeWidth="0.9" />
+      </svg>
+    </div>
+  );
+}
+
+function HeroForegroundDepth() {
+  return (
+    <>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[11] h-[58%]"
+        style={{
+          background:
+            "linear-gradient(to top, rgba(42,54,43,0.24) 0%, rgba(73,80,56,0.14) 22%, rgba(132,97,71,0.08) 44%, rgba(132,97,71,0) 72%)",
+          mixBlendMode: "multiply",
+          maskImage:
+            "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.72) 48%, #000 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.72) 48%, #000 100%)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[12] h-[46%]"
+        style={{
+          background:
+            "linear-gradient(160deg, rgba(249,144,77,0.16) 0%, rgba(249,144,77,0.04) 34%, rgba(85,111,89,0.1) 70%, rgba(85,111,89,0) 100%)",
+          mixBlendMode: "soft-light",
+          maskImage:
+            "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.18) 18%, rgba(0,0,0,0.82) 55%, #000 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.18) 18%, rgba(0,0,0,0.82) 55%, #000 100%)",
+        }}
+      />
+    </>
   );
 }
 

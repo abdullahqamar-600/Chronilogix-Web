@@ -75,7 +75,7 @@ export function Outcome() {
       />
 
       <OutcomeIntro />
-      <OutcomeGallery />
+      {/* <OutcomeGallery /> — hidden for now */}
     </section>
   );
 }
@@ -115,7 +115,7 @@ function OutcomeIntro() {
   return (
     <div
       ref={ref}
-      className="container-page relative py-24 md:py-32 lg:py-40"
+      className="container-page relative py-16 md:py-32 lg:py-40"
     >
       {/* Promise — the headline reframes the problem from the inverse angle. */}
       <div
@@ -134,7 +134,7 @@ function OutcomeIntro() {
           There in the moment.
           <br />
           <span className="text-ink-muted">
-            24/7. No waitlist. Judgment-free. Consistent.
+            24/7. No waitlist. Judgment free. Consistent.
           </span>
         </h2>
 
@@ -145,15 +145,12 @@ function OutcomeIntro() {
         </p>
       </div>
 
-      {/* Proof band — the 58% is the climax of the section, but the
-          previous treatment let the figure dominate at gigantic scale
-          while the statement floated small beside it. The pair now reads
-          as a single statement: the figure sits one notch above the
-          supporting sentence in size, baseline-aligned, so the eye moves
-          smoothly from number to claim instead of bouncing between two
-          unrelated scales. */}
+      {/* Proof band — the 58% is the climax of the section. Framed as a
+          study citation (DPP / CDC and NIH), with the formal source line
+          underneath and a closing bridge sentence that separates the
+          research finding from what Chronilogix actually does. */}
       <figure
-        className="mt-20 max-w-4xl border-t border-ink/10 pt-12 md:mt-24 md:pt-14"
+        className="mt-12 max-w-4xl border-t border-ink/10 pt-8 md:mt-24 md:pt-14"
         style={{
           opacity: enter || inView ? 1 : 0,
           transform: enter || inView ? "translateY(0)" : "translateY(20px)",
@@ -162,11 +159,6 @@ function OutcomeIntro() {
             : "opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1) 180ms, transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1) 180ms",
         }}
       >
-        {/* Frame this as a study citation, not a platform metric. The
-            study name lives inside the sentence, the formal source
-            attribution sits directly under the figure, and the closing
-            bridge line separates the research finding from what
-            Chronilogix actually does. */}
         <blockquote>
           <p className="font-serif text-section font-normal leading-[1.18] text-ink">
             <span
@@ -193,7 +185,7 @@ function OutcomeIntro() {
         </figcaption>
 
         <p className="mt-6 max-w-[58ch] body-quiet md:mt-7">
-          The kind of continuous, between-visit support Chronilogix scales.
+          The kind of continuous, between visit support Chronilogix scales.
         </p>
       </figure>
     </div>
@@ -201,119 +193,174 @@ function OutcomeIntro() {
 }
 
 /**
- * Horizontal scroll-jacked gallery.
+ * Outcome gallery — editorial three-column layout. Left column carries
+ * a second-beat headline; the right two columns are image cards (image,
+ * bold label, body, case-study button). Each card's button is a
+ * placeholder; destinations land later.
  *
- * Layout:
- *   [─── Image 1 (80vw) ───][─── Image 2 (80vw) ───]
- *   |                       |~~ overflow (60vw) ~~|
- *   ^ initially visible      ^ peeks (20vw) at start
- *
- * Mechanic: wrapper height = 100vh + horizontal travel. Inner viewport is
- * sticky h-screen. We translate the track from 0 → -travelPx as the user
- * scrolls past the wrapper top. Once the wrapper's bottom reaches the
- * viewport bottom, normal vertical scroll resumes.
+ * The images are intentionally not tied to personas. They are quiet
+ * editorial frames that carry the "in the moment" promise without any
+ * label work on top of them. Card 2 sits a notch taller than card 1,
+ * mirroring the reference's offset.
  */
+type Card = {
+  src: string;
+  alt: string;
+  label: string;
+  body: string;
+  aspect: string;
+};
+
+const CARDS: Card[] = [
+  {
+    src: "/for-employees.png",
+    alt: "A quiet, open frame — the kind of moment between scheduled care.",
+    label: "The moments care can't schedule for",
+    body:
+      "11 PM stress eating. Anxiety at midnight. The skipped evening dose. Chronilogix is there when the appointment isn't.",
+    aspect: "aspect-[4/5]",
+  },
+  {
+    src: "/for-universities.png",
+    alt: "A still frame from the long stretch after an appointment ends.",
+    label: "The space after the appointment",
+    body:
+      "After discharge, after the session, after motivation slips — continuous reinforcement that keeps people from quietly falling through.",
+    aspect: "aspect-[3/4]",
+  },
+];
+
 function OutcomeGallery() {
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const trackRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    // Respect reduced-motion — skip the scroll-jacked horizontal travel and
-    // leave the gallery in its initial state. Users still get the imagery.
-    if (
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      return;
-    }
-
-    let raf = 0;
-    let ticking = false;
-
-    const compute = () => {
-      ticking = false;
-      const wrap = wrapperRef.current;
-      const track = trackRef.current;
-      if (!wrap || !track) return;
-      const vh = window.innerHeight;
-      const vw = window.innerWidth;
-      const totalTravelPx = vw * 0.8;
-      const rect = wrap.getBoundingClientRect();
-      const scrollable = wrap.offsetHeight - vh;
-      const scrolled = Math.min(Math.max(-rect.top, 0), scrollable);
-      const progress = scrollable > 0 ? scrolled / scrollable : 0;
-      const travel = progress * totalTravelPx;
-      track.style.transform = `translate3d(${-travel}px, 0, 0)`;
-    };
-
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      raf = requestAnimationFrame(compute);
-    };
-
-    compute();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
-
   return (
-    <div
-      ref={wrapperRef}
-      className="relative"
-      style={{ height: "calc(100vh + 80vw)" }}
-    >
-      <div className="sticky top-0 h-screen overflow-hidden bg-paper-warm">
-        {/* Vertically-centered image track.
-            Top padding clears the nav (which lives at top:24 with h=81 →
-            occupies viewport y=[24, 105]). items-center keeps the
-            track sitting in the middle of the remaining canvas. */}
-        <div className="flex h-full items-center justify-start overflow-hidden pt-24 md:pt-28">
-          <div
-            ref={trackRef}
-            className="flex h-[86vh] items-stretch will-change-transform"
-            style={{
-              transform: "translate3d(0, 0, 0)",
-              gap: "min(2vw, 24px)",
-              paddingLeft: "min(3vw, 32px)",
-            }}
-          >
-            <GalleryFrame
-              src="/for-employees.png"
-              alt="Member moments — coaching between appointments."
-            />
-            <GalleryFrame
-              src="/for-universities.png"
-              alt="Quiet moments where support is needed most."
-            />
-          </div>
-        </div>
+    <div className="container-page relative pb-24 md:pb-32 lg:pb-40">
+      {/* Top hairline — separates the gallery from the intro proof band
+          and sets the editorial register of the three-column layout. */}
+      <div aria-hidden className="h-px w-full bg-ink/15" />
+
+      <div className="mt-14 grid gap-12 md:mt-20 md:gap-14 lg:grid-cols-12 lg:gap-12 xl:gap-16">
+        <HeadlineColumn />
+        <CardColumn card={CARDS[0]} delayMs={120} />
+        <CardColumn card={CARDS[1]} delayMs={240} />
       </div>
     </div>
   );
 }
 
-function GalleryFrame({
-  src,
-  alt,
-}: {
-  src: string;
-  alt: string;
-}) {
+function HeadlineColumn() {
+  const { ref, inView } = useInView<HTMLDivElement>();
+
   return (
-    <figure className="relative h-full w-[80vw] shrink-0 overflow-hidden rounded-[24px]">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={src}
-        alt={alt}
-        className="h-full w-full object-cover"
-        draggable={false}
-      />
-    </figure>
+    <div
+      ref={ref}
+      className="lg:col-span-4"
+      style={{
+        opacity: inView ? 1 : 0,
+        transform: inView ? "translateY(0)" : "translateY(20px)",
+        transition:
+          "opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1)",
+      }}
+    >
+      {/* Demoted from text-hero to text-section so it reads as the
+          section's second beat, not a competing primary headline. */}
+      <h3
+        className="text-section font-serif font-normal leading-[1.08] text-ink"
+        style={{ textWrap: "balance" } as React.CSSProperties}
+      >
+        Care that doesn&rsquo;t go quiet.
+      </h3>
+      <p className="mt-5 text-base text-ink-muted md:text-lg">
+        (Between visits. After discharge. At 11 PM.)
+      </p>
+    </div>
+  );
+}
+
+function CardColumn({ card, delayMs }: { card: Card; delayMs: number }) {
+  const { ref, inView } = useInView<HTMLDivElement>();
+
+  return (
+    <div
+      ref={ref}
+      className="lg:col-span-4"
+      style={{
+        opacity: inView ? 1 : 0,
+        transform: inView ? "translateY(0)" : "translateY(20px)",
+        transition: `opacity 800ms cubic-bezier(0.22, 0.61, 0.36, 1) ${delayMs}ms, transform 800ms cubic-bezier(0.22, 0.61, 0.36, 1) ${delayMs}ms`,
+      }}
+    >
+      <figure
+        className={`relative ${card.aspect} overflow-hidden rounded-[24px] bg-ink/5`}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={card.src}
+          alt={card.alt}
+          className="h-full w-full object-cover"
+          draggable={false}
+        />
+      </figure>
+
+      <div className="mt-7 md:mt-8">
+        <h4 className="text-base font-medium text-ink md:text-lg">
+          {card.label}
+        </h4>
+        <p className="mt-3 max-w-md text-sm leading-relaxed text-ink-soft md:text-base">
+          {card.body}
+        </p>
+
+        {/* Case-study CTA — placeholder, no destination wired. Rendered
+            as a button so it stays inert until the case-study URLs land. */}
+        <button
+          type="button"
+          className="group/link mt-6 inline-flex items-center gap-2 text-sm font-medium text-ink transition-colors hover:text-brand-600"
+        >
+          Read the case study
+          <Arrow />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function useInView<T extends HTMLElement>(threshold = 0.2) {
+  const ref = useRef<T | null>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    if (inView) return;
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          io.disconnect();
+        }
+      },
+      { threshold, rootMargin: "0px 0px -10% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [inView, threshold]);
+
+  return { ref, inView };
+}
+
+function Arrow() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className="transition-transform group-hover/link:translate-x-0.5"
+    >
+      <path d="M3 7h8M7.5 3l3.5 4-3.5 4" />
+    </svg>
   );
 }

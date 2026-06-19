@@ -15,20 +15,16 @@ import { useEffect, useMemo, useState } from "react";
 // Maria, 2:04 AM — same MI exchange used in earlier V5: open question
 // → reflect → name the feeling → safety check. Member lines stay
 // lowercase + casual; Roni's reflections do the careful clinical work.
-type ChatTurn = { who: "member" | "roni"; text: string };
+type ChatTurn = { who: "member" | "roni"; text: string; time: string };
 const CHAT: ChatTurn[] = [
-  { who: "member", text: "cant sleep" },
-  { who: "roni", text: "What's going on?" },
-  {
-    who: "member",
-    text: "everything just collapsed this week. i've been holding it together for so long",
-  },
   {
     who: "roni",
-    text: "That sounds like you, Maria — you carry it quietly until you can't. What does that feel like right now?",
+    text: "Didn't see you check in tonight. What's keeping you up?",
+    time: "16:19",
   },
-  { who: "member", text: "like i'm standing still but falling at the same time" },
-  { who: "roni", text: "Standing still and falling. Are you safe right now?" },
+  { who: "member", text: "Mind won't stop", time: "16:18" },
+  { who: "roni", text: "What's loudest right now?", time: "16:19" },
+  { who: "roni", text: "We can sit with it.", time: "16:19" },
 ];
 
 const TYPING_MS = 950;
@@ -140,7 +136,7 @@ export function HeroV5() {
     <section
       id="hero"
       aria-label="Chronilogix — AI coaching for mental health and chronic care"
-      className="relative flex flex-col overflow-hidden rounded-[28px]"
+      className="relative flex flex-col overflow-hidden rounded-t-[28px]"
       style={{
         // Locks the hero into the user's viewport. min/max guard against
         // very short or very tall windows so the composition never
@@ -154,42 +150,83 @@ export function HeroV5() {
         backgroundColor: "#FBF8F4",
       }}
     >
+      {/* Ambient backdrop — a low-saturation meadow image painted into
+          the cream page with very low opacity + soft-light blend so it
+          reads as gentle paper texture rather than a photographic
+          background. A radial mask fades it out behind the phone and
+          near the side columns, keeping the headline, mockup, and
+          subtext as the eye's focus. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/bg-low-saturation.png"
+        alt=""
+        aria-hidden
+        draggable={false}
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full select-none object-cover"
+        style={{
+          opacity: 0.08,
+          mixBlendMode: "soft-light",
+          filter: "blur(18px) saturate(60%)",
+          WebkitFilter: "blur(18px) saturate(60%)",
+          transform: "scale(1.08)",
+          maskImage:
+            "radial-gradient(ellipse 70% 80% at 50% 60%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.7) 80%, rgba(0,0,0,0.95) 100%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 70% 80% at 50% 60%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.7) 80%, rgba(0,0,0,0.95) 100%)",
+        }}
+      />
+      {/* Cream wash to keep the centre area soft — ensures the phone
+          and headline read on uniform paper, never on photographic
+          texture. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 55% 65% at 50% 55%, rgba(251,248,244,0.85) 0%, rgba(251,248,244,0.35) 50%, rgba(251,248,244,0) 80%)",
+        }}
+      />
+
       {/* ── Desktop: 3-column composition ───────────────────────────
           Heading flanks the phone on the left; subtext + CTA + stats
           flank on the right. Phone in the centre claims a wider
           column so it reads as the hero visual rather than a side
           prop. Below `lg` we stack: heading → phone → subtext. */}
-      <div className="container-page relative z-20 flex h-full w-full flex-col lg:grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.3fr)_minmax(0,1.1fr)] lg:items-center lg:gap-10 lg:py-16 xl:gap-12">
+      <div className="container-page relative z-20 flex h-full w-full flex-col lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1.1fr)_minmax(0,1.15fr)] lg:items-center lg:gap-20 lg:py-0 xl:gap-28">
 
-        {/* Left — Heading. Top-aligned at desktop so it shoulders the
-            phone; on smaller viewports flows in normal column order. */}
+        {/* Left — Heading. Sits high in the desktop column so it
+            shoulders the phone from above; on smaller viewports flows
+            in normal column order. */}
         <div
-          className="relative z-20 flex-none pt-20 md:pt-24 lg:pt-0"
+          className="relative z-20 flex-none pt-20 md:pt-24 lg:self-start lg:pt-36 xl:pt-44"
           style={{
             opacity: textFade,
             transform: `translateY(${(1 - textFade) * 10}px)`,
             willChange: "opacity, transform",
           }}
         >
-          <div className="flex w-full flex-col items-center text-center lg:items-end lg:text-right">
+          <div className="flex w-full flex-col items-center text-center lg:items-start lg:text-left">
             <h1
               className="max-w-[20ch] font-serif font-normal leading-[1.06] tracking-[-0.022em] text-ink text-[1.875rem] sm:text-[2.25rem] md:text-[2.75rem] lg:text-[2.5rem] xl:text-[2.875rem]"
               style={{ textWrap: "balance" } as React.CSSProperties}
             >
-              Filling the gaps in mental health and chronic care{" "}
+              Filling the gaps in{" "}
+              <span className="text-brand">mental health</span> and{" "}
+              <span className="text-brand">chronic care</span>{" "}
               <span className="italic text-ink-soft">
                 through AI coaching agents.
               </span>{" "}
-              <span className="text-brand">24/7</span>
+              24/7
             </h1>
           </div>
         </div>
 
-        {/* Centre — Phone. On desktop the column is wider than the
-            sides, so the phone scales up. Sized by HEIGHT so width
-            follows the aspect ratio. */}
+        {/* Centre — Phone. Anchored to the section's bottom edge so
+            the hand reaches the viewport floor and reads as held up
+            from below. Phone height is capped well under section
+            height so it doesn't dominate the composition. */}
         <div
-          className="relative z-0 flex w-full flex-1 justify-center pt-3 md:pt-4 lg:h-full lg:pt-0"
+          className="relative z-0 flex w-full flex-1 items-end justify-center pt-3 md:pt-4 lg:self-stretch lg:pt-0"
           style={{ minHeight: 0 }}
         >
           <div
@@ -198,7 +235,7 @@ export function HeroV5() {
               transform: `translateY(${(1 - phoneFade) * 14}px)`,
               willChange: "opacity, transform",
             }}
-            className="h-full"
+            className="h-[68%] lg:h-[76%]"
           >
             <div className="h-full" style={{ aspectRatio: "1013 / 986" }}>
               <PhoneFrame
@@ -210,12 +247,12 @@ export function HeroV5() {
           </div>
         </div>
 
-        {/* Right — Subtext + CTA + stats. Top-aligned at desktop so
-            it lines up with the headline opposite. Each child is a
-            quiet beat: attribution mark → Resnicow line → CTA →
-            stats. */}
+        {/* Right — Subtext + CTA + stats. Bottom-aligned at desktop so
+            it sits opposite the headline's high anchor across the
+            phone, giving the composition a diagonal read. Each child
+            is a quiet beat: Resnicow attribution → CTA → stat pills. */}
         <div
-          className="relative z-20 flex-none pb-8 md:pb-10 lg:pb-0"
+          className="relative z-20 flex-none pb-8 md:pb-10 lg:self-end lg:pb-28 xl:pb-32"
           style={{
             opacity: textFade,
             transform: `translateY(${(1 - textFade) * 12}px)`,
@@ -223,23 +260,19 @@ export function HeroV5() {
           }}
         >
           <div className="flex w-full flex-col items-center text-center lg:items-start lg:text-left">
-            <div
-              aria-hidden
-              className="mb-2.5 flex items-center gap-2.5 text-[10px] uppercase tracking-[0.24em] text-ink/45 md:mb-3 md:gap-3 md:text-[10.5px]"
-            >
-              <span className="inline-block h-px w-5 bg-ink/20 md:w-7" />
-              Clinical foundation
-            </div>
-
             <p
-              className="max-w-[36ch] font-serif font-normal leading-[1.32] tracking-[-0.01em] text-ink text-[0.95rem] md:text-[1.0625rem] lg:text-[1.1875rem]"
+              className="max-w-[36ch] font-serif font-normal italic leading-[1.32] tracking-[-0.01em] text-ink text-base md:text-lg"
               style={{ textWrap: "balance" } as React.CSSProperties}
             >
-              Built on the life&rsquo;s work of world-renowned{" "}
+              Built on the life&rsquo;s work of world renowned{" "}
               <em className="whitespace-nowrap not-italic font-medium">
                 Dr. Ken Resnicow
               </em>
-              , in Motivational Interviewing.
+              , in{" "}
+              <strong className="not-italic font-semibold text-ink">
+                Motivational Interviewing
+              </strong>
+              .
             </p>
 
             {/* TODO: Calendly URL */}
@@ -251,22 +284,14 @@ export function HeroV5() {
               <Arrow />
             </a>
 
-            <dl className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] text-ink-muted md:mt-6 md:gap-x-7 md:text-[12px] lg:justify-start lg:text-[12.5px]">
-              <div className="flex items-baseline gap-2">
-                <dt className="font-serif text-[1.0625rem] font-medium leading-none text-ink md:text-[1.1875rem]">
-                  30+
-                </dt>
-                <dd>years of MI research</dd>
+            <dl className="mt-4 flex flex-wrap items-center justify-center gap-1.5 text-[10.5px] text-ink-muted md:mt-5 md:gap-2 md:text-[11px] lg:justify-start lg:text-[11.5px]">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-ink/8 bg-white/70 px-2.5 py-1 backdrop-blur-sm md:px-3 md:py-1">
+                <dt className="font-medium leading-none text-ink">30+</dt>
+                <dd className="leading-none">years of MI research</dd>
               </div>
-              <span
-                aria-hidden
-                className="hidden h-3 w-px bg-ink/15 sm:inline-block"
-              />
-              <div className="flex items-baseline gap-2">
-                <dt className="font-serif text-[1.0625rem] font-medium leading-none text-ink md:text-[1.1875rem]">
-                  400+
-                </dt>
-                <dd>peer-reviewed publications</dd>
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-ink/8 bg-white/70 px-2.5 py-1 backdrop-blur-sm md:px-3 md:py-1">
+                <dt className="font-medium leading-none text-ink">400+</dt>
+                <dd className="leading-none">peer reviewed publications</dd>
               </div>
             </dl>
           </div>
@@ -344,24 +369,23 @@ function PhoneFrame({
             draggable={false}
             className="pointer-events-none absolute inset-0 h-full w-full select-none"
             style={{
-              // Bottom of the phone (the hand + arm) dissolves to
-              // transparent so the hand visibly blends into the white
-              // background — no hard cut-off. Mask runs across the
-              // bottom 50% of the image with a long shallow curve so
-              // the dissolve has no visible seam at any point. The
-              // chat overlay sits above this layer and stays sharp.
+              // Bottom of the image dissolves into the cream page so
+              // the hand + arm visibly merge with the background rather
+              // than ending at a rectangular edge. The fade starts just
+              // below the phone screen (~58%) and runs the full bottom
+              // half of the image — by the time the eye reaches the
+              // section floor, the arm has fully dissolved into paper.
               maskImage:
-                "linear-gradient(180deg, #000 0%, #000 48%, rgba(0,0,0,0.95) 58%, rgba(0,0,0,0.78) 68%, rgba(0,0,0,0.5) 78%, rgba(0,0,0,0.25) 87%, rgba(0,0,0,0.08) 95%, transparent 100%)",
+                "linear-gradient(180deg, #000 0%, #000 55%, rgba(0,0,0,0.92) 65%, rgba(0,0,0,0.7) 75%, rgba(0,0,0,0.42) 84%, rgba(0,0,0,0.18) 92%, rgba(0,0,0,0.05) 97%, transparent 100%)",
               WebkitMaskImage:
-                "linear-gradient(180deg, #000 0%, #000 48%, rgba(0,0,0,0.95) 58%, rgba(0,0,0,0.78) 68%, rgba(0,0,0,0.5) 78%, rgba(0,0,0,0.25) 87%, rgba(0,0,0,0.08) 95%, transparent 100%)",
+                "linear-gradient(180deg, #000 0%, #000 55%, rgba(0,0,0,0.92) 65%, rgba(0,0,0,0.7) 75%, rgba(0,0,0,0.42) 84%, rgba(0,0,0,0.18) 92%, rgba(0,0,0,0.05) 97%, transparent 100%)",
             }}
           />
 
           <div
-            className="absolute overflow-hidden"
+            className="absolute overflow-hidden bg-white"
             style={{
               ...SCREEN_RECT,
-              background: "linear-gradient(180deg, #FCF8F1 0%, #F7F0E4 100%)",
               maskImage: "url('/mobile.svg')",
               WebkitMaskImage: "url('/mobile.svg')",
               maskSize: "100% 100%",
@@ -370,20 +394,11 @@ function PhoneFrame({
               WebkitMaskRepeat: "no-repeat",
             }}
           >
-            {/* Subtle top sheen — glassy highlight. */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-0 h-[18%]"
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 100%)",
-              }}
-            />
-
             <ScreenChrome />
+            <ScreenAvatar />
 
             <div
-              className="absolute inset-x-[6%] bottom-[14%] top-[18%] flex flex-col justify-end gap-[3px] md:top-[19%] md:gap-[5px]"
+              className="absolute inset-x-[5%] top-[27%] bottom-[26%] flex flex-col justify-end gap-[5px] md:gap-[7px] lg:gap-[8px]"
               style={{
                 maskImage:
                   "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.4) 8%, #000 22%, #000 100%)",
@@ -392,17 +407,16 @@ function PhoneFrame({
               }}
             >
               {CHAT.map((turn, i) => (
-                <ChatBubble
+                <ChatMessage
                   key={i}
                   turn={turn}
                   visible={i <= activeIndex && !exiting}
                   exiting={exiting}
                 />
               ))}
-              <TypingIndicator visible={typingFor !== null && !exiting} />
             </div>
 
-            <ScreenInputBar />
+            <ScreenBottomBar />
           </div>
         </div>
       </div>
@@ -412,124 +426,133 @@ function PhoneFrame({
 
 function ScreenChrome() {
   return (
-    <div className="absolute inset-x-0 top-0 flex items-center justify-between px-[6%] pt-[4.5%]">
+    <div className="absolute inset-x-0 top-0 flex h-[12%] items-center justify-between px-[5%]">
       <svg
         viewBox="0 0 8 14"
-        className="h-[8px] w-[5px] text-ink/45 md:h-[10px] md:w-[6px]"
+        className="h-[8px] w-[5px] text-ink md:h-[10px] md:w-[6.5px] lg:h-[11px] lg:w-[7px]"
         aria-hidden
         fill="none"
       >
         <path
           d="M6 1 1 7l5 6"
           stroke="currentColor"
-          strokeWidth="1.4"
+          strokeWidth="1.6"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
       </svg>
       <div className="flex flex-col items-center">
-        <div className="text-[7px] font-medium tracking-[-0.005em] text-ink/85 md:text-[9.5px] lg:text-[10.5px]">
-          Coaching session
+        <div className="text-[7px] font-bold tracking-[-0.005em] text-ink md:text-[9px] lg:text-[10px]">
+          Diabetes Initial
         </div>
-        <div className="mt-[1.5px] flex items-center gap-[2.5px] text-[5px] text-ink/50 md:gap-[3px] md:text-[7px] lg:text-[7.5px]">
-          <span className="relative inline-flex h-[3.5px] w-[3.5px]">
-            <span className="absolute inset-0 animate-ping rounded-full bg-[#22c55e] opacity-60 motion-reduce:animate-none" />
-            <span className="relative h-[3.5px] w-[3.5px] rounded-full bg-[#22c55e]" />
-          </span>
-          listening
+        <div className="mt-[1px] text-[5px] text-[#9CA3AF] md:text-[6.5px] lg:text-[7.5px]">
+          listening...
         </div>
       </div>
-      <div
-        aria-hidden
-        className="relative inline-flex h-[10px] w-[10px] items-center justify-center rounded-full md:h-[12px] md:w-[12px]"
-        style={{
-          background:
-            "radial-gradient(circle at 35% 30%, #FFB178 0%, #F9904D 55%, #DE7530 100%)",
-          boxShadow: "0 0 0 0.5px rgba(0,0,0,0.05)",
-        }}
-      >
+      {/* right-side spacer, matches back-arrow footprint */}
+      <span aria-hidden className="block h-[8px] w-[5px] md:h-[10px] md:w-[6.5px] lg:h-[11px] lg:w-[7px]" />
+    </div>
+  );
+}
+
+function ScreenAvatar() {
+  return (
+    <div className="absolute inset-x-0 top-[13%] flex justify-center">
+      <div className="relative h-[22px] w-[22px] md:h-[28px] md:w-[28px] lg:h-[32px] lg:w-[32px]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/roni-avatar.png"
+          alt=""
+          aria-hidden
+          draggable={false}
+          className="h-full w-full rounded-full object-cover"
+        />
         <span
           aria-hidden
-          className="absolute -bottom-[0.5px] -right-[0.5px] inline-block h-[4px] w-[4px] rounded-full border border-white bg-[#22c55e] md:h-[5px] md:w-[5px]"
+          className="absolute -bottom-[1px] -right-[1px] block h-[7px] w-[7px] rounded-full border border-white bg-[#22C55E] md:h-[8px] md:w-[8px] lg:h-[9px] lg:w-[9px]"
         />
       </div>
     </div>
   );
 }
 
-function ScreenInputBar() {
+function ScreenBottomBar() {
   return (
-    <div className="absolute inset-x-[7%] bottom-[3.5%] flex items-center gap-1 rounded-full border border-ink/8 bg-white/95 px-1.5 py-[3px] shadow-[0_2px_10px_-4px_rgba(0,0,0,0.10)] md:gap-2 md:px-2.5 md:py-[5.5px]">
-      <span className="text-[7px] text-ink/30 md:text-[10px] lg:text-[11px]">
-        +
-      </span>
-      <span className="flex-1 truncate whitespace-nowrap text-[5.5px] text-ink/40 md:text-[8.5px] lg:text-[9.5px]">
-        Ask anything
-      </span>
-      <span
-        aria-hidden
-        className="inline-flex h-[12px] w-[12px] items-center justify-center rounded-full bg-[#F9904D] md:h-[14px] md:w-[14px] lg:h-[15px] lg:w-[15px]"
-        style={{ boxShadow: "0 1px 3px rgba(249,144,77,0.35)" }}
-      >
+    <div className="absolute inset-x-0 bottom-0 flex flex-col">
+      <div className="relative flex justify-center pb-[2%] pt-[1.5%]">
+        <span
+          aria-hidden
+          className="absolute inset-x-[3%] top-[55%] h-px bg-[#F5F5F5]"
+        />
+        <div className="relative flex items-center gap-[3px] rounded-full border border-[#F3F4F6] bg-[#F7F7F7] px-[8px] py-[3px] text-[6px] text-[#374151] md:gap-[4px] md:px-[10px] md:py-[4px] md:text-[7.5px] lg:text-[8.5px]">
+          See full conversation
+          <svg
+            viewBox="0 0 10 10"
+            className="h-[5px] w-[5px] text-[#9CA3AF] md:h-[6.5px] md:w-[6.5px] lg:h-[7px] lg:w-[7px]"
+            fill="none"
+            aria-hidden
+          >
+            <path
+              d="M1.5 3.5V1.5h2M8.5 6.5v2h-2M3.5 8.5h-2v-2M6.5 1.5h2v2"
+              stroke="currentColor"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+      </div>
+      <div className="flex items-center gap-[5px] px-[4.5%] pb-[7%] pt-[2%] md:gap-[6px]">
+        <span className="text-[10px] font-light leading-none text-ink md:text-[13px] lg:text-[15px]">
+          +
+        </span>
+        <div className="flex flex-1 items-center gap-[4px] rounded-full bg-[#F2F3F4] px-[8px] py-[5px] md:px-[10px] md:py-[6.5px] lg:py-[7.5px]">
+          <span className="flex-1 truncate whitespace-nowrap text-[5.5px] text-[#7C818A] md:text-[7.5px] lg:text-[8.5px]">
+            Ask anything
+          </span>
+          <span
+            aria-hidden
+            className="inline-flex h-[10px] w-[10px] items-center justify-center rounded-full bg-[#C9CDD4] md:h-[13px] md:w-[13px] lg:h-[14px] lg:w-[14px]"
+          >
+            <svg
+              viewBox="0 0 10 10"
+              className="h-[5px] w-[5px] md:h-[6.5px] md:w-[6.5px]"
+              fill="none"
+            >
+              <path
+                d="M1.7 5h6.6M5 1.7l3.3 3.3L5 8.3"
+                stroke="white"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+        </div>
         <svg
-          viewBox="0 0 10 10"
-          className="h-[6px] w-[6px] md:h-[7px] md:w-[7px]"
+          viewBox="0 0 14 14"
+          className="h-[9px] w-[9px] text-ink md:h-[12px] md:w-[12px] lg:h-[13px] lg:w-[13px]"
           fill="none"
+          aria-hidden
         >
           <path
-            d="M1.5 8.5 8.5 1.5M3.5 1.5h5v5"
-            stroke="white"
-            strokeWidth="1.1"
+            d="M7 1.5a2 2 0 0 0-2 2v3.5a2 2 0 1 0 4 0V3.5a2 2 0 0 0-2-2Z"
+            stroke="currentColor"
+            strokeWidth="1.2"
+          />
+          <path
+            d="M3.5 6.5a3.5 3.5 0 1 0 7 0M7 10v2"
+            stroke="currentColor"
+            strokeWidth="1.2"
             strokeLinecap="round"
-            strokeLinejoin="round"
           />
         </svg>
-      </span>
-    </div>
-  );
-}
-
-function TypingIndicator({ visible }: { visible: boolean }) {
-  return (
-    <div
-      className="flex w-full justify-start"
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(4px)",
-        transition:
-          "opacity 320ms cubic-bezier(0.22, 1, 0.36, 1), transform 320ms cubic-bezier(0.22, 1, 0.36, 1)",
-        height: visible ? "auto" : 0,
-        overflow: "hidden",
-      }}
-      aria-hidden
-    >
-      <div className="flex flex-col items-start gap-[1.5px]">
-        <span className="px-[2px] text-[5.5px] font-medium uppercase tracking-[0.08em] text-ink/45 md:text-[6.5px] lg:text-[7px]">
-          Roni
-        </span>
-        <div className="flex items-center gap-[2px] rounded-[7px] rounded-bl-[2px] border border-ink/5 bg-white px-[6.5px] py-[4px] md:rounded-[8px] md:px-[8px] md:py-[5px]">
-          <Dot delay={0} />
-          <Dot delay={140} />
-          <Dot delay={280} />
-        </div>
       </div>
     </div>
   );
 }
 
-function Dot({ delay }: { delay: number }) {
-  return (
-    <span
-      className="inline-block h-[3.5px] w-[3.5px] rounded-full bg-ink/35"
-      style={{
-        animation: "v5TypingDot 1.1s ease-in-out infinite",
-        animationDelay: `${delay}ms`,
-      }}
-    />
-  );
-}
-
-function ChatBubble({
+function ChatMessage({
   turn,
   visible,
   exiting,
@@ -539,10 +562,11 @@ function ChatBubble({
   exiting: boolean;
 }) {
   const isRoni = turn.who === "roni";
+  const label = isRoni ? "Roni" : "You";
 
   return (
     <div
-      className={`flex w-full ${isRoni ? "justify-start" : "justify-end"}`}
+      className={`flex w-full flex-col gap-[1px] ${isRoni ? "items-start text-left" : "items-end text-right"}`}
       style={{
         opacity: exiting ? 0 : visible ? 1 : 0,
         transform: exiting
@@ -557,27 +581,15 @@ function ChatBubble({
         overflow: "hidden",
       }}
     >
-      <div
-        className={`flex flex-col gap-[1.5px] ${isRoni ? "items-start" : "items-end"} max-w-[86%]`}
-      >
-        <span className="px-[2px] text-[5.5px] font-medium uppercase tracking-[0.08em] text-ink/45 md:text-[6.5px] lg:text-[7px]">
-          {isRoni ? "Roni" : "You"}
-        </span>
-        <div
-          className={
-            isRoni
-              ? "rounded-[7px] rounded-bl-[2px] border border-ink/5 bg-white px-[6.5px] py-[3.5px] text-[6.5px] leading-[1.4] text-ink md:text-[8.5px] md:px-[9px] md:py-[5.5px] md:rounded-[8px] lg:text-[9.5px]"
-              : "rounded-[7px] rounded-br-[2px] bg-gradient-to-br from-[#F9904D] to-[#FF7434] px-[6.5px] py-[3.5px] text-[6.5px] leading-[1.4] text-white md:text-[8.5px] md:px-[9px] md:py-[5.5px] md:rounded-[8px] lg:text-[9.5px]"
-          }
-          style={{
-            boxShadow: isRoni
-              ? "0 1px 2px rgba(0,0,0,0.03)"
-              : "0 2px 6px -2px rgba(249,144,77,0.45)",
-          }}
-        >
-          {turn.text}
-        </div>
-      </div>
+      <span className="text-[6px] font-bold leading-none text-[#111827] md:text-[7.5px] lg:text-[8.5px]">
+        {label}
+      </span>
+      <span className="max-w-[88%] text-[6.5px] leading-[1.35] text-[#111827] md:text-[8px] lg:text-[9px]">
+        {turn.text}
+      </span>
+      <span className="text-[4.5px] leading-none text-[#9CA3AF] md:text-[5.5px] lg:text-[6.5px]">
+        {turn.time}
+      </span>
     </div>
   );
 }

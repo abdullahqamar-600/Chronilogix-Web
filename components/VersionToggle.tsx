@@ -3,25 +3,24 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Floating V1 ↔ V2 toggle. Lives top-center, low z-index relative to the
+// Floating version toggle. Lives top-center, low z-index relative to the
 // Roni pill, but high enough to sit above page content. Purely a build-time
 // preview affordance — should be removed before production.
+//
+// V3 and V4 access points are hidden after the renumbering pass: the
+// design that used to live at /v5 was promoted into the V1 slot (/) and
+// the original V1 was moved to /v3. The deprecated /v3 (old) and /v4
+// routes have been removed.
 const VERSIONS = [
   { label: "V1", href: "/" },
   { label: "V2", href: "/v2" },
   { label: "V3", href: "/v3" },
-  { label: "V4", href: "/v4" },
-  { label: "V5", href: "/v5" },
 ] as const;
 
 export function VersionToggle() {
   const pathname = usePathname() ?? "/";
   const activeHref =
-    pathname.startsWith("/v5")
-      ? "/v5"
-      : pathname.startsWith("/v4")
-      ? "/v4"
-      : pathname.startsWith("/v3")
+    pathname.startsWith("/v3")
       ? "/v3"
       : pathname.startsWith("/v2")
       ? "/v2"
@@ -29,7 +28,7 @@ export function VersionToggle() {
 
   return (
     <div
-      className="pointer-events-auto fixed left-1/2 top-3 z-[110] -translate-x-1/2"
+      className="pointer-events-auto fixed left-1/2 top-3 z-[110] hidden -translate-x-1/2 md:block"
       aria-label="Design version toggle"
     >
       <div className="inline-flex items-center gap-1 rounded-full border border-ink/10 bg-white/85 p-1 shadow-[0_6px_24px_-8px_rgba(15,20,25,0.25)] backdrop-blur">

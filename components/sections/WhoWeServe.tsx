@@ -55,7 +55,7 @@ const PERSONAS: Persona[] = [
     intro: "For benefits consultants & brokers",
     headline: ["Defensible ROI.", "Not another point solution."],
     description:
-      "Chronilogix gives brokers a story that ends in measurable cost-curve impact, not a fragmented add-on. AI health coaching moves clients upstream on the spend curve, differentiates beyond plan design, and retains self-funded accounts through proactive, continuous member engagement.",
+      "Chronilogix gives brokers a story that ends in measurable cost curve impact, not a fragmented add on. AI health coaching moves clients upstream on the spend curve, differentiates beyond plan design, and retains self funded accounts through proactive, continuous member engagement.",
     signals: [
       {
         label: "Defensible ROI in renewal conversations",
@@ -66,8 +66,8 @@ const PERSONAS: Persona[] = [
         body: "Members engaged weeks before they show up in claims data, replacing reactive triage with proactive outreach.",
       },
       {
-        label: "Stickier self-funded accounts",
-        body: "Value-led retention beyond plan design: the book of business that doesn't compete on premium alone.",
+        label: "Stickier self funded accounts",
+        body: "Value led retention beyond plan design: the book of business that doesn't compete on premium alone.",
       },
     ],
   },
@@ -77,7 +77,7 @@ const PERSONAS: Persona[] = [
     intro: "For health plans & accountable care organizations",
     headline: ["Claims mitigation,", "before the claim."],
     description:
-      "A first-line claims-mitigation strategy. Chronilogix engages members before issues escalate, replacing up to 70% of routine human coaching at roughly one-twentieth the cost, while improving access and member experience.",
+      "A first line claims mitigation strategy. Chronilogix engages members before issues escalate, replacing up to 70% of routine human coaching at roughly one twentieth the cost, while improving access and member experience.",
     metrics: [
       {
         lead: "70%",
@@ -86,11 +86,11 @@ const PERSONAS: Persona[] = [
       },
       {
         lead: "1/20",
-        caption: "Of live-coaching cost",
+        caption: "Of live coaching cost",
         comparison: "Baseline → ~5% of baseline",
       },
       {
-        lead: "Pre-",
+        lead: "Pre",
         caption: "Engagement, before escalation",
         comparison: "Reactive triage → proactive outreach",
       },
@@ -102,14 +102,14 @@ const PERSONAS: Persona[] = [
     intro: "For consumer & enterprise wellness apps",
     headline: ["The engagement layer", "your platform is missing."],
     description:
-      "Embed Chronilogix as a white-labeled coach to drive longer sessions, deeper retention, and more upgrade moments, without expanding staff or building clinical IP in-house.",
+      "Embed Chronilogix as a white labeled coach to drive longer sessions, deeper retention, and more upgrade moments, without expanding staff or building clinical IP in house.",
     signals: [
       {
         label: "Longer sessions, deeper retention",
-        body: "An engagement layer designed for return visits: more upgrade moments without re-acquiring users.",
+        body: "An engagement layer designed for return visits: more upgrade moments without reacquiring users.",
       },
       {
-        label: "White-labeled by design",
+        label: "White labeled by design",
         body: "Your brand stays the surface; Chronilogix runs the coaching loop quietly underneath.",
       },
       {
@@ -121,21 +121,21 @@ const PERSONAS: Persona[] = [
   {
     key: "underserved",
     label: "Underserved & Uninsured",
-    intro: "For public-health & community-care programs",
+    intro: "For public health & community care programs",
     headline: ["Care without the gate.", "Reachable at population scale."],
     description:
-      "For people who often have no support alternative at all (the uninsured, underserved communities, and those who cannot afford repeated sessions), Chronilogix is an accessible, judgment-free entry point to behavioral support at population scale.",
+      "For people who often have no support alternative at all (the uninsured, underserved communities, and those who cannot afford repeated sessions), Chronilogix is an accessible, judgment free entry point to behavioral support at population scale.",
     signals: [
       {
         label: "An entry point where there isn't one",
         body: "For the uninsured and underserved, often the only behavioral support available at all.",
       },
       {
-        label: "Judgment-free, no scheduling, no cost barrier",
+        label: "Judgment free, no scheduling, no cost barrier",
         body: "Help that arrives in the moment, on a phone, without the friction that turns people away.",
       },
       {
-        label: "Population-scale reach",
+        label: "Population scale reach",
         body: "Picks up where staffed community programs cap out. Every member, every hour, every language.",
       },
     ],
@@ -239,7 +239,7 @@ export function WhoWeServe() {
         }}
       />
 
-      <div className="container-page py-24 md:py-28 lg:py-32">
+      <div className="container-page py-16 md:py-28 lg:py-32">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[300px_1fr] lg:gap-16 xl:grid-cols-[340px_1fr] xl:gap-24">
           <PersonaTabs
             active={active}
@@ -397,7 +397,7 @@ function PersonaTabs({
                 className="group relative flex w-full items-center py-3.5 pl-6 pr-2 text-left md:py-4"
               >
                 <span
-                  className="text-[15px] font-medium leading-snug md:text-[16px]"
+                  className="text-sm font-medium leading-snug md:text-base"
                   style={{
                     color: isActive
                       ? "rgba(15,20,25,0.95)"
@@ -630,7 +630,7 @@ function MetricColumn({
       </div>
 
       <div>
-        <p className="text-[15px] font-medium leading-snug text-ink md:text-base">
+        <p className="text-sm font-medium leading-snug text-ink md:text-base">
           {metric.caption}
         </p>
         {hasArrow ? (
@@ -714,7 +714,7 @@ function SignalRow({
       <span className="font-serif text-[15px] italic leading-[1.55] text-brand-700">
         {numeral}.
       </span>
-      <p className="text-[17px] font-medium leading-snug text-ink md:text-[18px]">
+      <p className="text-base font-medium leading-snug text-ink md:text-lg">
         {signal.label}
       </p>
       <span aria-hidden />

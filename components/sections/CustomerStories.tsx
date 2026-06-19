@@ -20,7 +20,7 @@ export function CustomerStories() {
           {/* 1 — About Dr. Resnicow (cream). flex-col + justify-center so
               content sits in the middle of the row when the row stretches
               to match the Aetna block. */}
-          <div className="flex flex-col justify-center bg-paper-warm px-8 py-14 md:px-14 md:py-16 lg:px-16 lg:py-20 xl:px-20">
+          <div className="flex flex-col justify-center bg-paper-warm px-6 py-10 md:px-14 md:py-16 lg:px-16 lg:py-20 xl:px-20">
             <p className="eyebrow">The science behind Chronilogix</p>
 
             <h2
@@ -42,7 +42,7 @@ export function CustomerStories() {
 
             <a
               href="/about"
-              className="group/link mt-8 inline-flex items-center gap-2 text-[15px] font-medium text-ink transition-colors hover:text-brand-600"
+              className="group/link mt-8 inline-flex items-center gap-2 text-sm font-medium text-ink transition-colors hover:text-brand-600"
             >
               About
               <Arrow />
@@ -51,7 +51,7 @@ export function CustomerStories() {
 
           {/* 2 — Aetna case study (white). Same flex-col + justify-center
               treatment so the two blocks render at equal heights on lg+. */}
-          <div className="flex flex-col justify-center bg-white px-8 py-14 md:px-14 md:py-16 lg:px-16 lg:py-20 xl:px-20">
+          <div className="flex flex-col justify-center bg-white px-6 py-10 md:px-14 md:py-16 lg:px-16 lg:py-20 xl:px-20">
             <p className="eyebrow">Proof in the field</p>
 
             <div className="mt-6 max-w-md">
@@ -68,7 +68,7 @@ export function CustomerStories() {
                 <span className="text-brand-600">&rarr;</span>{" "}
                 76%
               </p>
-              <p className="mt-3 text-[15px] font-medium text-ink-soft md:text-base">
+              <p className="mt-3 text-sm font-medium text-ink-soft md:text-base">
                 Member engagement, after nurse coaches were trained in Dr.
                 Resnicow&rsquo;s method. Dropouts fell by{" "}
                 <span className="text-ink">more than half</span>.
@@ -76,7 +76,7 @@ export function CustomerStories() {
 
               <a
                 href="/case-studies/aetna"
-                className="group/link mt-8 inline-flex items-center gap-2 text-[15px] font-medium text-ink transition-colors hover:text-brand-600"
+                className="group/link mt-8 inline-flex items-center gap-2 text-sm font-medium text-ink transition-colors hover:text-brand-600"
               >
                 Read the Aetna case study
                 <Arrow />
