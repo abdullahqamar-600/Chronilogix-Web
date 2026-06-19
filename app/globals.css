@@ -296,6 +296,17 @@
   .agent-shadow { animation: none !important; }
 }
 
+/* HeroV5 typing-indicator dots — three dots bounce out-of-phase so the
+   cycle reads as "the coach is composing a reply." Subtle vertical
+   lift + opacity dip so the rhythm stays gentle. */
+@keyframes v5TypingDot {
+  0%, 60%, 100% { transform: translateY(0);    opacity: 0.35; }
+  30%           { transform: translateY(-2px); opacity: 1;    }
+}
+@media (prefers-reduced-motion: reduce) {
+  [style*="v5TypingDot"] { animation: none !important; opacity: 0.6 !important; }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;

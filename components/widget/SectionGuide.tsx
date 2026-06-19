@@ -44,20 +44,22 @@ const TOC: TocItem[] = [
 ];
 const STEP_COUNT = TOC.length;
 
-// Rotating one-liners — buyer-first voice. Each line follows the same
-// shape: a concrete buyer pain, then Chronilogix as the subject doing
-// one concrete verb, anchored to a real claim from the homepage copy
-// doc (Aetna 25%, 200:1 counselor ratio, Dr. Resnicow / MI, 50–70%
-// cost reduction, the data-policy line). Five lines cover the four
-// buyer personas + the IT/compliance reviewer.
+// Rotating one-liners — rewritten for the V5 storyline.
+//
+// V5 opens with the chatbot indictment ("Most chatbots ask, answer,
+// sell, dispense. People don't change like that — Motivational
+// Interviewing is how they do.") and the four MI processes (engage,
+// focus, evoke, plan). The widget's lines lean into that MI-first
+// narrative: I/II reframe the chatbot vs MI contrast, III names the
+// method + Resnicow, IV/V hold the cost + data-policy proofs from
+// the homepage copy.
 const LINES: string[] = [
-  // Employer / HR — engagement gap, Aetna proof.
-  "Most EAPs reach single digits. Chronilogix engaged an additional 25% of employees at Aetna.",
+  // The indictment — echoes the StatementV5 heading.
+  "Most chatbots dispense answers. Chronilogix listens, reflects, and draws change out.",
+  // The method — V5 hero's attribution + the four cards' subjects.
+  "Engage, focus, evoke, plan. Chronilogix is built on Dr. Resnicow's 30 years of MI research.",
   // University — counselor ratio, immediate availability.
   "200 students per counselor; two-week waits. Chronilogix answers the moment a student reaches out.",
-  // The differentiator — Dr. Resnicow + MI. Echoes the homepage's
-  // verbatim "reflect, not lecture" line.
-  "Generic AI lectures. Chronilogix reflects, built on Dr. Resnicow's 30 years of MI research.",
   // Health plans — cost story.
   "Live coaching doesn't scale. Chronilogix delivers the outcomes at 50–70% lower cost.",
   // IT / compliance / legal — verbatim from Section 7.
@@ -75,6 +77,12 @@ const REVEAL_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 
 export function SectionGuide() {
   const [open, setOpen] = useState(true);
+  // Tracks whether the user manually toggled the widget. If they
+  // intentionally collapsed it (or expanded it inside hero/statement),
+  // we respect that choice and stop auto-toggling on scroll until they
+  // navigate to a new region. Without this flag, the auto-collapse
+  // logic below would fight the user.
+  const [userToggled, setUserToggled] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [lineIdx, setLineIdx] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -152,6 +160,58 @@ export function SectionGuide() {
     nodes.forEach((n) => observer.observe(n));
     return () => observer.disconnect();
   }, []);
+
+  // Auto-collapse when the visitor scrolls back into the hero or the
+  // statement section. The widget's purpose is to orient on the
+  // rest-of-page material; while the visitor is still in the opening
+  // two beats, the expanded panel reads as clutter over the hero
+  // composition. Collapsing to the pill keeps the affordance available
+  // without competing with the headline.
+  //
+  // Respects manual toggles within a region: if the user expanded the
+  // widget while in the hero/statement region, we leave it expanded
+  // for as long as they stay there. Crossing the region boundary
+  // clears the manual flag so the next visit auto-toggles again.
+  useEffect(() => {
+    if (!revealed) return;
+    let raf = 0;
+    // Track the region across calls so we know when the user crossed.
+    let lastRegion: "early" | "late" | null = null;
+    const update = () => {
+      raf = 0;
+      const statement = document.getElementById("statement");
+      if (!statement) return;
+      const stmtBottom = statement.getBoundingClientRect().bottom;
+      // "early" = still inside / above the statement section. The 40%-
+      // of-viewport threshold fires shortly after the visitor starts
+      // scrolling back up, not right at the seam.
+      const region: "early" | "late" =
+        stmtBottom > window.innerHeight * 0.4 ? "early" : "late";
+      // Region boundary crossed → clear any manual override so the new
+      // region gets its default behaviour.
+      if (lastRegion !== null && region !== lastRegion) {
+        setUserToggled(false);
+      }
+      lastRegion = region;
+      // Auto-toggle only when the user hasn't manually overridden.
+      if (!userToggled) {
+        if (region === "early" && open) setOpen(false);
+        else if (region === "late" && !open) setOpen(true);
+      }
+    };
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [revealed, open, userToggled]);
 
   // Line rotation. Pause on hover so the visitor can finish reading.
   useEffect(() => {
@@ -245,7 +305,10 @@ export function SectionGuide() {
               keeping the widget as compact as possible. */}
           <button
             type="button"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              setUserToggled(true);
+            }}
             aria-label="Collapse page guide"
             className="absolute right-2 top-2 z-10 flex h-[18px] w-[18px] items-center justify-center rounded-full text-ink-subtle transition-colors duration-200 hover:bg-ink/[0.06] hover:text-ink"
           >
@@ -448,7 +511,10 @@ export function SectionGuide() {
       ) : (
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            setOpen(true);
+            setUserToggled(true);
+          }}
           aria-label="Expand page guide"
           className="pointer-events-auto group flex h-9 items-center gap-2 rounded-full px-3.5 text-[12px] font-medium text-ink-soft transition-colors duration-200 hover:text-ink"
           style={{
