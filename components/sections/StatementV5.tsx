@@ -55,17 +55,19 @@ const STEPS = [
   },
 ] as const;
 
-// Reveal beat anchors in `progress` (0 → 1 across the sticky scene's
-// 180vh runway). Beat-1 holds for the first ~40%; the cross-fade
-// (bg swap + line-2 reveal) happens between 40–80%. Cards live in
-// the natural flow after the sticky and reveal on intersection.
-const T_LINE2_START = 0.4;
-const T_LINE2_END = 0.8;
+// Trigger-then-play. The cross-fade runs on its own timeline once the
+// sticky scene comes into view — no scroll-scrubbing. Beat-1 holds
+// briefly, then the bg swap and line-2 reveal play over the rest of
+// the runway. Total play duration is wall-clock, not scroll-tied.
+const PLAY_DURATION_MS = 1800;
+const T_LINE2_START = 0.3;
+const T_LINE2_END = 0.9;
 
 
 export function StatementV5() {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const [progress, setProgress] = useState(0);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const stickyRef = useRef<HTMLDivElement | null>(null);
+  const [reveal, setReveal] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -77,63 +79,82 @@ export function StatementV5() {
     return () => mq.removeEventListener("change", on);
   }, []);
 
-  // Scroll progress — 0 when the section's top reaches the viewport
-  // top, 1 when the section's bottom (minus one viewport) reaches it.
-  // rAF-throttled so we never run more than once per frame.
+  // One-shot trigger: a single scroll listener watches for the sticky
+  // scene to cross the trigger threshold (top edge above 60% of the
+  // viewport). On first crossing it locks the trigger, detaches, and
+  // kicks off a rAF-driven animation that runs 0 → 1 over
+  // PLAY_DURATION_MS. Scrolling past doesn't reverse the animation;
+  // scrolling back doesn't restart it.
   useEffect(() => {
     if (reducedMotion) {
-      setProgress(1);
+      setReveal(1);
       return;
     }
-    let ticking = false;
-    const update = () => {
-      ticking = false;
-      const el = sectionRef.current;
-      if (!el) return;
+    const el = stickyRef.current;
+    if (!el) return;
+    let cancelled = false;
+    let rafId = 0;
+    let started = false;
+
+    const startAnimation = () => {
+      if (started) return;
+      started = true;
+      window.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+      const startT = performance.now();
+      const tick = (now: number) => {
+        if (cancelled) return;
+        const t = Math.min((now - startT) / PLAY_DURATION_MS, 1);
+        setReveal(t);
+        if (t < 1) rafId = requestAnimationFrame(tick);
+      };
+      rafId = requestAnimationFrame(tick);
+    };
+
+    const check = () => {
+      if (started) return;
       const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const total = rect.height - vh;
-      if (total <= 0) {
-        setProgress(0);
-        return;
-      }
-      const scrolled = -rect.top;
-      const p = clamp01(scrolled / total);
-      setProgress(p);
+      const triggerY = window.innerHeight * 0.6;
+      // Top of the sticky scene has scrolled above the trigger line —
+      // fire once.
+      if (rect.top < triggerY) startAnimation();
     };
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      cancelled = true;
+      window.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, [reducedMotion]);
 
-  // Derived reveal values for the sticky scene.
+  // Eased reveal so the cross-fade has a natural in-out shape rather
+  // than a linear ramp — feels like a single composed beat instead of
+  // a timer winding.
+  const eased = easeInOutCubic(reveal);
   const crossFade = clamp01(
-    (progress - T_LINE2_START) / (T_LINE2_END - T_LINE2_START),
+    (eased - T_LINE2_START) / (T_LINE2_END - T_LINE2_START),
   );
   const line2Fade = crossFade;
 
   return (
     <section
       id="statement"
-      className="relative bg-white"
+      className="relative"
+      style={{ backgroundColor: "#FBF8F4" }}
       aria-label="What is Motivational Interviewing"
     >
       {/* ── Stage 1: Sticky scene (bg cross-fade + heading reveal) ──
-          A tall runway pins the visual while the user scrolls. The
-          progress value drives bg cross-fade, line-2 reveal, and CTA
-          entrance. Once the runway is exhausted, the section
-          continues with the natural cards flow below. */}
-      <div ref={sectionRef} className="relative" style={{ height: "180vh" }}>
-        <div className="sticky top-0 h-svh overflow-hidden rounded-[28px]">
+          A short runway pins the visual long enough for the user to
+          see the trigger-then-play animation, but doesn't force a
+          long scroll. Once it enters view, the cross-fade runs on
+          its own time (see PLAY_DURATION_MS) and locks. */}
+      <div ref={sectionRef} className="relative" style={{ height: "130vh" }}>
+        <div ref={stickyRef} className="sticky top-0 h-svh overflow-hidden rounded-b-[28px]">
           {/* Background plates cross-fade. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -164,25 +185,12 @@ export function StatementV5() {
             className="pointer-events-none absolute inset-x-0 top-0 h-[30%]"
             style={{
               background:
-                "linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.7) 25%, rgba(255,255,255,0.3) 60%, rgba(255,255,255,0) 100%)",
+                "linear-gradient(180deg, #FBF8F4 0%, rgba(251,248,244,0.7) 25%, rgba(251,248,244,0.3) 60%, rgba(251,248,244,0) 100%)",
             }}
           />
 
-          {/* Bottom scrim — dissolves the bottom of the image into
-              the white cards section below. Mirror of the top scrim:
-              image is full-strength at ~75% down the panel, then
-              fades to solid white at the bottom edge. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-[30%]"
-            style={{
-              background:
-                "linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.7) 75%, #FFFFFF 100%)",
-            }}
-          />
-
-          <div className="relative z-10 flex h-full flex-col">
-            <div className="container-page flex h-full w-full flex-col justify-start pt-20 md:pt-24 lg:pt-28">
+<div className="relative z-10 flex h-full flex-col">
+            <div className="container-page flex h-full w-full flex-col justify-start pt-28 md:pt-32 lg:pt-40 xl:pt-48">
               <div className="max-w-5xl">
                 {/* Heading — two halves. The first is visible from
                     the start; the second blur-fades in during the
@@ -192,19 +200,19 @@ export function StatementV5() {
                   style={{ textWrap: "balance" } as React.CSSProperties}
                 >
                   <span className="inline">
-                    Most chatbots ask, answer, sell, dispense. People
-                    don&rsquo;t change like that
+                    Most healthcare chatbots ask, answer, sell or
+                    dispense. People don&rsquo;t change like this.
                   </span>
                   <span
-                    className="inline"
+                    className="mt-3 block md:mt-4"
                     style={{
                       opacity: line2Fade,
                       filter: `blur(${(1 - line2Fade) * 6}px)`,
                       transition: "filter 80ms linear",
                     }}
                   >
-                    {" "}
-                    &mdash; Motivational Interviewing is how they do.
+                    Motivational Interviewing is designed to change
+                    people&rsquo;s behaviours.
                   </span>
                 </h2>
 
@@ -232,7 +240,7 @@ export function StatementV5() {
           Once the sticky runway ends, the body paragraph introduces
           the MI vocabulary, then the 4 process cards reveal on
           intersection in their original portrait aspect. */}
-      <div className="container-page relative z-10 pb-24 pt-16 md:pb-28 md:pt-20 lg:pb-32 lg:pt-24">
+      <div className="container-page relative z-10 pb-16 pt-10 md:pb-28 md:pt-20 lg:pb-32 lg:pt-24">
         {/* Subtext — sits directly above the 4 blocks. Names the four
             processes + OARS so the cards below land as recognised
             terms rather than fresh ones. */}
@@ -242,7 +250,7 @@ export function StatementV5() {
           <span className="text-ink">draws motivation out</span> — never
           installs it. It moves through four processes —{" "}
           <span className="text-ink">engage, focus, evoke, plan</span> — and
-          four micro-skills called{" "}
+          four micro skills called{" "}
           <span className="text-ink">OARS</span>: open questions,
           affirmations, reflective listening, summaries. Reflective listening
           is the workhorse. The density of a member&rsquo;s own{" "}
@@ -256,10 +264,6 @@ export function StatementV5() {
           ))}
         </div>
 
-        <p className="mt-16 max-w-3xl font-serif text-row font-normal leading-[1.2] text-ink md:mt-20">
-          Proven across more than 200 randomized controlled trials.
-          Delivered faithfully not by clever prompting — by architecture.
-        </p>
       </div>
     </section>
   );
@@ -322,13 +326,13 @@ function CardOnScroll({
             "opacity 600ms cubic-bezier(0.22, 0.61, 0.36, 1) 200ms, transform 600ms cubic-bezier(0.22, 0.61, 0.36, 1) 200ms",
         }}
       >
-        <div className="flex items-center gap-2.5">
-          <Icon className="h-[18px] w-[18px] text-brand-600" />
-          <p className="text-[15px] font-medium leading-none text-ink md:text-[16px]">
+        <div className="flex items-center gap-3">
+          <Icon className="h-[22px] w-[22px] text-brand-600 md:h-[24px] md:w-[24px]" />
+          <p className="text-row font-serif font-normal leading-none text-ink">
             {step.label}
           </p>
         </div>
-        <p className="mt-2.5 max-w-[36ch] text-[14.5px] leading-[1.55] text-ink-muted md:text-[15px]">
+        <p className="mt-3 max-w-[36ch] body-quiet">
           {step.title}
         </p>
       </div>
@@ -678,4 +682,8 @@ function Arrow() {
 
 function clamp01(n: number) {
   return Math.min(Math.max(n, 0), 1);
+}
+
+function easeInOutCubic(t: number) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
