@@ -11,6 +11,10 @@ type Fact = {
   body: React.ReactNode;
   /** Source attribution */
   source: string;
+  /** Optional downstream chain — renders as a small vertical waterfall
+   *  below the body. Used to show how a single number (e.g. unfilled
+   *  prescriptions) propagates into downstream cost. */
+  waterfall?: string[];
 };
 
 const FACTS: Fact[] = [
@@ -65,10 +69,34 @@ const FACTS: Fact[] = [
     ),
     source: "SAMHSA · National Survey on Drug Use and Health",
   },
+  // Post-discharge access gap — the highest-stakes handoff in mental
+  // health. The 70% never-engaged figure is the engagement collapse; the
+  // 300×/200× multipliers are why that collapse is a clinical emergency
+  // when no follow-up mechanism exists.
+  {
+    lead: "70%",
+    body: (
+      <>
+        of patients discharged from the ER after a suicide attempt{" "}
+        <em className="font-normal not-italic text-ink">
+          never begin outpatient mental health treatment
+        </em>
+        . Suicide risk runs{" "}
+        <em className="font-normal not-italic text-ink">300× higher</em> in
+        the first week and{" "}
+        <em className="font-normal not-italic text-ink">200× higher</em>{" "}
+        across the first month for those left without follow-up.
+      </>
+    ),
+    source: "JAMA Psychiatry · post-discharge cohort studies",
+  },
   // Unfilled prescriptions — names the dollar cost of the engagement gap
   // and sets up the ambivalence frame the rest of the page resolves.
   // Mechanism line ("not forgetting") is lifted from the whitepaper's
-  // medication adherence section.
+  // medication adherence section. The waterfall list traces what the
+  // dollar number actually looks like downstream: medication skipped →
+  // appointment missed → quiet escalation → ER visit. Placeholder counts
+  // pending Steven's data pull.
   {
     lead: "$300B",
     body: (
@@ -80,9 +108,15 @@ const FACTS: Fact[] = [
       </>
     ),
     source: "Annals of Internal Medicine · WHO",
+    waterfall: [
+      "Prescription unfilled. Ambivalence wins quietly",
+      "Follow up appointment skipped or rescheduled out",
+      "Symptoms drift, the gap widens between visits",
+      "Help arrives only after escalation, often in the ER",
+    ],
   },
   {
-    lead: "2–6",
+    lead: "2 to 6",
     unit: "wks",
     body: (
       <>
@@ -297,6 +331,35 @@ function FactPanel({ index, fact }: { index: number; fact: Fact }) {
       <p className="reveal-row mt-5 max-w-lg body-prose [transition-delay:320ms]">
         {fact.body}
       </p>
+
+      {/* Waterfall — only rendered when a fact carries downstream chain
+          data. Each step lifts in a beat later so the cascade reads as
+          a sequence, not a static list. A hairline runs through the
+          left number column connecting the steps so the cascade reads
+          as one chain rather than four discrete bullets. */}
+      {fact.waterfall ? (
+        <ol className="reveal-row relative mt-6 max-w-lg space-y-3 [transition-delay:420ms]">
+          {/* Vertical chain hairline — sits behind the numbers,
+              tracing the downstream flow. */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute left-[7px] top-[12px] bottom-[12px] w-px bg-ink/12"
+          />
+          {fact.waterfall.map((step, i) => (
+            <li
+              key={step}
+              className="relative flex gap-3 text-[15px] leading-snug text-ink-soft md:text-base"
+            >
+              <span className="relative z-10 w-5 shrink-0 pt-[2px] font-mono text-[11px] font-medium tabular-nums text-ink-subtle">
+                <span className="inline-block bg-paper-warm px-px">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+              </span>
+              <span className="flex-1">{step}</span>
+            </li>
+          ))}
+        </ol>
+      ) : null}
 
       {/* Source */}
       <p className="reveal-row source-line mt-5 [transition-delay:520ms]">

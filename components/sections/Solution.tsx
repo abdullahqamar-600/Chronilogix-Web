@@ -28,7 +28,7 @@ const AGENTS: Agent[] = [
   {
     name: "Roni AI",
     condition: "Diabetes",
-    body: "Daily coaching for the habits that move A1C. Built on motivational interviewing.",
+    body: "Adaptive coaching for the food, activity, and medication choices that happen between clinic visits. Built around the member, not a template.",
     // Topic pills speak in member-voice moments, not clinical metrics —
     // mirrors how Omada / Livongo / Welldoc actually market between-visit
     // coaching, and the MI literature's emphasis on small wins, barriers,
@@ -53,7 +53,7 @@ const AGENTS: Agent[] = [
   {
     name: "Millie AI",
     condition: "Mental Health",
-    body: "Therapeutic coaching for the moments between appointments. 988 escalation built in.",
+    body: "Reflective coaching for the 2 AM spiral and the long stretch between therapy sessions. Therapeutically informed, never prescriptive.",
     // Same moment-language framing as Roni — the kinds of things a
     // member actually opens the app for between therapy sessions. The
     // five together map the full surface: anticipatory anxiety, rumination,
@@ -114,8 +114,10 @@ export function Solution() {
     >
       <div className="container-page">
         <p className="eyebrow">The agents</p>
-        <h2 className="mt-4 max-w-4xl text-display font-serif font-normal text-ink">
-          Two contextually engineered AI coaches.
+        <h2 className="mt-4 text-hero font-serif font-normal text-ink">
+          Two contextually engineered
+          <br />
+          AI coaches.
           <br />
           <span className="text-ink-muted">Not just conversational AIs.</span>
         </h2>
@@ -130,7 +132,7 @@ export function Solution() {
             not added at the language layer. */}
         <p className="mt-6 max-w-2xl body-prose md:mt-7">
           Conversational AI replies. Contextually engineered AI{" "}
-          <span className="text-ink">reasons</span> — against the
+          <span className="text-ink">reasons</span>, against the
           member&rsquo;s prior sessions, their cultural context, and an MI
           fidelity rubric. The result is engagement that{" "}
           <span className="text-ink">compounds</span>, instead of
@@ -200,8 +202,12 @@ export function Solution() {
             sits in the care continuum. Sits between the agent cards
             (who the coaches are) and SessionWalkthrough (how a single
             session is run), so the narrative arc reads:
-            two coaches → three places they show up → here's a session. */}
-        <div className="mt-12 md:mt-28">
+            two coaches → three places they show up → here's a session.
+
+            Extra top margin separates the Levels intro from the agent
+            cards above; the intro itself hugs its three rows tightly
+            (see mt-6 inside LevelsOfCare). */}
+        <div className="mt-24 md:mt-44">
           <LevelsOfCare />
         </div>
 
@@ -326,6 +332,27 @@ function AgentCard({ agent }: { agent: Agent }) {
         >
           {agent.body}
         </p>
+
+        {/* Mobile-only topic tags — the orbit chips are hidden below
+            md so the avatar can read clean; topics surface here as a
+            simple wrap row so members still see what the coach
+            handles. */}
+        <ul
+          className="mt-4 flex flex-wrap gap-1.5 md:hidden"
+          style={{
+            opacity: inView ? 1 : 0,
+            transition: "opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1) 460ms",
+          }}
+        >
+          {agent.topics.slice(0, 4).map((topic) => (
+            <li
+              key={topic}
+              className="inline-flex items-center rounded-full border border-ink/8 bg-white/80 px-2.5 py-1 text-[11.5px] text-ink-soft"
+            >
+              {topic}
+            </li>
+          ))}
+        </ul>
       </div>
     </article>
   );
@@ -342,9 +369,9 @@ function AgentOrbit({ agent, active }: { agent: Agent; active: boolean }) {
   // The asymmetry is intentional — three angles that don't form a tidy
   // triangle so the orbit reads as motion rather than a fixed pattern.
   const chipPolars: Array<{ angle: number; radius: number }> = [
-    { angle: 305, radius: 38 }, // upper-left, outer ring
-    { angle: 80, radius: 34 }, // middle-right, middle ring
-    { angle: 200, radius: 40 }, // lower-left, outer ring
+    { angle: 305, radius: 47 }, // upper-left, outer ring
+    { angle: 80, radius: 44 }, // middle-right, middle ring
+    { angle: 200, radius: 48 }, // lower-left, outer ring
   ];
 
   return (
@@ -368,7 +395,9 @@ function AgentOrbit({ agent, active }: { agent: Agent; active: boolean }) {
       <CoachAvatar agent={agent} active={active} />
 
       {/* Floating topic chips — parked at polar coords so each one sits
-          on (or near) one of the orbit rings. */}
+          on (or near) one of the orbit rings. Hidden on mobile where
+          they'd crowd the avatar; the card body renders the topics as
+          a quiet inline tag row instead (see AgentCard). */}
       {visibleTopics.map((topic, i) => {
         const { angle, radius } = chipPolars[i];
         const rad = ((angle - 90) * Math.PI) / 180; // 12 o'clock = -90°
@@ -377,7 +406,7 @@ function AgentOrbit({ agent, active }: { agent: Agent; active: boolean }) {
         return (
           <span
             key={topic}
-            className="absolute inline-flex -translate-x-1/2 -translate-y-1/2 items-center whitespace-nowrap rounded-full border px-3 py-1 text-[12px] font-medium text-ink"
+            className="absolute z-20 hidden -translate-x-1/2 -translate-y-1/2 items-center whitespace-nowrap rounded-full border px-3 py-1 text-[12px] font-medium text-ink md:inline-flex"
             style={{
               left: `${x}%`,
               top: `${y}%`,

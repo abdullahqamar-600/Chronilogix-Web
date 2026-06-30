@@ -21,12 +21,12 @@ const FEELINGS: Feeling[] = [
   {
     lead: "Connected to what actually matters to you.",
     body:
-      "Roni and Millie don't optimize for metrics. They help members reconnect with their own reasons for change — family, health, independence, purpose, the feeling of waking up and recognizing yourself. When the reason is yours, the motivation holds.",
+      "Roni and Millie don't optimize for metrics. They help members reconnect with their own reasons for change. Family, health, independence, purpose, the feeling of waking up and recognizing yourself. When the reason is yours, the motivation holds.",
   },
   {
     lead: "Safe enough to be honest.",
     body:
-      "For many members, this is the first time they have spoken honestly about their struggle. Not because other care wasn't available — but because this felt different. Judgment-free isn't a value statement. It's how the conversation is engineered.",
+      "For many members, this is the first time they have spoken honestly about their struggle. Not because other care wasn't available, but because this felt different. Judgment free isn't a value statement. It's how the conversation is engineered.",
   },
   {
     lead: "Present when nobody else is.",
@@ -59,8 +59,8 @@ export function HiwFeel() {
               There is something that happens when a person realizes they
               will not be judged. When the coach doesn&rsquo;t react to
               the thing they&rsquo;ve been afraid to say. When the
-              response is a question — a genuine, curious, open question
-              — rather than a correction or a plan.
+              response is a question, a genuine, curious, open question,
+              rather than a correction or a plan.
             </p>
             <p>
               Chronilogix is designed to create that experience,

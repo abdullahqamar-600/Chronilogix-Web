@@ -15,19 +15,19 @@ const PROFILES: Profile[] = [
   {
     key: "cant-afford",
     label: "Can't afford care",
-    intro: "Cost-barrier members",
-    headline: ["Clinical-quality coaching.", "Without the copay."],
+    intro: "Cost barrier members",
+    headline: ["Clinical quality coaching.", "Without the copay."],
     description:
-      "High deductibles and out-of-pocket costs turn behavioral health into a luxury. Coaching, accountability support, and the behavioral reinforcement that actually sustains long-term change is rarely covered by insurance. Chronilogix delivers clinical-quality coaching at a fraction of the cost of live care — with no copay and no scheduling barrier.",
+      "High deductibles and out of pocket costs turn behavioral health into a luxury. Coaching, accountability support, and the behavioral reinforcement that actually sustains long term change is rarely covered by insurance. Chronilogix delivers clinical quality coaching at a fraction of the cost of live care, with no copay and no scheduling barrier.",
   },
   {
     key: "off-hours",
-    label: "Off-hours workers",
+    label: "Off hours workers",
     intro: "Night shift, first responders, hospitality",
     headline: ["Care at 3 AM.", "Not just 3 PM."],
     description:
-      "Night-shift nurses. First responders. Transportation and manufacturing workers. Hospitality staff. These are people who need support at 3 AM — not 3 PM. The traditional system was not built for their schedule. Chronilogix was.",
-    pull: { lead: "24/7", caption: "Available when shift work is" },
+      "Night shift nurses. First responders. Transportation and manufacturing workers. Hospitality staff. These are people who need support at 3 AM, not 3 PM. The traditional system was not built for their schedule. Chronilogix was.",
+    pull: { lead: "Anytime", caption: "Available when shift work is" },
   },
   {
     key: "wont-talk",
@@ -35,15 +35,15 @@ const PROFILES: Profile[] = [
     intro: "Members who avoid live providers",
     headline: ["Honest where", "live care can't reach."],
     description:
-      "Fear of judgment. Cultural stigma. The feeling that a stranger across a desk cannot be trusted with the most honest version of your struggle. These are real barriers that turn millions of people away from care entirely. In a non-judgmental AI environment, many people are more honest than they have ever been with a live provider. That honesty is where change begins.",
+      "Fear of judgment. Cultural stigma. The feeling that a stranger across a desk cannot be trusted with the most honest version of your struggle. These are real barriers that turn millions of people away from care entirely. In a non judgmental AI environment, many people are more honest than they have ever been with a live provider. That honesty is where change begins.",
   },
   {
     key: "fallen-through",
     label: "Fallen through the cracks",
-    intro: "Post-discharge & post-therapy members",
+    intro: "Post discharge and post therapy members",
     headline: ["Present long after", "the clinic goes silent."],
     description:
-      "After discharge. After the therapy course ends. After the motivation from the diagnosis scare fades. These are the moments when traditional care goes silent. Chronilogix stays present — not as a crisis line, but as the consistent coaching voice that remains long after the clinical intervention has closed.",
+      "After discharge. After the therapy course ends. After the motivation from the diagnosis scare fades. These are the moments when traditional care goes silent. Chronilogix stays present. Not as a crisis line, but as the consistent coaching voice that remains long after the clinical intervention has closed.",
   },
   {
     key: "underserved",
@@ -51,8 +51,8 @@ const PROFILES: Profile[] = [
     intro: "Members standard programs don't reach",
     headline: ["Standard programs miss.", "Chronilogix adapts."],
     description:
-      "Hispanic men face a 64% higher rate of diabetes, yet represent just 2% of participants in the CDC's National Diabetes Prevention Program. Standard coaching fails these members linguistically, culturally, and financially. Chronilogix's MI-based approach is built to adapt to cultural context, dietary norms, literacy levels, and behavioral readiness — not just translate the same program into another language.",
-    pull: { lead: "64%", caption: "Higher diabetes rate · Hispanic men" },
+      "Hispanic men face a 64% higher rate of diabetes, yet represent just 2% of participants in the CDC's National Diabetes Prevention Program. Standard coaching fails these members linguistically, culturally, and financially. Chronilogix's MI based approach is built to adapt to cultural context, dietary norms, literacy levels, and behavioral readiness, not just translate the same program into another language.",
+    pull: { lead: "64%", caption: "Higher diabetes rate for Hispanic men" },
   },
 ];
 
@@ -158,9 +158,9 @@ export function HiwAudience() {
             <span className="text-ink-muted">standard programs keep missing.</span>
           </h3>
           <p className="mt-5 max-w-[58ch] body-prose">
-            Chronilogix wasn&rsquo;t designed for the already-engaged
+            Chronilogix wasn&rsquo;t designed for the already engaged
             wellness consumer. It was built for the members traditional
-            care fails to reach — and for the organizations trying to
+            care fails to reach, and for the organizations trying to
             reach them.
           </p>
         </div>
@@ -341,7 +341,7 @@ function ProfilePanel({
       {/* Tiny intro line above the headline — matches the home persona
           pattern's "for [audience]" framing. */}
       <p
-        className="text-[12px] font-medium uppercase tracking-[0.16em] text-brand-700"
+        className="text-[13px] font-medium tracking-tight text-brand-700"
         style={{
           opacity: 0,
           animation: reducedMotion

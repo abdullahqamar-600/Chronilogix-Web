@@ -40,7 +40,7 @@ const PERSONAS: Persona[] = [
       {
         lead: "~50%",
         caption: "Lower cost than live coaching",
-        comparison: "$60–70 PMPM → $20–30 PMPM",
+        comparison: "$60 to $70 PMPM → $20 to $30 PMPM",
       },
       {
         lead: "24/7",
@@ -545,7 +545,7 @@ function MetricsStrip({
   const range =
     metrics.length === 1
       ? ROMAN[0]
-      : `${ROMAN[0]} — ${ROMAN[metrics.length - 1]}`;
+      : `${ROMAN[0]} to ${ROMAN[metrics.length - 1]}`;
   return (
     <div className="mt-14 md:mt-16">
       <SectionLabel
@@ -661,7 +661,7 @@ function SignalsList({
   const range =
     signals.length === 1
       ? ROMAN[0]
-      : `${ROMAN[0]} — ${ROMAN[signals.length - 1]}`;
+      : `${ROMAN[0]} to ${ROMAN[signals.length - 1]}`;
   return (
     <div className="mt-14 md:mt-16">
       <SectionLabel

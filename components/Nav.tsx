@@ -95,7 +95,7 @@ const RESOURCES_MENU: MegaMenu = {
     articles: [
       {
         href: "/resources/blog/rooney-ai-clinical-coaching",
-        title: "Inside Rooney AI: clinical-grade coaching at scale",
+        title: "Inside Rooney AI: clinical grade coaching at scale",
         tag: "Insight",
         readTime: "5 min read",
         gradient: "from-[#1F2937] via-[#2C3D55] to-[#3F5572]",
@@ -176,18 +176,17 @@ export function Nav() {
                 onMouseEnter={() => hasMenu && setOpenMenu(link.label)}
                 onMouseLeave={() => hasMenu && setOpenMenu(null)}
               >
-                <a
-                  href={link.href}
-                  aria-haspopup={hasMenu || undefined}
-                  aria-expanded={hasMenu ? isOpen : undefined}
-                  className={`group/navlink relative inline-flex items-center gap-1 text-sm transition-colors duration-200 ease-out-quart motion-reduce:transition-none ${
-                    solid
-                      ? "text-ink-soft hover:text-ink"
-                      : "text-white/85 hover:text-white"
-                  }`}
-                >
-                  {link.label}
-                  {hasMenu && (
+                {hasMenu ? (
+                  <span
+                    aria-haspopup="true"
+                    aria-expanded={isOpen}
+                    className={`group/navlink relative inline-flex cursor-default items-center gap-1 bg-transparent p-0 text-sm transition-colors duration-200 ease-out-quart motion-reduce:transition-none ${
+                      solid
+                        ? "text-ink-soft hover:text-ink"
+                        : "text-white/85 hover:text-white"
+                    }`}
+                  >
+                    {link.label}
                     <svg
                       aria-hidden
                       viewBox="0 0 12 12"
@@ -204,14 +203,31 @@ export function Nav() {
                         strokeLinejoin="round"
                       />
                     </svg>
-                  )}
-                  <span
-                    aria-hidden
-                    className={`absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 transition-transform duration-300 ease-out-quart group-hover/navlink:scale-x-100 motion-reduce:hidden ${
-                      solid ? "bg-ink" : "bg-white"
+                    <span
+                      aria-hidden
+                      className={`absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 transition-transform duration-300 ease-out-quart group-hover/navlink:scale-x-100 motion-reduce:hidden ${
+                        solid ? "bg-ink" : "bg-white"
+                      }`}
+                    />
+                  </span>
+                ) : (
+                  <a
+                    href={link.href}
+                    className={`group/navlink relative inline-flex items-center gap-1 text-sm transition-colors duration-200 ease-out-quart motion-reduce:transition-none ${
+                      solid
+                        ? "text-ink-soft hover:text-ink"
+                        : "text-white/85 hover:text-white"
                     }`}
-                  />
-                </a>
+                  >
+                    {link.label}
+                    <span
+                      aria-hidden
+                      className={`absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 transition-transform duration-300 ease-out-quart group-hover/navlink:scale-x-100 motion-reduce:hidden ${
+                        solid ? "bg-ink" : "bg-white"
+                      }`}
+                    />
+                  </a>
+                )}
 
                 {hasMenu && (
                   <div
@@ -340,7 +356,7 @@ export function Nav() {
                       <div className="ml-3 flex flex-col gap-5 border-l border-ink/10 pl-4">
                         {link.megaMenu!.groups.map((group) => (
                           <div key={group.heading} className="flex flex-col gap-2">
-                            <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-soft/70">
+                            <div className="text-[12px] font-medium tracking-tight text-ink-soft/70">
                               {group.heading}
                             </div>
                             {group.items.map((item) => (
@@ -380,7 +396,7 @@ function MegaPanel({ menu }: { menu: MegaMenu }) {
       <div className="grid grid-cols-[1fr_1.4fr] gap-10">
         {menu.groups.map((group) => (
           <div key={group.heading} className="flex flex-col gap-5">
-            <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-ink-soft/70">
+            <div className="text-[12px] font-medium tracking-tight text-ink-soft/70">
               {group.heading}
             </div>
             <ul className="flex flex-col gap-1">
@@ -409,7 +425,7 @@ function MegaPanel({ menu }: { menu: MegaMenu }) {
         ))}
 
         <div className="flex flex-col gap-5">
-          <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-ink-soft/70">
+          <div className="text-[12px] font-medium tracking-tight text-ink-soft/70">
             {menu.featured.heading}
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -431,7 +447,7 @@ function MegaPanel({ menu }: { menu: MegaMenu }) {
                     }}
                   />
                   {article.eyebrow && (
-                    <div className="absolute left-4 top-4 text-[11px] font-medium uppercase tracking-[0.14em] text-white/90">
+                    <div className="absolute left-4 top-4 text-[12px] font-medium tracking-tight text-white/90">
                       {article.eyebrow}
                     </div>
                   )}
@@ -445,7 +461,7 @@ function MegaPanel({ menu }: { menu: MegaMenu }) {
                   </div>
                   <div className="mt-1.5 flex items-center gap-2 text-xs text-ink-soft">
                     <span>{article.tag}</span>
-                    <span className="h-1 w-1 rounded-full bg-ink-soft/40" />
+                    <span aria-hidden className="block h-3 w-px bg-ink-soft/30" />
                     <span>{article.readTime}</span>
                   </div>
                 </div>

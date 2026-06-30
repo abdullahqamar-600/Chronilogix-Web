@@ -63,7 +63,7 @@ export function HiwIntegration() {
           </h2>
           <p className="mt-5 max-w-[62ch] body-quiet">
             Four ways Chronilogix lands inside an existing care delivery
-            model — on infrastructure that meets you where compliance
+            model, on infrastructure that meets you where compliance
             demands it.
           </p>
         </div>
@@ -93,7 +93,7 @@ export function HiwIntegration() {
                     {path.index}
                   </span>
                 </div>
-                <p className="mt-5 text-[12px] font-medium uppercase tracking-[0.16em] text-ink-muted">
+                <p className="mt-5 text-[13px] font-medium tracking-tight text-ink-muted">
                   {path.label}
                 </p>
                 <h3
@@ -115,13 +115,12 @@ export function HiwIntegration() {
             ground-floor rather than another path. */}
         <div className="mt-16 border-t border-ink/10 pt-7 md:mt-20">
           <p className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
-            <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-ink-muted">
+            <span className="text-[12px] font-medium tracking-tight text-ink-muted">
               Infrastructure
             </span>
             <span className="text-[14.5px] leading-relaxed text-ink-soft md:text-[15px]">
-              Stripe-powered consumer-direct billing.
-              <span className="mx-2 text-ink/25">·</span>
-              HIPAA-compliant by default.
+              Stripe powered consumer direct billing. HIPAA compliant by
+              default.
             </span>
           </p>
         </div>
@@ -220,7 +219,7 @@ const PATHS: (Path & { heading: string })[] = [
     heading: "Direct PMPM contracts with health plans.",
     body: (
       <>
-        Member-month pricing inside an existing plan footprint — without
+        Member month pricing inside an existing plan footprint, without
         the plan having to build clinical IP from scratch.
       </>
     ),
@@ -233,7 +232,7 @@ const PATHS: (Path & { heading: string })[] = [
     body: (
       <>
         Drops into a benefits portfolio alongside EAP, telehealth, and
-        wellness vendors — reachable by every covered employee without
+        wellness vendors, reachable by every covered employee without
         a separate enrollment flow.
       </>
     ),
@@ -246,7 +245,7 @@ const PATHS: (Path & { heading: string })[] = [
     body: (
       <>
         Lives as a coaching layer inside a partner&rsquo;s existing app
-        experience — same surface the member already opens, with
+        experience, same surface the member already opens, with
         Chronilogix doing the clinical work underneath.
       </>
     ),
@@ -255,11 +254,11 @@ const PATHS: (Path & { heading: string })[] = [
   {
     index: "04",
     label: "Chronic care vendors",
-    heading: "Co-deployed with supplies and devices.",
+    heading: "Co deployed with supplies and devices.",
     body: (
       <>
         Pairs with diabetes supply programs, glucose monitors, and other
-        chronic-care vendors so the behavioral layer ships in the same
+        chronic care vendors so the behavioral layer ships in the same
         box as the clinical hardware.
       </>
     ),

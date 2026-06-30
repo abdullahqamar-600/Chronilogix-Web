@@ -85,7 +85,7 @@ function MealsIllustration({ className }: { className?: string }) {
     <div className={`flex w-full justify-center ${className ?? ""}`}>
       <ToastSurface className="flex-col gap-1 px-5 py-3.5">
         <span className="text-[10px] font-medium tracking-[-0.005em] text-ink-muted">
-          Lunch · today
+          Lunch, today
         </span>
         <div className="flex items-baseline gap-1.5">
           <span className="font-serif text-[34px] leading-none tabular-nums text-ink">
@@ -156,7 +156,7 @@ function MomentumIllustration({ className }: { className?: string }) {
             className="text-[10px] font-medium tabular-nums"
             style={{ color: BRAND_DEEP }}
           >
-            5 / 7
+            5 of 7
           </span>
         </div>
         <div className="flex items-end justify-between gap-1.5">
@@ -196,7 +196,7 @@ export const RONI_CAPABILITIES: Capability[] = [
   },
   {
     heading: "Plans the meals",
-    body: "Carbohydrate awareness — guidance, never lectures.",
+    body: "Carbohydrate awareness. Guidance, never lectures.",
     Illustration: MealsIllustration,
   },
   {

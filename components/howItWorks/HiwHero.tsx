@@ -18,7 +18,7 @@ const HEADLINE_LINES: { text: string; tone: "bright" | "muted" }[] = [
 // member. "Between appointments" is the spine of the value claim and
 // echoes through the rest of the page.
 const SUBHEADLINE =
-  "Daily coaching for the moments between appointments — when habits slip, motivation fades, and no one else is around.";
+  "For the moments between appointments, when habits slip, motivation fades, and no one else is around.";
 
 const REVEAL_DURATION_MS = 2400;
 const REVEAL_WINDOW_RATIO = 4;
@@ -281,7 +281,7 @@ function FloatingAvatar({
   return (
     <a
       href={agent.ctaHref}
-      aria-label={`Meet ${agent.name} AI — ${agent.role}`}
+      aria-label={`Meet ${agent.name} AI, ${agent.role}`}
       className="group/agent flex flex-col items-center"
     >
       {/* Identity card — the avatar and its role pill move together as a
@@ -326,7 +326,7 @@ function FloatingAvatar({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={agent.avatar}
-              alt={`${agent.name} — ${agent.role}`}
+              alt={`${agent.name}, ${agent.role}`}
               className="h-full w-full object-cover transition-transform duration-500 ease-out motion-reduce:transition-none group-hover/agent:scale-[1.04]"
               draggable={false}
             />

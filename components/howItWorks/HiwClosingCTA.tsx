@@ -40,7 +40,7 @@ export function HiwClosingCTA() {
 
         <div className="reveal-row mx-auto mt-10 max-w-[58ch] space-y-5 body-prose [transition-delay:280ms]">
           <p>
-            Chronilogix was built for that gap — so that every member,
+            Chronilogix was built for that gap, so that every member,
             regardless of insurance status, work schedule, cultural
             background, or willingness to walk into a clinic, has access
             to a coaching relationship grounded in thirty years of

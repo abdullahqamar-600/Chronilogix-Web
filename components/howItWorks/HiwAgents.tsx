@@ -33,16 +33,16 @@ export function HiwAgents() {
             <span className="text-ink-muted">For different needs.</span>
           </h2>
           <p className="mt-7 max-w-[68ch] body-prose">
-            Chronic disease and mental health rarely travel alone — yet
+            Chronic disease and mental health rarely travel alone, yet
             most AI health tools are built as if they do. One generalist
             model trained on everything from step counts to grief, doing
             nothing particularly well.
           </p>
           <p className="mt-5 max-w-[68ch] body-prose">
             Chronilogix made a different choice. Two specialized coaches,
-            each purpose-built for a distinct clinical domain, with its own
+            each purpose built for a distinct clinical domain, with its own
             voice, depth, and expertise. Both live inside one app,
-            grounded in the same evidence-based behavioral science — and
+            grounded in the same evidence based behavioral science, and
             members can work with one or both, as life requires.
           </p>
         </div>

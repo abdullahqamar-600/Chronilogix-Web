@@ -264,11 +264,11 @@ function WhiteLabelVisual({ active }: { active: boolean }) {
                 {brand.name}
               </span>
             </div>
-            {/* The little tab dots — three quiet circles to imply nav.   */}
-            <span aria-hidden className="flex items-center gap-1.5">
-              <span className="block h-1.5 w-1.5 rounded-full bg-ink/15" />
-              <span className="block h-1.5 w-1.5 rounded-full bg-ink/15" />
-              <span className="block h-1.5 w-1.5 rounded-full bg-ink/15" />
+            {/* The little tab marks — three quiet vertical bars to imply nav. */}
+            <span aria-hidden className="flex items-end gap-[3px]">
+              <span className="block h-3 w-[2px] rounded-full bg-ink/15" />
+              <span className="block h-3 w-[2px] rounded-full bg-ink/15" />
+              <span className="block h-3 w-[2px] rounded-full bg-ink/15" />
             </span>
           </div>
 
@@ -319,7 +319,7 @@ function WhiteLabelVisual({ active }: { active: boolean }) {
           {/* Footer attribution — the only place Chronilogix is named.
               Reads quiet, the way a "powered by" line should. */}
           <div className="relative flex items-center justify-between border-t border-ink/[0.06] px-5 py-2.5">
-            <span className="text-[10.5px] font-medium uppercase tracking-[0.14em] text-ink-muted">
+            <span className="text-[11.5px] font-medium tracking-tight text-ink-muted">
               Powered by
             </span>
             <span className="font-serif text-[13px] tracking-tight text-ink">
@@ -420,8 +420,8 @@ function CoverageVisual({ active }: { active: boolean }) {
             opacity: 0,
           }}
         >
-          <p className="text-[10.5px] font-medium uppercase tracking-[0.18em] text-brand-700">
-            Active · 02
+          <p className="text-[12px] font-medium tracking-tight text-brand-700">
+            Active, 02
           </p>
           <span aria-hidden className="h-px flex-1 ml-3 self-center bg-ink/12" />
         </div>
@@ -447,8 +447,8 @@ function CoverageVisual({ active }: { active: boolean }) {
             opacity: 0,
           }}
         >
-          <p className="text-[10.5px] font-medium uppercase tracking-[0.18em] text-ink-muted">
-            In development · 04
+          <p className="text-[12px] font-medium tracking-tight text-ink-muted">
+            In development, 04
           </p>
           <span aria-hidden className="h-px flex-1 ml-3 self-center bg-ink/12" />
         </div>
@@ -523,7 +523,7 @@ function ModuleTile({
         {isActive ? (
           <span
             aria-hidden
-            className="ml-auto mt-1 block h-1.5 w-1.5 shrink-0 rounded-full"
+            className="ml-auto mt-1 block h-3 w-[2px] shrink-0 rounded-full"
             style={{
               backgroundColor: "#34C759",
               boxShadow: "0 0 0 2px rgba(52, 199, 89, 0.18)",
@@ -532,7 +532,7 @@ function ModuleTile({
         ) : (
           <span
             aria-hidden
-            className="ml-auto mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-ink-muted/40"
+            className="ml-auto mt-1 block h-3 w-[2px] shrink-0 rounded-full bg-ink-muted/40"
             style={{
               animation: "knobPulse 2400ms cubic-bezier(0.22, 0.61, 0.36, 1) infinite",
               animationPlayState: playState,
@@ -656,13 +656,13 @@ function ScaleIcon({ className }: { className?: string }) {
 
 const ROWS: Row[] = [
   {
-    eyebrow: "01. White-label",
+    eyebrow: "01. White label",
     heading: "Same coach. Any brand.",
     body: (
       <>
         Chronilogix ships as a branded experience inside a partner&rsquo;s
         app, employer benefit, or wellness platform. Your chrome on top;
-        the same MI-trained coach underneath. The coaching layer without
+        the same MI trained coach underneath. The coaching layer without
         building clinical IP from scratch.
       </>
     ),
@@ -674,8 +674,8 @@ const ROWS: Row[] = [
     body: (
       <>
         Roni covers diabetes and chronic care. Millie covers anxiety,
-        stress, and mood. Four additional modules are in development —
-        including a diabetic retinopathy screener — and ship into the
+        stress, and mood. Four additional modules are in development,
+        including a diabetic retinopathy screener, and ship into the
         same coaching surface members already use.
       </>
     ),

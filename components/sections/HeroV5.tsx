@@ -135,7 +135,7 @@ export function HeroV5() {
   return (
     <section
       id="hero"
-      aria-label="Chronilogix — AI coaching for mental health and chronic care"
+      aria-label="Chronilogix, AI coaching for mental health and chronic care"
       className="relative flex flex-col overflow-hidden rounded-t-[28px]"
       style={{
         // Locks the hero into the user's viewport. min/max guard against
@@ -284,12 +284,16 @@ export function HeroV5() {
               <Arrow />
             </a>
 
-            <dl className="mt-4 flex flex-wrap items-center justify-center gap-1.5 text-[10.5px] text-ink-muted md:mt-5 md:gap-2 md:text-[11px] lg:justify-start lg:text-[11.5px]">
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-ink/8 bg-white/70 px-2.5 py-1 backdrop-blur-sm md:px-3 md:py-1">
+            <dl className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[12px] text-ink-muted md:mt-5 md:gap-2 md:text-[11px] lg:justify-start lg:text-[11.5px]">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-ink/8 bg-white/70 px-3 py-1.5 backdrop-blur-sm md:px-3 md:py-1">
                 <dt className="font-medium leading-none text-ink">30+</dt>
                 <dd className="leading-none">years of MI research</dd>
               </div>
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-ink/8 bg-white/70 px-2.5 py-1 backdrop-blur-sm md:px-3 md:py-1">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-ink/8 bg-white/70 px-3 py-1.5 backdrop-blur-sm md:px-3 md:py-1">
+                <dt className="font-medium leading-none text-ink">70+</dt>
+                <dd className="leading-none">clinical studies</dd>
+              </div>
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-ink/8 bg-white/70 px-3 py-1.5 backdrop-blur-sm md:px-3 md:py-1">
                 <dt className="font-medium leading-none text-ink">400+</dt>
                 <dd className="leading-none">peer reviewed publications</dd>
               </div>

@@ -68,20 +68,50 @@ export function AboutPurpose() {
             a large company with a robust benefits package.
           </p>
           <p className="body-prose" style={reveal(420)}>
-            We are building for{" "}
-            <span className="text-ink">the night-shift nurse</span> who needs
-            support at 3 AM. <span className="text-ink">The diabetic patient</span>{" "}
-            who wants to stop taking their medication because they&rsquo;re
-            exhausted and nobody is checking in. {" "}
-            <span className="text-ink">The underinsured worker</span> who has
-            avoided care for two years because the deductible makes it
-            inaccessible. <span className="text-ink">The person</span> who has
-            never spoken honestly to a therapist because the stigma in their
-            community makes it feel impossible.
+            We are building for the people the healthcare system consistently
+            fails to reach.
           </p>
-          <p className="body-prose" style={reveal(500)}>
-            These are the people the healthcare system consistently fails to
-            reach. And they are the reason Chronilogix exists.
+
+          {/* Personas as a list — same brand-dot bullet treatment Problem
+              uses for "Between the numbers". Each persona is one concrete
+              scene, not an abstraction; the bold lead anchors the eye,
+              the rest of the line carries the why. */}
+          <ul className="space-y-5 pt-2 md:space-y-6" style={reveal(500)}>
+            {[
+              {
+                lead: "The night shift nurse",
+                rest: "who needs support at 3 AM.",
+              },
+              {
+                lead: "The diabetic patient",
+                rest: "who wants to stop taking their medication because they’re exhausted and nobody is checking in.",
+              },
+              {
+                lead: "The underinsured worker",
+                rest: "who has avoided care for two years because the deductible makes it inaccessible.",
+              },
+              {
+                lead: "The person",
+                rest: "who has never spoken honestly to a therapist because the stigma in their community makes it feel impossible.",
+              },
+            ].map((p) => (
+              <li
+                key={p.lead}
+                className="flex gap-4 text-left text-base leading-relaxed text-ink-soft md:text-lg"
+              >
+                <span
+                  aria-hidden
+                  className="mt-[0.7em] inline-block h-2 w-2 shrink-0 rounded-full bg-brand"
+                />
+                <span>
+                  <span className="text-ink">{p.lead}</span> {p.rest}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          <p className="body-prose" style={reveal(640)}>
+            They are the reason Chronilogix exists.
           </p>
         </div>
 

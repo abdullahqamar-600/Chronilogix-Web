@@ -24,13 +24,12 @@ const VALUES: Value[] = [
   {
     label: "Radical accessibility",
     body:
-      "If we’re not reaching the people who fall through the cracks of traditional care, we’re not doing our job. That means meeting the night-shift nurse at 3 AM, the underinsured worker who hasn’t seen a clinician in two years, and the person whose community makes therapy feel impossible.",
+      "If we’re not reaching the people who fall through the cracks of traditional care, we’re not doing our job. That means meeting the night shift nurse at 3 AM, the underinsured worker who hasn’t seen a clinician in two years, and the person whose community makes therapy feel impossible.",
     icon: <GlobeIcon />,
   },
 ];
 
 export function AboutMission() {
-  const [openIdx, setOpenIdx] = useState(0);
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const [inView, setInView] = useState(false);
 
@@ -71,22 +70,33 @@ export function AboutMission() {
       className="relative overflow-hidden rounded-[28px] bg-white py-20 md:py-24 lg:py-28"
     >
       <div className="container-page relative">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.05fr_1fr] lg:gap-20">
-          <h2
-            className="max-w-[22ch] font-serif text-[32px] font-normal leading-[1.1] tracking-[-0.012em] text-ink md:text-[40px] lg:text-[44px]"
-            style={
-              {
-                textWrap: "balance",
-                ...reveal(0),
-              } as React.CSSProperties
-            }
-          >
-            Three things Chronilogix{" "}
-            <span className="text-ink-muted italic">won&rsquo;t compromise on.</span>
-          </h2>
+        {/* Editorial two-column intro — heading on the left, supporting
+            body on the right. Both top-aligned (no self-end) so the
+            columns read as balanced peers rather than a diagonal layout.
+            The body sits down a beat (lg:mt-3) so its first line aligns
+            visually with the heading's first baseline rather than with
+            the smaller eyebrow above. */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-16 xl:gap-20">
+          <div>
+            <p className="eyebrow" style={reveal(0)}>
+              Our values
+            </p>
+            <h2
+              className="mt-5 font-serif text-[32px] font-normal leading-[1.1] tracking-[-0.012em] text-ink md:text-[40px] lg:text-[44px]"
+              style={
+                {
+                  textWrap: "balance",
+                  ...reveal(80),
+                } as React.CSSProperties
+              }
+            >
+              Three things Chronilogix{" "}
+              <span className="text-ink-muted italic">won&rsquo;t compromise on.</span>
+            </h2>
+          </div>
           <p
-            className="max-w-[44ch] self-end text-[15px] leading-relaxed text-ink-muted md:text-base"
-            style={reveal(120)}
+            className="max-w-[48ch] text-[15px] leading-relaxed text-ink-muted lg:mt-12 md:text-base"
+            style={reveal(160)}
           >
             By partnering with healthcare leaders, employers, and clinicians,
             Chronilogix is rebuilding behavioral and chronic care from the
@@ -95,16 +105,16 @@ export function AboutMission() {
           </p>
         </div>
 
-        <ul
-          className="mt-12 flex flex-col gap-3 md:mt-16"
-          style={reveal(220)}
-        >
+        {/* Flat three-up grid — every value visible at once. The eye reads
+            icon → label → body, indexed by a small ordinal so the three
+            sit as a numbered set rather than a row of cards. Hairline rule
+            above each row ties them into one editorial block. */}
+        <ul className="mt-14 grid grid-cols-1 gap-10 md:mt-20 md:grid-cols-3 md:gap-8 lg:gap-10">
           {VALUES.map((v, i) => (
-            <AccordionRow
+            <ValueColumn
               key={v.label}
               value={v}
-              open={openIdx === i}
-              onToggle={() => setOpenIdx(openIdx === i ? -1 : i)}
+              style={reveal(240 + i * 100)}
             />
           ))}
         </ul>
@@ -113,85 +123,27 @@ export function AboutMission() {
   );
 }
 
-function AccordionRow({
+function ValueColumn({
   value,
-  open,
-  onToggle,
+  style,
 }: {
   value: Value;
-  open: boolean;
-  onToggle: () => void;
+  style: React.CSSProperties;
 }) {
   return (
-    <li
-      className={`relative overflow-hidden rounded-[18px] transition-colors duration-400 ease-out-quart motion-reduce:transition-none ${
-        open ? "bg-ink" : "bg-paper-tint"
-      }`}
-    >
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={open}
-        className="flex w-full items-center justify-between gap-6 px-6 py-5 text-left focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-brand md:px-7 md:py-6"
-      >
-        <span className="flex items-center gap-4">
-          <span
-            aria-hidden
-            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center transition-colors duration-400 ease-out-quart ${
-              open ? "text-brand" : "text-ink"
-            }`}
-          >
-            {value.icon}
-          </span>
-          <span
-            className={`text-[16px] font-medium tracking-[-0.005em] transition-colors duration-400 ease-out-quart md:text-[17px] ${
-              open ? "text-white" : "text-ink"
-            }`}
-          >
-            {value.label}
-          </span>
+    <li className="flex flex-col" style={style}>
+      <div className="flex items-center">
+        <span aria-hidden className="inline-flex h-5 w-5 items-center justify-center text-brand-700">
+          {value.icon}
         </span>
-        <Chevron open={open} />
-      </button>
-
-      <div
-        className="grid transition-[grid-template-rows] duration-400 ease-out-quart motion-reduce:transition-none"
-        style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
-      >
-        <div className="overflow-hidden">
-          <p
-            className="pb-6 pt-1 pr-6 text-[15px] leading-relaxed text-white/75 md:pb-7 md:pr-7 md:text-[16px]"
-            style={{ paddingLeft: "calc(1.5rem + 24px + 1rem)" }}
-          >
-            {value.body}
-          </p>
-        </div>
       </div>
+      <h3 className="mt-5 font-serif text-[22px] font-normal leading-tight tracking-[-0.012em] text-ink md:text-[24px]">
+        {value.label}
+      </h3>
+      <p className="mt-4 max-w-[38ch] text-[15px] leading-relaxed text-ink-soft md:text-[15.5px]">
+        {value.body}
+      </p>
     </li>
-  );
-}
-
-function Chevron({ open }: { open: boolean }) {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 18 18"
-      fill="none"
-      aria-hidden
-      className={`shrink-0 transition-transform duration-400 ease-out-quart ${
-        open ? "text-white/70" : "text-ink/50"
-      }`}
-      style={{ transform: open ? "rotate(180deg)" : "rotate(0)" }}
-    >
-      <path
-        d="M4 7 L9 12 L14 7"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }
 

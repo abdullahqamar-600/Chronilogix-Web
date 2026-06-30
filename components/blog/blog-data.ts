@@ -28,7 +28,7 @@ export const BLOG_SORTS = ["Latest", "Most read", "Oldest"] as const;
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
     slug: "inside-rooney-ai-clinical-grade-coaching-at-scale",
-    title: "Inside Rooney AI: clinical-grade coaching at scale",
+    title: "Inside Rooney AI: clinical grade coaching at scale",
     tag: "Product",
     topic: "Product",
     readTime: "5 min read",
@@ -76,7 +76,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
   },
   {
     slug: "the-engagement-gap-in-behavioral-health",
-    title: "Why behavioral health care misses 50–70% of members",
+    title: "Why behavioral health care misses 50 to 70% of members",
     tag: "Behavioral Health",
     topic: "Behavioral Health",
     readTime: "7 min read",

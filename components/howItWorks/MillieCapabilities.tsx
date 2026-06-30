@@ -136,7 +136,7 @@ function ConversationIllustration({ className }: { className?: string }) {
       }`}
     >
       <span className="ml-1 text-[10px] font-medium tracking-[-0.005em] text-ink-muted">
-        Millie · 11:42 PM
+        Millie, 11:42 PM
       </span>
       <div className="flex items-start gap-2">
         <span

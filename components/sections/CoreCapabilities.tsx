@@ -55,7 +55,12 @@ export function CoreCapabilities() {
   return (
     <section
       id="capabilities"
-      className="relative overflow-hidden rounded-[28px] bg-white pt-24 pb-24 md:pt-32 md:pb-32 lg:pt-40 lg:pb-40"
+      // No `overflow-hidden` here — the sticky rows need to stick to the
+      // page's scroll container, not to this section. `overflow-hidden`
+      // would create a scrolling box that captures them and kills the
+      // stack effect. Rounded corners still clip because nothing inside
+      // extends past the section bounds.
+      className="relative rounded-[28px] bg-white pt-24 pb-24 md:pt-32 md:pb-32 lg:pt-40 lg:pb-40"
     >
       <div className="container-page">
         {/* Header */}
@@ -64,18 +69,24 @@ export function CoreCapabilities() {
             className="mt-4 text-hero font-serif font-normal text-ink"
             style={{ textWrap: "balance" } as React.CSSProperties}
           >
-            What coaching demands,{" "}
-            <span className="text-brand-700">built in.</span>
+            Real coaching does many things at once.{" "}
+            <span className="text-brand-700">
+              Chronilogix does them every time.
+            </span>
           </h2>
-          <p className="mt-5 max-w-[58ch] body-quiet">
-            The capabilities behind every Chronilogix session.
+          <p className="mt-5 max-w-[60ch] body-quiet">
+            Clinical methodology, cultural and emotional reach, consistent
+            delivery, and crisis safe handoffs. Engineered into every
+            Chronilogix conversation, not added as features on top.
           </p>
         </div>
 
-        {/* Anchor rows — six full-bleed capability rows with bespoke
-            visuals. Each alternates the content column, with the
-            illustration always centered. */}
-        <div className="mt-20 space-y-24 md:mt-28 md:space-y-32 lg:space-y-40">
+        {/* Anchor rows — six scroll-stacking capability rows. Each row
+            is `sticky top-...` with a matching white background so as the
+            user scrolls, the next capability rises from below and lands
+            directly on top of the previous one. Same mechanic the home
+            page uses for the three Levels of Care. */}
+        <div className="mt-12 flex flex-col md:mt-16">
           {BLOCKS.map((block, i) => (
             <CapabilityRow key={block.heading} block={block} index={i} />
           ))}
@@ -91,58 +102,96 @@ export function CoreCapabilities() {
 }
 
 function CapabilityRow({ block, index }: { block: Block; index: number }) {
-  const { ref, inView } = useInView<HTMLDivElement>(0.15);
+  const { ref, inView } = useInView<HTMLElement>(0.15);
   const reverse = index % 2 === 1;
   const { Visual } = block;
 
   const contentSide = reverse ? "lg:col-start-3" : "lg:col-start-1";
 
   return (
-    <div
+    <article
       ref={ref}
-      className="grid grid-cols-1 items-center gap-10 lg:grid-cols-3 lg:gap-12"
+      // Sticky scroll-stacking is a desktop pattern — on mobile it
+      // makes scroll feel uncertain in a small viewport. Below md the
+      // row flows naturally; at md+ it sticks and stacks via the fog
+      // veil. Same approach as LevelsOfCare.
+      className="md:sticky md:top-24"
+      style={{
+        opacity: inView ? 1 : 0,
+        // Use `none` rather than `translateY(0)` once revealed so the
+        // article doesn't carry a permanent transform that would create
+        // a containing block and break sticky positioning.
+        transform: inView ? "none" : "translateY(16px)",
+        transition:
+          "opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1)",
+      }}
     >
-      {/* Content */}
+      {/* Fog veil — softens the seam where rows stack on md+. Fades from
+          transparent to the section's white ground so the next row lands
+          on a clean surface, not a hard edge. Hidden on mobile. */}
       <div
-        className={`order-2 lg:order-none lg:row-start-1 ${contentSide} flex flex-col justify-center`}
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 -top-24 hidden h-24 md:block md:-top-32 md:h-32"
         style={{
-          opacity: inView ? 1 : 0,
-          transform: inView ? "translateY(0)" : "translateY(18px)",
-          transition:
-            "opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1) 240ms, transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1) 240ms",
+          background:
+            "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0.85) 85%, rgba(255,255,255,1) 100%)",
         }}
-      >
-        <p className="eyebrow-muted">{block.eyebrow}</p>
-        <h3 className="mt-3 max-w-[22ch] text-row font-serif font-normal text-ink">
-          {block.heading}
-        </h3>
-        <p className="mt-5 max-w-[42ch] body-quiet">
-          {block.body}
-        </p>
-      </div>
+      />
 
-      {/* Illustration — always centered column on desktop */}
-      <div
-        className="order-1 lg:order-none lg:col-start-2 lg:row-start-1"
-        style={{
-          opacity: inView ? 1 : 0,
-          transform: inView ? "scale(1)" : "scale(0.97)",
-          transition:
-            "opacity 800ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1)",
-        }}
-      >
-        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[24px] border border-ink/[0.08] bg-paper shadow-[0_10px_28px_-18px_rgba(20,8,2,0.18)] md:aspect-[5/6]">
-          <Visual active={inView} />
+      {/* Row body — opaque white background so each row hides the row
+          beneath it as it stacks. Internal padding carries the rhythm
+          that the old `space-y-*` used to provide. */}
+      <div className="relative bg-white pb-16 pt-14 md:pb-24 md:pt-20 lg:pb-28 lg:pt-24">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-3 lg:gap-12">
+          {/* Content */}
+          <div
+            className={`order-2 lg:order-none lg:row-start-1 ${contentSide} flex flex-col justify-center`}
+          >
+            <p className="eyebrow-muted">{block.eyebrow}</p>
+            <h3 className="mt-3 max-w-[22ch] text-row font-serif font-normal text-ink">
+              {block.heading}
+            </h3>
+            <p className="mt-5 max-w-[42ch] body-quiet">{block.body}</p>
+          </div>
+
+          {/* Illustration — always centered column on desktop */}
+          <div className="order-1 lg:order-none lg:col-start-2 lg:row-start-1">
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[24px] border border-ink/[0.08] bg-paper shadow-[0_10px_28px_-18px_rgba(20,8,2,0.18)] md:aspect-[5/6]">
+              <Visual active={inView} />
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 
 /* ── Privacy by design — the inverted closing block ─────────────────────
-   Visually distinct from the pillars so the trust posture reads as a
-   commitment, not a feature. Dark ink ground, light type, single big
-   claim, supporting line, and a row of compliance pills. */
+   Three deliberate beats:
+     1) The absolute claim — "never used to train. Not now. Not ever."
+        Centered and dominant. This is the line the messaging plan calls
+        out as the single most important sentence in this entire posture.
+     2) Three trust pillars — Built for Healthcare / Data Stays Yours /
+        Enterprise Controls. Lifted from the source doc's Section 7
+        pillar definitions so the trust argument has structural depth.
+     3) Compliance footer — HIPAA badge centered at the bottom. Reads as
+        the closing affirmation of the architecture above, not an
+        orphan element fighting the headline for attention. */
+
+const TRUST_PILLARS: { title: string; body: string }[] = [
+  {
+    title: "Built for Healthcare",
+    body: "Designed for healthcare from the ground up. Encryption in transit and at rest. HIPAA compliant access controls baked in, not bolted on.",
+  },
+  {
+    title: "Data Stays Yours",
+    body: "Conversations are never shared, sold, or used to improve our models. What members tell Chronilogix belongs to them and to you.",
+  },
+  {
+    title: "Enterprise Controls",
+    body: "Single tenant deployment available. Role based access. Clinical grade audit logging. The controls your IT and legal teams already require.",
+  },
+];
 
 function PrivacyByDesign() {
   const { ref, inView } = useInView<HTMLDivElement>(0.2);
@@ -158,7 +207,7 @@ function PrivacyByDesign() {
       }}
     >
       <div
-        className="relative overflow-hidden rounded-[24px] px-8 py-12 md:px-12 md:py-16 lg:px-16 lg:py-20"
+        className="relative overflow-hidden rounded-[24px] px-8 py-14 md:px-12 md:py-20 lg:px-16 lg:py-24"
         style={{
           background:
             "linear-gradient(140deg, #14181D 0%, #1B2129 55%, #14181D 100%)",
@@ -176,45 +225,60 @@ function PrivacyByDesign() {
           }}
         />
 
-        <div className="relative grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-end lg:gap-16">
-          {/* Claim — large and stark. */}
-          <div className="lg:col-span-8">
-            <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-brand-400/90">
-              Privacy by design
-            </p>
-            <h3
-              className="mt-5 max-w-[22ch] font-serif text-[34px] font-normal leading-[1.08] text-white md:text-[44px] lg:text-[52px]"
-              style={{ textWrap: "balance" } as React.CSSProperties}
-            >
-              Member data is never used{" "}
-              <span className="text-brand-400">to train our models.</span>
-            </h3>
-            <p className="mt-6 max-w-[52ch] text-[15px] leading-relaxed text-white/70 md:text-[16px]">
-              Conversations stay private. Sponsors see aggregate
-              engagement and behavioral trends; individual member data
-              never leaves the platform. Encryption in transit and at
-              rest, role-based access, and clinical-grade audit trails
-              by default.
-            </p>
-          </div>
+        {/* Beat 1 — the absolute claim, centered and dominant. */}
+        <div className="relative mx-auto max-w-3xl text-center">
+          <p className="text-[13px] font-medium tracking-tight text-brand-400/90">
+            Privacy by design
+          </p>
+          <h3
+            className="mt-5 font-serif text-[34px] font-normal leading-[1.08] text-white md:text-[44px] lg:text-[52px]"
+            style={{ textWrap: "balance" } as React.CSSProperties}
+          >
+            Member data is never used to train our models.{" "}
+            <span className="text-brand-400">Not now. Not ever.</span>
+          </h3>
+        </div>
 
-          {/* HIPAA pill — a single emphasised badge. */}
-          <div className="lg:col-span-4">
-            <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-white/55">
-              Compliance posture
-            </p>
-            <div className="mt-4 inline-flex items-center gap-3 rounded-full border border-white/12 bg-white/[0.04] px-5 py-2.5 backdrop-blur-sm">
-              <span
-                aria-hidden
-                className="block h-1.5 w-1.5 rounded-full bg-brand-400"
-              />
-              <span className="text-[14px] font-medium text-white">
-                HIPAA
-              </span>
-              <span className="text-[12.5px] text-white/55">
-                Compliant
-              </span>
+        {/* Hairline divider — marks the seam between the headline claim
+            and the three pillars that back it up. */}
+        <div
+          aria-hidden
+          className="relative mx-auto mt-12 h-px w-16 bg-white/15 md:mt-16"
+        />
+
+        {/* Beat 2 — three trust pillars. Three stacked beats on mobile,
+            three columns side by side on md+. Each pillar reads as its
+            own commitment, not a bullet under the headline. */}
+        <div className="relative mt-12 grid grid-cols-1 gap-10 md:mt-16 md:grid-cols-3 md:gap-10 lg:gap-14">
+          {TRUST_PILLARS.map((pillar) => (
+            <div key={pillar.title} className="flex flex-col">
+              <h4 className="font-serif text-[20px] font-normal leading-tight text-white md:text-[22px]">
+                {pillar.title}
+              </h4>
+              <p className="mt-3 text-[14.5px] leading-relaxed text-white/65 md:text-[15px]">
+                {pillar.body}
+              </p>
             </div>
+          ))}
+        </div>
+
+        {/* Beat 3 — compliance footer. HIPAA badge centered at the
+            bottom, sitting above a quiet "Compliance posture" label so
+            it reads as the formal affirmation of the trust commitments
+            above. */}
+        <div className="relative mt-12 flex flex-col items-center gap-3 md:mt-16">
+          <p className="text-[12px] font-medium tracking-tight text-white/45">
+            Compliance posture
+          </p>
+          <div className="inline-flex items-center gap-3 rounded-full border border-white/12 bg-white/[0.04] px-5 py-2.5 backdrop-blur-sm">
+            <span
+              aria-hidden
+              className="block h-3 w-[2px] rounded-full bg-brand-400"
+            />
+            <span className="text-[14px] font-medium text-white">
+              HIPAA
+            </span>
+            <span className="text-[12.5px] text-white/55">Compliant</span>
           </div>
         </div>
       </div>
@@ -419,14 +483,14 @@ function OversightVisual({ active }: { active: boolean }) {
                   {!s.ok && (
                     <span
                       aria-hidden
-                      className="mb-1 font-mono text-[10px] text-brand-700"
+                      className="mb-1 font-mono text-[10px] leading-none text-brand-700"
                       style={{
                         animation: `fadeUp 400ms ease-out ${600 + i * 160}ms forwards`,
                         animationPlayState: playState,
                         opacity: 0,
                       }}
                     >
-                      ·
+                      ▾
                     </span>
                   )}
                   <span
@@ -517,14 +581,14 @@ function MultilingualVisual({ active }: { active: boolean }) {
 
       <div className="relative flex h-full flex-col justify-center gap-3.5 p-8 md:p-10">
         <p
-          className="text-[10.5px] font-medium uppercase tracking-[0.18em] text-ink-muted"
+          className="text-[12px] font-medium tracking-tight text-ink-muted"
           style={{
             animation: "fadeUp 500ms ease-out 100ms forwards",
             animationPlayState: playState,
             opacity: 0,
           }}
         >
-          The same question · in the member&rsquo;s language
+          The same question, in the member&rsquo;s language
         </p>
         {greetings.map((g, i) => (
           <div
@@ -613,11 +677,11 @@ function EmotionAwareVisual({ active }: { active: boolean }) {
                 aria-hidden
                 className="block h-px w-6 bg-ink/20"
               />
-              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-muted">
+              <span className="font-mono text-[11px] tracking-tight text-ink-muted">
                 reads
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-600/12 px-2.5 py-0.5 text-[11px] font-medium text-brand-700">
-                <span aria-hidden className="block h-1 w-1 rounded-full bg-brand-700" />
+                <span aria-hidden className="block h-3 w-[2px] rounded-full bg-brand-700" />
                 {ex.reads}
               </span>
               <span
@@ -681,15 +745,15 @@ function CrisisSafeVisual({ active }: { active: boolean }) {
         >
           <span
             aria-hidden
-            className="block h-1.5 w-1.5 rounded-full"
+            className="block h-3 w-[2px] rounded-full"
             style={{
               backgroundColor: "#E45A1C",
               animation: "knobPulse 1800ms cubic-bezier(0.22, 0.61, 0.36, 1) infinite",
               animationPlayState: playState,
             }}
           />
-          <span className="font-mono text-[10.5px] font-medium uppercase tracking-[0.14em] text-brand-700">
-            Distress signal · auto-escalating
+          <span className="font-mono text-[11px] font-medium tracking-tight text-brand-700">
+            Distress signal, auto escalating
           </span>
         </div>
 
@@ -769,7 +833,7 @@ const BLOCKS: Block[] = [
     body: (
       <>
         Every Chronilogix conversation runs on the{" "}
-        <span className="text-ink">MI Engine</span> — Dr. Ken
+        <span className="text-ink">MI Engine</span>, Dr. Ken
         Resnicow&rsquo;s Motivational Interviewing framework, encoded
         into the coaching loop. It doesn&rsquo;t lecture. It listens,
         reflects, and helps members find their own reasons to change.
@@ -788,7 +852,7 @@ const BLOCKS: Block[] = [
         Stigma, fear of judgment, and confidentiality worries keep many
         people from ever opening up to a live coach. Chronilogix lets
         them speak honestly first, then adapts to each member&rsquo;s
-        culture, language, literacy, and readiness — reaching
+        culture, language, literacy, and readiness, reaching
         populations traditional programs overlook. Hispanic men face a{" "}
         <span className="text-ink">64% higher diabetes rate</span> yet
         make up just{" "}
@@ -803,13 +867,12 @@ const BLOCKS: Block[] = [
     body: (
       <>
         AI coaching doesn&rsquo;t vary with fatigue, caseload, or
-        turnover — it delivers the same evidence-based engagement every
-        time. Chronilogix handles{" "}
-        <span className="text-ink">70–80% of coaching interactions</span>;
-        human clinicians take the{" "}
-        <span className="text-ink">20–30%</span> that genuinely need
-        them, escalated automatically when the moment calls for it. The
-        reach and economics of AI, paired with clinical oversight.
+        turnover. It delivers the same evidence based engagement every
+        time. Chronilogix is designed to handle{" "}
+        <span className="text-ink">up to 70% of routine coaching</span>;
+        the remaining <span className="text-ink">~30%</span> escalates
+        to human clinicians when the moment calls for it. The reach and
+        economics of AI, paired with clinical oversight.
       </>
     ),
     Visual: OversightVisual,
@@ -820,15 +883,15 @@ const BLOCKS: Block[] = [
     body: (
       <>
         Conversations adapt to the language each member chooses,
-        reaching populations English-only platforms cannot serve. Not
-        subtitle translation — the full coaching voice, native in each
+        reaching populations English only platforms cannot serve. Not
+        subtitle translation. The full coaching voice, native in each
         language Chronilogix supports.
       </>
     ),
     Visual: MultilingualVisual,
   },
   {
-    eyebrow: "05. Emotion-aware",
+    eyebrow: "05. Emotion aware",
     heading: "Reads what the words are doing.",
     body: (
       <>
@@ -843,14 +906,15 @@ const BLOCKS: Block[] = [
     Visual: EmotionAwareVisual,
   },
   {
-    eyebrow: "06. Crisis-safe",
+    eyebrow: "06. Crisis safe",
     heading: "988 escalation, built in.",
     body: (
       <>
-        Millie is designed to recognize crisis-level distress signals
-        that exceed coaching scope and route to 988 immediately — without
-        the member having to ask. Safety is part of the conversation
-        architecture, not a fallback.
+        Millie is designed to recognize crisis level distress signals
+        that exceed coaching scope, shift into a structured risk
+        assessment, and escalate to the 988 Suicide &amp; Crisis Lifeline
+        when the risk level warrants it. Safety is part of the
+        conversation architecture, not a fallback.
       </>
     ),
     Visual: CrisisSafeVisual,

@@ -55,14 +55,14 @@ const LEVELS: Level[] = [
       "Patients who have exhausted their covered counseling sessions",
       "Anyone in between scheduled appointments",
       "Available 24/7 when live coaches are not",
-      "Bridges the typical 2–6 week wait for a human appointment",
+      "Bridges the typical 2 to 6 week wait for a human appointment",
       "Cost efficient access for almost anyone",
     ],
     visualBg: "/card-1-bg.jpg",
     Artifact: AvailabilityArtifact,
     image: {
-      src: "/generated-images/image.png",
-      alt: "A moment of first-line care — where Chronilogix steps in when no other coverage exists.",
+      src: "/generated-images/family-low-angle-chronilogix-aesthetic.png",
+      alt: "A family from below, the people who fall through the cracks of traditional care, where Chronilogix steps in as the first line.",
     },
   },
   {
@@ -79,7 +79,7 @@ const LEVELS: Level[] = [
     Artifact: BriefingArtifact,
     image: {
       src: "/generated-images/caregiver-senior-chronilogix-aesthetic.png",
-      alt: "A caregiver beside an older adult — the human-plus-AI hybrid Chronilogix supports.",
+      alt: "A caregiver beside an older adult, the human plus AI hybrid Chronilogix supports.",
     },
   },
   {
@@ -89,15 +89,15 @@ const LEVELS: Level[] = [
     lead: "A growing category of cohorts who get better outcomes with a fully digital coach:",
     bullets: [
       "Certain ethnic and cultural backgrounds where a digital coach reduces barriers",
-      "No bias, no judgment — consistent every session",
+      "No bias, no judgment. Consistent every session",
       "Uniform, reliable treatment regardless of provider variability",
       "The most cost efficient option available",
     ],
     visualBg: "/card-3-bg.jpg",
     Artifact: ConsistencyArtifact,
     image: {
-      src: "/generated-images/Felix%20Wittich%20_%20Emeis%20Deubel.jpeg",
-      alt: "A quiet portrait — for the members who get better outcomes with a fully digital coach.",
+      src: "/generated-images/home-phone-woman-chronilogix-aesthetic.png",
+      alt: "A woman at home with her phone, the members who get better outcomes with a fully digital coach.",
     },
   },
 ];
@@ -140,7 +140,7 @@ export function LevelsOfCare({
           <p className="eyebrow">Three Levels of Care</p>
         )}
         <h3
-          className={`${hideEyebrow ? "" : "mt-3"} max-w-4xl text-section font-serif font-normal text-ink`.trim()}
+          className={`${hideEyebrow ? "" : "mt-3"} max-w-4xl text-hero font-serif font-normal text-ink`.trim()}
           style={{ textWrap: "balance" } as React.CSSProperties}
         >
           Chronilogix meets people where they are, across every gap in the
@@ -154,16 +154,22 @@ export function LevelsOfCare({
           previous one. No card chrome, no shadows — the matching
           background makes the transition read as content flowing,
           not as panels stacking. DOM order (row 1 → 2 → 3) naturally
-          places later rows on top of earlier rows. */}
-      <div className="mt-12 flex flex-col md:mt-14">
-        {LEVELS.map((level) => (
-          <LevelRow key={level.ordinal} level={level} />
+          places later rows on top of earlier rows.
+
+          Tighter top margin so the "Three Levels of Care" intro reads
+          as the header for the rows immediately below it. Section-
+          above separation is carried by Solution.tsx's wrapper. */}
+      <div className="mt-6 flex flex-col md:mt-7">
+        {LEVELS.map((level, i) => (
+          <LevelRow key={level.ordinal} level={level} index={i} />
         ))}
       </div>
 
-      <div className="mt-16 md:mt-20">
+      {/* Closing thesis — sits tight against the row stack above so it
+          reads as the same section's resolution, not a separate beat. */}
+      <div className="mt-8 md:mt-10">
         <p
-          className="mx-auto max-w-3xl text-center font-serif text-section font-normal text-ink"
+          className="mx-auto max-w-3xl text-center font-serif text-section font-normal leading-[1.15] text-ink"
           style={{ textWrap: "balance" } as React.CSSProperties}
         >
           One engine. Three levels. Every gap covered.
@@ -173,14 +179,21 @@ export function LevelsOfCare({
   );
 }
 
-function LevelRow({ level }: { level: Level }) {
+function LevelRow({ level, index }: { level: Level; index: number }) {
   const { ref, inView } = useInView<HTMLElement>(0.15);
   const { Artifact } = level;
+  // Alternate image/text placement on odd rows so the row cadence
+  // doesn't feel mechanical. Card 02 flips image to the right.
+  const flipped = index % 2 === 1;
 
   return (
     <article
       ref={ref}
-      className="sticky top-20 md:top-24"
+      // Sticky scroll-stacking is a desktop pattern — on mobile it
+      // makes scroll feel uncertain in a small viewport. Below md the
+      // row flows naturally; at md+ it sticks and stacks via the fog
+      // veil as before.
+      className="md:sticky md:top-24"
       style={{
         opacity: inView ? 1 : 0,
         // Use `none` rather than `translateY(0)` once revealed so the
@@ -193,30 +206,31 @@ function LevelRow({ level }: { level: Level }) {
           "opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1)",
       }}
     >
+      {/* Fog veil — softens the seam where rows stack on md+. Hidden
+          on mobile where rows flow naturally without overlapping. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 -top-24 hidden h-24 md:block md:-top-32 md:h-32"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(251,248,244,0) 0%, rgba(251,248,244,0.45) 50%, rgba(251,248,244,0.85) 85%, rgba(251,248,244,1) 100%)",
+        }}
+      />
+
       {/* Card body — the row sits flush with the surrounding section
-          on the same paper-warm background. No fog veil, no hairline
-          highlight, no rounded corners — the three rows read as one
-          continuous paper surface as they stack, with the sticky
-          behaviour alone carrying the layering. */}
+          on the same paper-warm background. The fog veil above carries
+          the layering transition so the three rows still read as one
+          continuous paper surface as they stack. */}
       <div
         className="relative bg-paper-warm pb-8 pt-10 md:pb-10 md:pt-[4.5rem]"
       >
-        {/* Identity — sits at the row's top so the artifact and content
-            columns below start at the same baseline. */}
-        <header className="relative mb-8 md:mb-10">
-          <p className="eyebrow">{level.ordinal}</p>
-          <h4 className="mt-3 max-w-3xl text-row font-serif font-normal text-ink">
-            {level.label}
-          </h4>
-          <p className="mt-3 max-w-2xl body-quiet">{level.subhead}</p>
-        </header>
-
-        {/* 5/7 grid. items-stretch is the default for grid items; both
-            columns inherit the row height set by whichever side is
-            naturally taller. Artifact column uses h-full so the framed
-            block stretches to match the right column's content. */}
-        <div className="relative grid items-start gap-8 md:grid-cols-12 md:gap-10">
-          <div className="md:col-span-5">
+        {/* Two-column layout: image in one column, text (header + lead
+            + bullets) in the other. The header now sits at the top of
+            the text column so the row's identity reads against the
+            content rather than spanning the full width. Odd rows flip
+            the image to the opposite side via grid `order`. */}
+        <div className="relative grid items-center gap-10 md:grid-cols-2 md:gap-12 lg:gap-16">
+          <div className={flipped ? "md:order-2" : ""}>
             {level.image ? (
               <LevelImage image={level.image} active={inView} />
             ) : (
@@ -226,13 +240,21 @@ function LevelRow({ level }: { level: Level }) {
             )}
           </div>
 
-          <div className="md:col-span-7">
+          <div className={flipped ? "md:order-1" : ""}>
+            <header className="mb-7 md:mb-8">
+              <p className="eyebrow">{level.ordinal}</p>
+              <h4 className="mt-3 text-row font-serif font-normal text-ink">
+                {level.label}
+              </h4>
+              <p className="mt-3 body-quiet">{level.subhead}</p>
+            </header>
+
             <p className="body-prose text-ink-soft">{level.lead}</p>
             <ul className="mt-5 space-y-3 md:mt-6">
               {level.bullets.map((bullet) => (
                 <li
                   key={bullet}
-                  className="flex gap-4 body-prose text-ink-soft"
+                  className="flex gap-3 body-prose text-ink-soft"
                 >
                   <span
                     aria-hidden
@@ -260,7 +282,7 @@ function LevelImage({
 }) {
   return (
     <div
-      className="relative aspect-[4/5] min-h-[340px] overflow-hidden rounded-2xl bg-ink/5"
+      className="relative aspect-[4/5] w-full max-w-[360px] overflow-hidden rounded-2xl bg-ink/5 md:max-w-[420px] lg:max-w-[460px]"
       style={{
         opacity: active ? 1 : 0,
         transform: active ? "none" : "translateY(12px)",
@@ -405,7 +427,7 @@ function AvailabilityArtifact({ active }: { active: boolean }) {
  */
 
 const BRIEFING_EVENTS: { day: string; text: string; session?: boolean }[] = [
-  { day: "Tue", text: "Last session — anxiety + medication review", session: true },
+  { day: "Tue", text: "Last session, anxiety and medication review", session: true },
   { day: "Wed", text: "Check in: felt heavy around 6pm" },
   { day: "Thu", text: "Practiced 3-3-3 grounding, sustained" },
   { day: "Thu", text: "Open question: timing of evening dose" },

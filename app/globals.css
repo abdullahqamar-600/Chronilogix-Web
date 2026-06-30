@@ -119,6 +119,32 @@
   50%      { transform: scale(1.4); opacity: 0.55; }
 }
 
+/* Sinusoidal wave — used by AboutTimeline's dotted journey line. Each
+   tile is 80px wide; translating background-position by exactly one tile
+   width loops seamlessly so the wave drifts forever. A single layer
+   handles both the horizontal drift and the amplitude breathe (via a
+   scaleY transform that swells from 0.4× to 1.6× of the source tile's
+   amplitude), so the wave reads as ONE living dotted line rather than
+   stacked parallel waves. */
+@keyframes waveDrift {
+  from { background-position-x: 0px; }
+  to   { background-position-x: -80px; }
+}
+@keyframes waveBreathe {
+  0%, 100% { transform: scaleY(0.4); }
+  50%      { transform: scaleY(1.6); }
+}
+.timeline-wave {
+  animation: waveDrift 14s linear infinite, waveBreathe 5s ease-in-out infinite;
+  transform-origin: center center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .timeline-wave {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
 /* Vertical tally stroke rising from the baseline — used by the goal-tracking
    weekly habit row and the oversight horizon. transform-origin must be
    bottom for the rise to read. */
@@ -207,6 +233,16 @@
     transform: none;
     filter: none;
   }
+}
+
+/* Hides the native scrollbar on horizontal scroll-snap carousels (Testimonials).
+   Scrolling still works via swipe, wheel, keyboard, and the visible controls. */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* Core Capabilities section animations */

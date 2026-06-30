@@ -5,11 +5,13 @@ import { SectionGuide } from "@/components/widget/SectionGuide";
 import { CoachLauncher } from "@/components/CoachLauncher";
 import { HeroV5 } from "@/components/sections/HeroV5";
 import { StatementV5 } from "@/components/sections/StatementV5";
+import { MIExplainer } from "@/components/sections/MIExplainer";
 import { Problem } from "@/components/sections/Problem";
 import { Outcome } from "@/components/sections/Outcome";
 import { Solution } from "@/components/sections/Solution";
 import { WhoWeServe } from "@/components/sections/WhoWeServe";
 import { CustomerStories } from "@/components/sections/CustomerStories";
+import { Testimonials } from "@/components/sections/Testimonials";
 
 // Home (V1) — the current canonical design. Was previously V5 and was
 // promoted into the V1 slot after the toggle renumbering: V5 → V3 →
@@ -25,6 +27,7 @@ export default function HomePage() {
             <HeroV5 />
             <StatementV5 />
           </div>
+          <MIExplainer />
           <Solution />
         </div>
         <div className="flex flex-col">
@@ -34,6 +37,7 @@ export default function HomePage() {
         </div>
         <div className="flex flex-col gap-2 p-2 md:gap-3 md:p-3">
           <CustomerStories />
+          <Testimonials />
         </div>
       </main>
       <Footer />

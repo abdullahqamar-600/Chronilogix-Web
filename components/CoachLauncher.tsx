@@ -51,7 +51,7 @@ export function CoachLauncher() {
             <div>
               <p className="text-[14px] font-medium text-ink">Talk to Coach</p>
               <p className="mt-0.5 text-[11px] text-ink-muted">
-                Ask Chronilogix anything — what it does, how it works, what it costs.
+                Ask Chronilogix anything. What it does, how it works, what it costs.
               </p>
             </div>
             <button
@@ -66,7 +66,7 @@ export function CoachLauncher() {
 
           <div className="px-5 pb-5 pt-5">
             <div className="rounded-xl bg-paper-warm/60 px-4 py-3 text-[13px] leading-relaxed text-ink-soft">
-              Hi — I&rsquo;m the coach behind Chronilogix. Pick a question
+              Hi, I&rsquo;m the coach behind Chronilogix. Pick a question
               below, or type your own.
             </div>
 

@@ -139,7 +139,7 @@ export function HiwMillieGrid() {
     <div
       ref={ref}
       data-revealed={inView ? "true" : "false"}
-      className="border-t border-b border-ink/[0.07]"
+      className="overflow-hidden rounded-[24px] border border-ink/[0.07]"
     >
       <div className="grid grid-cols-1 lg:grid-cols-4 lg:grid-rows-2">
         {cells.map((cell, i) => {
@@ -205,7 +205,7 @@ function AvatarAndChat() {
         <MemberBubble>I can&rsquo;t get my mind to slow down.</MemberBubble>
         <CoachBubble>
           Racing thoughts aren&rsquo;t yours to solve at midnight. Let&rsquo;s
-          bring your body back into the room first — I&rsquo;ll walk you
+          bring your body back into the room first. I&rsquo;ll walk you
           through it.
         </CoachBubble>
       </div>
@@ -268,7 +268,7 @@ function NameAndDescription() {
         <span style={{ color: SLATE_DEEP }}>AI</span>
       </h3>
       <p className="mt-3 font-serif text-[18px] font-normal leading-[1.3] text-ink-soft md:text-[20px]">
-        <span style={{ color: SLATE_DEEP }}>/</span> Mental health coach
+        Mental health coach
       </p>
       <p className="mt-6 max-w-[44ch] body-prose md:mt-7">
         Built for the moments no appointment reaches. At midnight. After

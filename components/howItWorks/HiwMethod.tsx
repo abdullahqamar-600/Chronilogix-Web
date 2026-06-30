@@ -13,7 +13,7 @@ const PRINCIPLES: Principle[] = [
     index: "01",
     lead: "It reflects rather than prescribes.",
     body:
-      "Roni and Millie ask open questions. They summarize what the member says back to them. They help the member hear their own ambivalence — and work through it — without being pushed. The coach isn't the authority. The member is.",
+      "Roni and Millie ask open questions. They summarize what the member says back to them. They help the member hear their own ambivalence, and work through it, without being pushed. The coach isn't the authority. The member is.",
   },
   {
     index: "02",
@@ -25,7 +25,7 @@ const PRINCIPLES: Principle[] = [
     index: "03",
     lead: "It builds intrinsic motivation, not compliance.",
     body:
-      "Compliance breaks under stress. Intrinsic motivation — rooted in what the person actually cares about, their family, their health, their sense of self — holds. Chronilogix coaches are designed to find that thread and pull it gently forward.",
+      "Compliance breaks under stress. Intrinsic motivation, rooted in what the person actually cares about, their family, their health, their sense of self, holds. Chronilogix coaches are designed to find that thread and pull it gently forward.",
   },
 ];
 
@@ -38,7 +38,7 @@ type ResearchStat = {
 };
 
 const RESEARCH_STATS: ResearchStat[] = [
-  { target: 430, suffix: "+", label: "Peer-reviewed studies" },
+  { target: 430, suffix: "+", label: "Peer reviewed studies" },
   { target: 110, prefix: "$", suffix: "M", label: "Research funding" },
   { target: 70, label: "Global clinical trials" },
 ];
@@ -49,7 +49,7 @@ type ProofPoint = {
 };
 
 const PROOF_POINTS: ProofPoint[] = [
-  { lead: "430+", label: "Peer-reviewed studies" },
+  { lead: "430+", label: "Peer reviewed studies" },
   { lead: "$110M", label: "Research funding" },
   { lead: "70", label: "Global clinical studies" },
   { lead: "+43%", label: "Engagement increase at Aetna" },
@@ -96,16 +96,16 @@ export function HiwMethod() {
               </p>
               <p>
                 Motivational Interviewing is the clinical antidote to that
-                failure. Developed over decades of NIH-funded research, MI
+                failure. Developed over decades of NIH funded research, MI
                 is the communication framework used by the world&rsquo;s
                 most effective therapists, addiction counselors, and
                 chronic disease specialists. It doesn&rsquo;t persuade. It
-                doesn&rsquo;t lecture. It listens — and through listening,
+                doesn&rsquo;t lecture. It listens, and through listening,
                 it helps people find their own reasons to change.
               </p>
               <p>
-                That internal shift — from external pressure to internal
-                motivation — is what makes change sustainable. Not just
+                That internal shift, from external pressure to internal
+                motivation, is what makes change sustainable. Not just
                 for a week after the appointment. But for months. Years.
                 For good.
               </p>
@@ -129,7 +129,7 @@ export function HiwMethod() {
               </p>
               <p className="mt-6 body-quiet">
                 Thirty years of MI research, encoded into the coaching
-                loop of every Roni and Millie session — automatically, at
+                loop of every Roni and Millie session, automatically, at
                 clinical fidelity, around the clock.
               </p>
             </aside>
@@ -233,8 +233,8 @@ function CredentialBlock() {
           </h3>
           <p className="reveal-row mt-7 max-w-xl body-prose [transition-delay:160ms]">
             His work spans research that has shaped how the world&rsquo;s
-            largest health plans and governments deliver behavioral care
-            — including Kaiser, Aetna, and international ministries of
+            largest health plans and governments deliver behavioral care,
+            including Kaiser, Aetna, and international ministries of
             health.
           </p>
 

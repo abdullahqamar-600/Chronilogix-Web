@@ -8,102 +8,97 @@ type Milestone = {
   body: string;
 };
 
-// Newest first — the visitor lands on the most recent moment and drags
-// rightward to discover the lineage. This puts "launch" on the left
-// (today, here) and "foundations" on the right (origin, 25 years back).
+// Oldest first — the visitor reads left to right in natural Western
+// chronological order, from the origins of the research lineage in 2000
+// through to the Roni launch in January 2026. Matches the reference
+// timeline graphic the client provided.
 const MILESTONES: Milestone[] = [
   {
-    era: "January 2026",
-    title: "Commercial launch",
-    body:
-      "Roni and the Chronilogix app launch at the NBIP and ASCEND Conference.",
+    era: "2000 to 2005",
+    title: "Initial development",
+    body: "Motivational Interviewing training system.",
   },
   {
-    era: "2023",
-    title: "Chronilogix founded",
-    body:
-      "Initial scripting of the AI coaching architecture begins on top of the MI research lineage.",
-  },
-  {
-    era: "2015 to today",
-    title: "Scale",
-    body:
-      "Expansion to U.S. providers including Kaiser and Active Health. Over 10,000 practitioners and 200 trainers trained globally.",
+    era: "2005 to 2010",
+    title: "R&D expansion",
+    body: "Deep tailoring eHealth academic research.",
   },
   {
     era: "2010 to 2015",
     title: "Market entry",
     body:
-      "Partnerships with AmeriHealth, Caritas, and the launch of the Global MI program for Aetna.",
+      "Partnered with AmeriHealth, Caritas, and launched the Global MI program for Aetna.",
   },
   {
-    era: "2005 to 2010",
-    title: "Deep tailoring",
+    era: "2015 to present",
+    title: "Expansion",
     body:
-      "Academic research expansion, deep tailoring, and the first digital health applications of MI.",
+      "U.S. providers including Kaiser and Active Health, plus global clients. 10,000+ practitioners and 200 trainers trained worldwide.",
   },
   {
-    era: "2000 to 2005",
-    title: "Foundations",
+    era: "2023",
+    title: "Chronilogix founded",
+    body: "Initial scripting begins as a rules based technology.",
+  },
+  {
+    era: "2025 to present",
+    title: "Present and future vision",
     body:
-      "Initial development of MI training systems and the first wave of behavioral intervention research.",
+      "Commercial launch of Roni and the Chronilogix app at the NBIP and ASCEND Conference.",
+  },
+  {
+    era: "January 2026",
+    title: "Roni launch",
+    body: "Full suite of MI eHealth brought to market.",
   },
 ];
 
-const DOT_COLOR = "rgba(45,30,20,0.45)";
+// Brand-tinted wave — uses a warm orange close to the brand primary so
+// the journey line lives in the page's colour family instead of as a
+// dark accent. Alpha keeps it sitting back as ambient texture, not as a
+// loud line. Combined with the thinner stroke + sparse dasharray below
+// the result is a quiet, dotted brand-coloured current rather than two
+// bold ink lines.
+const STROKE_COLOR = "rgba(184, 70, 20, 0.55)";
 
 /**
- * Two intertwined sinusoidal particle streams. Each path is a smooth S-curve
- * that spans exactly one wavelength and lands back on the centre at both
+ * Two intertwined sinusoidal strokes. Each path is a smooth S-curve that
+ * spans exactly one wavelength and lands back on the centre at both
  * boundaries, so the pattern tiles seamlessly when repeated horizontally.
  *
  *   wave A: rises early, dips late  ─ ╭╮╭╮ ─
  *   wave B: dips early, rises late   ─ ╰╯╰╯ ─
  *
- * stroke-dasharray turns each curve into a row of fine particles. Where the
- * two waves cross (every λ/2) the particles overlap and read as denser,
- * producing the woven, flowing texture of the reference.
+ * The two curves cross at the centre and at every wavelength boundary,
+ * giving the band its woven, current-like texture. Thin (0.9px) dashed
+ * strokes with sparse dots keep the wave understated against the warm
+ * gradient background — when the layer breathes via scaleY the woven
+ * pattern visibly opens up and pulls in.
  */
 const WAVE_TILE_WIDTH = 80;
-const WAVE_TILE_HEIGHT = 20;
-const WAVE_SVG = `<svg xmlns='http://www.w3.org/2000/svg' width='${WAVE_TILE_WIDTH}' height='${WAVE_TILE_HEIGHT}' viewBox='0 0 ${WAVE_TILE_WIDTH} ${WAVE_TILE_HEIGHT}'><path d='M 0 10 C 20 4 60 16 80 10' stroke='${DOT_COLOR}' stroke-width='1.4' stroke-dasharray='1.2 2.4' stroke-linecap='round' fill='none'/><path d='M 0 10 C 20 16 60 4 80 10' stroke='${DOT_COLOR}' stroke-width='1.4' stroke-dasharray='1.2 2.4' stroke-linecap='round' fill='none'/></svg>`;
+const WAVE_TILE_HEIGHT = 28;
+const WAVE_SVG = `<svg xmlns='http://www.w3.org/2000/svg' width='${WAVE_TILE_WIDTH}' height='${WAVE_TILE_HEIGHT}' viewBox='0 0 ${WAVE_TILE_WIDTH} ${WAVE_TILE_HEIGHT}'><path d='M 0 14 C 20 2 60 26 80 14' stroke='${STROKE_COLOR}' stroke-width='0.9' stroke-dasharray='1.4 3' stroke-linecap='round' fill='none'/><path d='M 0 14 C 20 26 60 2 80 14' stroke='${STROKE_COLOR}' stroke-width='0.9' stroke-dasharray='1.4 3' stroke-linecap='round' fill='none'/></svg>`;
 const WAVE_BG = `url("data:image/svg+xml;utf8,${encodeURIComponent(WAVE_SVG)}")`;
-const MARKER_COLOR = "#2D1E14";
 
 export function AboutTimeline() {
   const trackRef = useRef<HTMLDivElement | null>(null);
 
-  // Step scroll by one column width. The first child of the track's
-  // inner row is the leading continuation segment; the second is the
-  // first milestone — measure that to get a stable column width.
-  const scrollByColumn = useCallback((direction: 1 | -1) => {
-    const el = trackRef.current;
-    if (!el) return;
-    const row = el.firstElementChild as HTMLDivElement | null;
-    const firstColumn = row?.querySelector<HTMLDivElement>(
-      "[data-milestone-column]",
-    );
-    const step = firstColumn?.offsetWidth ?? 320;
-    el.scrollBy({ left: step * direction, behavior: "smooth" });
-  }, []);
-
   return (
     <section
       id="timeline"
-      className="relative overflow-hidden rounded-[28px]"
+      className="group/timeline relative overflow-hidden rounded-[28px]"
       style={{
         background:
           "linear-gradient(180deg, #FBF6F0 0%, #F6E5D2 65%, #F2DCC4 100%)",
       }}
     >
-      <div className="container-page pt-24 md:pt-32 lg:pt-40">
+      <div className="container-page pt-16 md:pt-20 lg:pt-24">
         <Intro />
-        <DragHint onLeft={() => scrollByColumn(-1)} onRight={() => scrollByColumn(1)} />
       </div>
 
       <HorizontalTimeline trackRef={trackRef} />
 
-      <div className="h-24 md:h-32 lg:h-40" />
+      <div className="h-12 md:h-16 lg:h-20" />
     </section>
   );
 }
@@ -124,7 +119,7 @@ function Intro() {
         </h2>
       </Reveal>
       <Reveal delay={200}>
-        <p className="mt-7 max-w-[58ch] body-prose">
+        <p className="mt-6 max-w-[58ch] body-prose">
           Chronilogix didn&rsquo;t start with a pitch deck. It started with
           research. The intellectual foundation of our platform, Motivational
           Interviewing as a scalable intervention for chronic and behavioral
@@ -133,26 +128,6 @@ function Intro() {
         </p>
       </Reveal>
     </div>
-  );
-}
-
-function DragHint({
-  onLeft,
-  onRight,
-}: {
-  onLeft: () => void;
-  onRight: () => void;
-}) {
-  return (
-    <Reveal delay={300}>
-      <div className="mt-10 flex items-center justify-center gap-5 md:mt-14">
-        <ChevButton dir="left" onClick={onLeft} />
-        <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-muted">
-          drag
-        </span>
-        <ChevButton dir="right" onClick={onRight} />
-      </div>
-    </Reveal>
   );
 }
 
@@ -166,6 +141,8 @@ function HorizontalTimeline({
 }: {
   trackRef: React.MutableRefObject<HTMLDivElement | null>;
 }) {
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const indicatorRef = useRef<HTMLDivElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
@@ -213,23 +190,11 @@ function HorizontalTimeline({
       setIsDragging(false);
     };
 
-    // Block click events that fire after a drag — otherwise an accidental
-    // chevron-button click could fire on pointerup at the end of a drag
-    // that started over the button.
-    const onClickCapture = (e: MouseEvent) => {
-      if (moved) {
-        e.stopPropagation();
-        e.preventDefault();
-        moved = false;
-      }
-    };
-
     el.addEventListener("pointerdown", onPointerDown);
     el.addEventListener("pointermove", onPointerMove);
     el.addEventListener("pointerup", release);
     el.addEventListener("pointercancel", release);
     el.addEventListener("pointerleave", release);
-    el.addEventListener("click", onClickCapture, true);
 
     return () => {
       el.removeEventListener("pointerdown", onPointerDown);
@@ -237,70 +202,160 @@ function HorizontalTimeline({
       el.removeEventListener("pointerup", release);
       el.removeEventListener("pointercancel", release);
       el.removeEventListener("pointerleave", release);
-      el.removeEventListener("click", onClickCapture, true);
     };
   }, [trackRef]);
 
+  // Cursor-following drag indicator. We update the indicator's transform
+  // directly via the ref on every mousemove rather than going through
+  // React state — at hover rates this would otherwise trigger a re-render
+  // every animation frame and stutter under load.
+  const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const wrapper = wrapperRef.current;
+    const indicator = indicatorRef.current;
+    if (!wrapper || !indicator) return;
+    const rect = wrapper.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    // Sit the pill just below-right of the cursor — close enough to read
+    // as "attached to the mouse", offset enough that it doesn't sit
+    // underneath the cursor itself.
+    indicator.style.transform = `translate(${x + 14}px, ${y + 10}px)`;
+  }, []);
+
   return (
     <div
-      ref={trackRef}
-      className="mt-32 overflow-x-auto [&::-webkit-scrollbar]:hidden md:mt-44 lg:mt-52"
-      style={{
-        cursor: isDragging ? "grabbing" : "grab",
-        scrollbarWidth: "none",
-        msOverflowStyle: "none",
-        WebkitOverflowScrolling: "touch",
-        touchAction: "pan-x",
-        // Soft fade on BOTH edges of the track so the row feels continuous —
-        // implies lineage extending past the visible window in both directions.
-        maskImage:
-          "linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%)",
-        WebkitMaskImage:
-          "linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%)",
-      }}
+      ref={wrapperRef}
+      className="group/track relative mt-8 md:mt-10 lg:mt-12"
+      onMouseMove={onMouseMove}
     >
-      <div className="flex select-none">
-        {/* Leading dotted continuation — mirrors the trailing segment so the
-            line reads as if it stretches in from before "today". */}
-        <DottedFiller direction="leading" />
+      <div
+        ref={trackRef}
+        className="overflow-x-auto [&::-webkit-scrollbar]:hidden"
+        style={{
+          cursor: isDragging ? "grabbing" : "grab",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          WebkitOverflowScrolling: "touch",
+          touchAction: "pan-x",
+          // Soft fade on BOTH edges of the track so the row feels continuous —
+          // implies lineage extending past the visible window in both directions.
+          maskImage:
+            "linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%)",
+        }}
+      >
+        <div className="relative flex select-none">
+          {/* Continuous wave band — one element spans the entire row width,
+              sitting behind the columns. The columns layer on top and
+              contribute only the markers at their left edges; the wave is
+              unbroken end-to-end so the journey reads as a single, living
+              current rather than a chain of segments. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 h-[44px] md:h-[52px]"
+          >
+            <WaveBand />
+          </div>
 
-        {MILESTONES.map((m, i) => (
-          <MilestoneColumn
-            key={m.era}
-            milestone={m}
-            index={i}
-            isLaunch={i === 0}
-          />
-        ))}
+          <DottedFiller />
 
-        {/* Trailing dotted continuation — the lineage runs deeper still. */}
-        <DottedFiller direction="trailing" />
+          {MILESTONES.map((m, i) => (
+            <MilestoneColumn key={m.era} milestone={m} index={i} />
+          ))}
+
+          <DottedFiller />
+        </div>
+      </div>
+
+      {/* Cursor-following drag indicator. Hidden by default, fades in on
+          hover, and tracks the mouse position via the onMouseMove handler
+          on the wrapper. pointer-events-none so it doesn't block drag. */}
+      <div
+        ref={indicatorRef}
+        aria-hidden
+        className="pointer-events-none absolute left-0 top-0 z-20 opacity-0 transition-opacity duration-200 ease-out group-hover/track:opacity-100 motion-reduce:transition-none"
+        style={{ transform: "translate(-9999px, -9999px)" }}
+      >
+        <DragPill />
       </div>
     </div>
   );
 }
 
-function DottedFiller({ direction }: { direction: "leading" | "trailing" }) {
-  const isLeading = direction === "leading";
+/**
+ * Small label that follows the mouse cursor when the visitor hovers the
+ * timeline track. Chevron-flanked "drag" text in a dark pill so it reads
+ * as a quiet affordance against the warm-paper background.
+ */
+function DragPill() {
+  return (
+    <div className="flex items-center gap-1.5 whitespace-nowrap rounded-full bg-ink/85 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white shadow-[0_6px_18px_-8px_rgba(40,25,15,0.4)] backdrop-blur-sm">
+      <svg
+        width="10"
+        height="10"
+        viewBox="0 0 14 14"
+        fill="none"
+        aria-hidden
+      >
+        <path
+          d="M9 3 L4 7 L9 11"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      drag
+      <svg
+        width="10"
+        height="10"
+        viewBox="0 0 14 14"
+        fill="none"
+        aria-hidden
+      >
+        <path
+          d="M5 3 L10 7 L5 11"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
+  );
+}
+
+/**
+ * A single wave layer fills the band. It carries both animations —
+ * horizontal drift (14s linear) AND the scaleY amplitude breathe (5s
+ * ease-in-out, ranging 0.4× → 1.6×) — so the line reads as one living
+ * curve that grows and contracts in place.
+ */
+function WaveBand() {
+  const layerStyle: React.CSSProperties = {
+    backgroundSize: `${WAVE_TILE_WIDTH}px ${WAVE_TILE_HEIGHT}px`,
+    backgroundRepeat: "repeat-x",
+    backgroundPosition: "center",
+    willChange: "background-position, transform",
+  };
+  return (
+    <div
+      className="timeline-wave absolute inset-x-0 top-1/2 h-7 -translate-y-1/2 md:h-8"
+      style={{ ...layerStyle, backgroundImage: WAVE_BG }}
+    />
+  );
+}
+
+/**
+ * Width-only spacer for the leading/trailing edges. The continuous wave
+ * layer above is the visual; this just reserves horizontal space so the
+ * lineage feels like it extends past the visible window in both directions.
+ */
+function DottedFiller() {
   return (
     <div className="shrink-0 w-[clamp(80px,12vw,180px)]">
-      <div className="relative h-[40px] md:h-[48px]">
-        <div
-          className="absolute inset-x-0 top-1/2 h-5 -translate-y-1/2"
-          style={{
-            backgroundImage: WAVE_BG,
-            backgroundSize: `${WAVE_TILE_WIDTH}px ${WAVE_TILE_HEIGHT}px`,
-            backgroundRepeat: "repeat-x",
-            backgroundPosition: "center",
-            maskImage: isLeading
-              ? "linear-gradient(to right, transparent 0%, #000 100%)"
-              : "linear-gradient(to right, #000 0%, transparent 100%)",
-            WebkitMaskImage: isLeading
-              ? "linear-gradient(to right, transparent 0%, #000 100%)"
-              : "linear-gradient(to right, #000 0%, transparent 100%)",
-          }}
-        />
-      </div>
+      <div className="h-[44px] md:h-[52px]" />
     </div>
   );
 }
@@ -308,113 +363,40 @@ function DottedFiller({ direction }: { direction: "leading" | "trailing" }) {
 function MilestoneColumn({
   milestone,
   index,
-  isLaunch,
 }: {
   milestone: Milestone;
   index: number;
-  isLaunch: boolean;
 }) {
   return (
     <div
       data-milestone-column
-      className="shrink-0 w-[320px] pr-12 md:w-[460px] md:pr-16 lg:w-[540px] lg:pr-20"
+      className="relative z-10 shrink-0 w-[260px] pr-10 md:w-[340px] md:pr-12 lg:w-[400px] lg:pr-14"
     >
-      {/* Top: dotted line with a square marker anchored at the left edge.
-          The line continues across every column so the whole row reads as
-          one continuous timeline. */}
-      <div className="relative h-[40px] md:h-[48px]">
-        <div
-          className="absolute inset-x-0 top-1/2 h-5 -translate-y-1/2"
-          style={{
-            backgroundImage: WAVE_BG,
-            backgroundSize: `${WAVE_TILE_WIDTH}px ${WAVE_TILE_HEIGHT}px`,
-            backgroundRepeat: "repeat-x",
-            backgroundPosition: "center",
-          }}
-        />
-        {/* The "today" marker gets brand-orange + a soft pulse so the eye
-            lands on where the company is right now, before reading rightward
-            into history. */}
-        {isLaunch ? (
-          <span
-            aria-hidden
-            className="absolute left-0 top-1/2 -translate-y-1/2"
-            style={{ width: 10, height: 10 }}
-          >
-            <span
-              className="absolute inset-0 rounded-[1px] bg-brand-accent motion-reduce:animate-none"
-              style={{ animation: "livePulse 2.4s ease-in-out infinite" }}
-            />
-            <span
-              aria-hidden
-              className="absolute -inset-1.5 rounded-[3px] bg-brand-accent/20 motion-reduce:animate-none"
-              style={{
-                animation: "livePulse 2.4s ease-in-out infinite",
-                animationDelay: "1.2s",
-              }}
-            />
-          </span>
-        ) : (
-          <span
-            aria-hidden
-            className="absolute left-0 top-1/2 -translate-y-1/2"
-            style={{
-              width: 9,
-              height: 9,
-              background: MARKER_COLOR,
-            }}
-          />
-        )}
-      </div>
+      {/* Spacer to reserve the height of the continuous wave band above.
+          No markers — the wave runs uninterrupted; era labels anchor each
+          milestone visually. */}
+      <div className="h-[44px] md:h-[52px]" />
 
-      {/* Content */}
+      {/* Content — era is the small brand label, title is the serif
+          anchor, body is the descriptive prose underneath. Matches the
+          reference timeline graphic's hierarchy. */}
       <Reveal delay={index * 60}>
-        <div className="pt-10 md:pt-14">
-          <p
-            className="font-serif font-normal leading-[0.98] tracking-[-0.02em] text-ink"
-            style={{ fontSize: "clamp(34px, 4vw, 56px)" }}
-          >
+        <div className="pt-7 md:pt-9">
+          <p className="text-[12px] font-medium uppercase tracking-[0.12em] text-brand-700">
             {milestone.era}
           </p>
-          <p className="mt-6 max-w-[34ch] text-[14px] leading-relaxed text-ink-muted md:mt-7 md:text-[15px]">
+          <h3
+            className="mt-3 font-serif font-normal leading-[1.05] tracking-[-0.018em] text-ink"
+            style={{ fontSize: "clamp(22px, 2.6vw, 34px)" }}
+          >
+            {milestone.title}
+          </h3>
+          <p className="mt-4 max-w-[32ch] text-[13.5px] leading-relaxed text-ink-muted md:mt-5 md:text-[14.5px]">
             {milestone.body}
           </p>
         </div>
       </Reveal>
     </div>
-  );
-}
-
-function ChevButton({
-  dir,
-  onClick,
-}: {
-  dir: "left" | "right";
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={dir === "left" ? "Scroll timeline left" : "Scroll timeline right"}
-      className="group/chev -m-3 inline-flex h-11 w-11 items-center justify-center text-ink-muted transition-colors duration-200 ease-out hover:text-ink focus:outline-none focus-visible:text-ink"
-    >
-      <svg
-        width="14"
-        height="14"
-        viewBox="0 0 14 14"
-        fill="none"
-        aria-hidden
-      >
-        <path
-          d={dir === "left" ? "M9 3 L4 7 L9 11" : "M5 3 L10 7 L5 11"}
-          stroke="currentColor"
-          strokeWidth="1.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </button>
   );
 }
 

@@ -140,7 +140,7 @@ export function HiwRoniGrid() {
     <div
       ref={ref}
       data-revealed={inView ? "true" : "false"}
-      className="border-t border-b border-ink/[0.07]"
+      className="overflow-hidden rounded-[24px] border border-ink/[0.07]"
     >
       <div className="grid grid-cols-1 lg:grid-cols-4 lg:grid-rows-2">
         {cells.map((cell, i) => {
@@ -212,8 +212,8 @@ function AvatarAndChat() {
           I keep forgetting to check my sugar before meals.
         </MemberBubble>
         <CoachBubble>
-          Forgetting isn&rsquo;t failure. Pair the check with your coffee
-          — we&rsquo;re stacking, not adding willpower.
+          Forgetting isn&rsquo;t failure. Pair the check with your coffee.
+          We&rsquo;re stacking, not adding willpower.
         </CoachBubble>
       </div>
     </div>
@@ -279,13 +279,12 @@ function NameAndDescription() {
           the name, but at a smaller scale so the hierarchy stays clear.
           Brand-tinted slash ties it to the agent's accent color. */}
       <p className="mt-3 font-serif text-[18px] font-normal leading-[1.3] text-ink-soft md:text-[20px]">
-        <span style={{ color: "#E45A1C" }}>/</span>{" "}
-        Diabetes &amp; chronic care coach
+        Diabetes and chronic care coach
       </p>
       <p className="mt-6 max-w-[44ch] body-prose md:mt-7">
         Built for the gap between clinical appointments. The meal that
         breaks the plan, the medication you considered skipping, the
-        morning you woke up exhausted. The moments that decide A1C —
+        morning you woke up exhausted. The moments that decide A1C.
         Roni is there for them.
       </p>
     </div>

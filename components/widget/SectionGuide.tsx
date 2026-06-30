@@ -1,15 +1,16 @@
 "use client";
 
-// SectionGuide — compact bottom-left companion for the homepage.
+// SectionGuide, compact bottom-left companion for the homepage.
 //
 // Two halves, no headings:
 //   1) A vertical-rail TOC of homepage sections. Same rail treatment as
 //      the Who-We-Serve persona tabs (track + brand-gradient fill +
 //      pulsing knob), but scaled thin so it lives quietly in the
 //      corner. Click to scroll; scroll-spy moves the knob.
-//   2) A single line of copy that names a buyer pain and how
-//      Chronilogix meets it. Cross-fades (no slider) on a slow timer,
-//      with a hanging roman numeral anchoring each line.
+//   2) A single line of copy that summarizes the section currently in
+//      view. Crossfades whenever the scroll-spy advances; the roman
+//      numeral marker tracks the section's position on the page so the
+//      visitor always knows where they are in the argument.
 //
 // Material: paper-warm panel that matches the cream homepage, lifted by
 // a layered shadow (cool sharp + warm brand-tinted underlay), with a
@@ -24,49 +25,54 @@
 import { useEffect, useMemo, useState } from "react";
 
 type TocItem = {
-  // null id means "scroll to top" — the hero has no DOM id of its own.
+  // null id means "scroll to top". The hero has no DOM id of its own.
   id: string | null;
   label: string;
 };
 
-// TOC labels are conventional + clear — what a healthcare buyer
+// TOC labels are conventional and clear. What a healthcare buyer
 // expects to see in a nav, not the homepage's internal arc names
 // ("Statement", "Outcome"). Each ≤ 12 chars so the compact rail keeps
-// its single-column rhythm.
+// its single-column rhythm. Method (MIExplainer) and Voices
+// (Testimonials) ride alongside the original seven.
 const TOC: TocItem[] = [
   { id: null, label: "Overview" },
   { id: "statement", label: "Mission" },
+  { id: "motivational-interviewing", label: "Method" },
   { id: "solution", label: "Platform" },
   { id: "problem", label: "The gap" },
   { id: "outcome", label: "Outcomes" },
   { id: "who-we-serve", label: "Who it's for" },
   { id: "customer-stories", label: "Proof" },
+  { id: "testimonials", label: "Voices" },
 ];
 const STEP_COUNT = TOC.length;
 
-// Rotating one-liners — rewritten for the V5 storyline.
-//
-// V5 opens with the chatbot indictment ("Most chatbots ask, answer,
-// sell, dispense. People don't change like that — Motivational
-// Interviewing is how they do.") and the four MI processes (engage,
-// focus, evoke, plan). The widget's lines lean into that MI-first
-// narrative: I/II reframe the chatbot vs MI contrast, III names the
-// method + Resnicow, IV/V hold the cost + data-policy proofs from
-// the homepage copy.
-const LINES: string[] = [
-  // The indictment — echoes the StatementV5 heading.
+// Section-keyed copy. Each line summarizes the section the visitor is
+// currently in, in the same voice the section itself uses. Roman
+// numeral marker reflects the section's position on the page so the
+// widget reads as an argument index, not an arbitrary carousel.
+const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"];
+const SECTION_LINES: string[] = [
+  // Overview / top of page. Brand framing.
+  "Clinical grade AI coaching, for every member who would otherwise wait.",
+  // Mission (statement). Echoes the StatementV5 indictment.
   "Most chatbots dispense answers. Chronilogix listens, reflects, and draws change out.",
-  // The method — V5 hero's attribution + the four cards' subjects.
-  "Engage, focus, evoke, plan. Chronilogix is built on Dr. Resnicow's 30 years of MI research.",
-  // University — counselor ratio, immediate availability.
-  "200 students per counselor; two-week waits. Chronilogix answers the moment a student reaches out.",
-  // Health plans — cost story.
-  "Live coaching doesn't scale. Chronilogix delivers the outcomes at 50–70% lower cost.",
-  // IT / compliance / legal — verbatim from Section 7.
-  "Member data is never used to train our models. Not now. Not ever.",
+  // Method (MIExplainer). Names the four MI processes.
+  "Engage, focus, evoke, plan. Four processes from 30 years of MI research.",
+  // Platform (Solution). Names the two coaches.
+  "Roni for chronic care, Millie for mental health, on one MI engine.",
+  // The gap (Problem). Surfaces the access shortfall.
+  "200 students per counselor. Two week waits. Care that arrives only at crisis.",
+  // Outcomes. The Aetna engagement uplift.
+  "From 53 to 76% engagement. What changes when coaching scales.",
+  // Who it's for (WhoWeServe). Names the four buyer surfaces.
+  "Health plans, employers, universities, partner apps.",
+  // Proof (CustomerStories). Resnicow + clinical evidence.
+  "Thirty years of clinical evidence, behind every Chronilogix conversation.",
+  // Voices (Testimonials). Beta member voice.
+  "Unedited reflections from members on what the coaching felt like.",
 ];
-const ROTATION_MS = 6000;
-const ROMAN = ["I", "II", "III", "IV", "V"];
 
 // Match the site's primary motion curve (out-quart) so this widget's
 // transitions read as part of the same system.
@@ -84,8 +90,6 @@ export function SectionGuide() {
   // logic below would fight the user.
   const [userToggled, setUserToggled] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [lineIdx, setLineIdx] = useState(0);
-  const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   // Gate: the widget stays hidden over the hero so it doesn't compete
   // with the opening moment. It mounts only once the next section
@@ -213,15 +217,6 @@ export function SectionGuide() {
     };
   }, [revealed, open, userToggled]);
 
-  // Line rotation. Pause on hover so the visitor can finish reading.
-  useEffect(() => {
-    if (paused || reducedMotion) return;
-    const t = window.setInterval(() => {
-      setLineIdx((i) => (i + 1) % LINES.length);
-    }, ROTATION_MS);
-    return () => window.clearInterval(t);
-  }, [paused, reducedMotion]);
-
   // Map the active section id to an index on the rail. Top === 0.
   const activeIndex = useMemo(() => {
     if (activeId === null) return 0;
@@ -276,8 +271,6 @@ export function SectionGuide() {
         <div
           role="complementary"
           aria-label="Page guide"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
           className="pointer-events-auto relative w-[244px] origin-bottom-left overflow-hidden rounded-[14px]"
           style={{
             background: PANEL_BG,
@@ -428,22 +421,23 @@ export function SectionGuide() {
             }}
           />
 
-          {/* Part 2 — single line + roman numeral marker. Two stacked
-              layers swap opacity so the transition is a true crossfade,
-              never a slide. The slot pins to a stable height so the
-              widget doesn't reflow as lines change length. */}
+          {/* Part 2 — single line + roman numeral marker keyed to the
+              section currently in view. All N lines render layered so
+              transitions are a true crossfade rather than a remount.
+              The slot pins to a stable min-height so the widget doesn't
+              reflow as section-specific lines change length. */}
           <div
             className="relative px-3.5 pb-4 pt-3"
             aria-live="polite"
           >
             <div className="relative grid grid-cols-[14px_1fr] gap-x-2">
-              {/* Roman numeral column — same italic-serif marker the
-                  Who-We-Serve section uses for its argument rows. Acts as
-                  a quiet anchor so the rotating line has a typographic
-                  hand-hold instead of floating in space. */}
-              <div className="relative h-[68px]">
-                {LINES.map((_, i) => {
-                  const isActive = i === lineIdx;
+              {/* Roman numeral column — italic serif marker mirroring
+                  the Who-We-Serve argument rows. Numbers reflect the
+                  section's order on the page so the visitor reads it as
+                  an index, not a counter. */}
+              <div className="relative min-h-[78px]">
+                {SECTION_LINES.map((_, i) => {
+                  const isActive = i === activeIndex;
                   return (
                     <span
                       key={i}
@@ -452,7 +446,7 @@ export function SectionGuide() {
                         opacity: isActive ? 1 : 0,
                         transition: reducedMotion
                           ? "none"
-                          : `opacity 700ms ${RAIL_EASE}`,
+                          : `opacity 500ms ${RAIL_EASE}`,
                       }}
                     >
                       {ROMAN[i] ?? String(i + 1)}.
@@ -462,9 +456,9 @@ export function SectionGuide() {
               </div>
 
               {/* Line column. */}
-              <div className="relative h-[68px]">
-                {LINES.map((text, i) => {
-                  const isActive = i === lineIdx;
+              <div className="relative min-h-[78px]">
+                {SECTION_LINES.map((text, i) => {
+                  const isActive = i === activeIndex;
                   return (
                     <p
                       key={i}
@@ -476,7 +470,7 @@ export function SectionGuide() {
                           : "translateY(2px)",
                         transition: reducedMotion
                           ? "none"
-                          : `opacity 700ms ${RAIL_EASE}, transform 700ms ${RAIL_EASE}`,
+                          : `opacity 500ms ${RAIL_EASE}, transform 500ms ${RAIL_EASE}`,
                       }}
                     >
                       {text}
@@ -486,27 +480,6 @@ export function SectionGuide() {
               </div>
             </div>
           </div>
-
-          {/* Dwell progress hairline — pinned to the bottom of the
-              panel. 1px brand gradient that sweeps left to right across
-              each ROTATION_MS dwell, pausing when the visitor hovers
-              and restarting cleanly on each new line. The key remount
-              guarantees the animation begins from scaleX(0) every
-              rotation, matching the line transition. */}
-          {!reducedMotion && (
-            <span
-              aria-hidden
-              key={lineIdx}
-              className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left"
-              style={{
-                background:
-                  "linear-gradient(90deg, rgba(255,176,136,0) 0%, #FF7434 55%, #E45A1C 100%)",
-                transform: "scaleX(0)",
-                animation: `guideDwell ${ROTATION_MS}ms linear forwards`,
-                animationPlayState: paused ? "paused" : "running",
-              }}
-            />
-          )}
         </div>
       ) : (
         <button

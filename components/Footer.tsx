@@ -49,9 +49,15 @@ export function Footer() {
               backfaceVisibility: "hidden",
             }}
           >
-            {/* Items duplicated inline so a single track animation can loop
-                by translating exactly -50% — no jump at the loop boundary. */}
-            {[0, 1].flatMap((loopIndex) =>
+            {/* Items repeated 4× so the loop never runs dry. A single copy
+                of CAROUSEL is ~1272px wide; on viewports above that the
+                trailing edge would show the cream background before the
+                loop resets. 4 copies keeps at least 2 copies' worth
+                (~2568px) of content visible at every point in the cycle,
+                covering desktop and most wide displays. The existing
+                calc(-50% - 12px) keyframe still resolves to exactly two
+                copies' shift, so the loop point stays seamless. */}
+            {[0, 1, 2, 3].flatMap((loopIndex) =>
               CAROUSEL.map((img, i) => {
                 const offsets = ["mb-0", "mb-6", "mb-2", "mb-8", "mb-3", "mb-5"];
                 const offset = offsets[i % offsets.length];
@@ -79,16 +85,20 @@ export function Footer() {
           </ul>
         </div>
 
-        {/* Big closing CTA */}
+        {/* Big closing CTA — minimal close. The page has already made the
+            argument; this just opens the door. Short body sits centered
+            without a tight max-width so it doesn't feel orphaned under the
+            big display headline. */}
         <div className="container-page mt-24 text-center md:mt-32 lg:mt-40">
           <h3 className="mx-auto text-display font-serif font-normal text-ink">
-            <span className="md:whitespace-nowrap">Human coaches cannot scale.</span>
+            <span className="md:whitespace-nowrap">Coaching, every day.</span>
             <br />
-            <span className="text-brand-700">Our AI can.</span>
+            <span className="text-brand-700">For every member.</span>
           </h3>
-          <p className="mx-auto mt-7 max-w-[46ch] body-quiet">
-            Always on. Never judging. Built so members keep showing up, and so
-            the people behind every program can finally reach all of them.
+          <p className="mx-auto mt-7 max-w-[52ch] body-quiet">
+            Book a 30 minute demo. We&rsquo;ll walk through a live coaching
+            session, the clinical method behind it, and the impact modeled
+            for your member population.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
             <a href="#book-a-demo" className="btn-primary">
@@ -98,7 +108,7 @@ export function Footer() {
               href="#whitepaper"
               className="group/wp btn-secondary"
             >
-              Download whitepaper
+              Download the Whitepaper
               <svg
                 width="12"
                 height="12"

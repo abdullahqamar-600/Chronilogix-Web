@@ -214,7 +214,7 @@ type Card = {
 const CARDS: Card[] = [
   {
     src: "/for-employees.png",
-    alt: "A quiet, open frame — the kind of moment between scheduled care.",
+    alt: "A quiet, open frame, the kind of moment between scheduled care.",
     label: "The moments care can't schedule for",
     body:
       "11 PM stress eating. Anxiety at midnight. The skipped evening dose. Chronilogix is there when the appointment isn't.",
@@ -225,7 +225,7 @@ const CARDS: Card[] = [
     alt: "A still frame from the long stretch after an appointment ends.",
     label: "The space after the appointment",
     body:
-      "After discharge, after the session, after motivation slips — continuous reinforcement that keeps people from quietly falling through.",
+      "After discharge, after the session, after motivation slips. Continuous reinforcement that keeps people from quietly falling through.",
     aspect: "aspect-[3/4]",
   },
 ];

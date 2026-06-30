@@ -24,10 +24,10 @@ export function BlogNewsletter() {
                 In Practice
               </div>
               <h2 className="mt-3 text-section font-medium text-white">
-                Get our quarterly briefing on behavioral health, chronic care, and clinical-grade AI.
+                Get our quarterly briefing on behavioral health, chronic care, and clinical grade AI.
               </h2>
               <p className="mt-3 text-sm text-white/85 md:text-base">
-                New research, field notes, and product updates from Chronilogix — straight to your inbox.
+                New research, field notes, and product updates from Chronilogix, straight to your inbox.
               </p>
             </div>
 

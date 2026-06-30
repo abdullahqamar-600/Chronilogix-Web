@@ -3,9 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Closing CTA section for the About page. Dark ink slab, warm wash, two
- * CTAs (Get in Touch / See How It Works), and a small contact line for
- * direct outreach to Steven.
+ * Closing CTA section for the About page. Warm-paper register matching the
+ * rest of the site — no dark slab. A brand-orange radial wash from the top
+ * gives the close its "lights up" energy without resorting to ink.
+ * Two CTAs (Get in Touch / See How It Works), a contact line for direct
+ * outreach to Steven, and a folded legal strip act as the page's bookend.
  */
 export function AboutClosingCTA() {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -36,30 +38,31 @@ export function AboutClosingCTA() {
   return (
     <section
       id="get-in-touch"
-      data-nav-tone="dark"
       ref={ref}
-      className="relative overflow-hidden rounded-[28px] bg-ink py-24 md:py-32 lg:py-40"
+      className="relative overflow-hidden rounded-[28px] bg-paper-warm py-24 md:py-32 lg:py-40"
     >
+      {/* Brand wash from the top — picks up the same radial idiom AboutTeam
+          uses, anchoring the close as a visual bookend. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(70% 60% at 50% 0%, rgba(255,116,52,0.22) 0%, transparent 60%)",
+            "radial-gradient(80% 65% at 50% 0%, rgba(255,116,52,0.20) 0%, rgba(249,144,77,0.08) 35%, transparent 70%)",
         }}
       />
 
       <div className="container-page relative text-center">
         <h2
-          className="mx-auto max-w-[20ch] text-display font-serif font-normal text-white"
+          className="mx-auto max-w-[20ch] text-display font-serif font-normal text-ink"
           style={reveal(0)}
         >
           Let&rsquo;s create a future where{" "}
-          <span className="text-brand-accent italic">care listens first.</span>
+          <span className="text-brand italic">care listens first.</span>
         </h2>
 
         <p
-          className="mx-auto mt-7 max-w-[52ch] text-[18px] leading-relaxed text-white/70 md:text-[20px]"
+          className="mx-auto mt-7 max-w-[52ch] text-[18px] leading-relaxed text-ink-soft md:text-[20px]"
           style={reveal(140)}
         >
           Whether you&rsquo;re an employer, a health plan, a benefits broker,
@@ -73,17 +76,44 @@ export function AboutClosingCTA() {
         >
           <a
             href="mailto:steven@chronilogix.com"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-medium text-ink shadow-soft transition-all duration-300 ease-out motion-reduce:transition-none hover:bg-brand-accent hover:text-white hover:shadow-[0_6px_24px_-8px_rgba(255,116,52,0.55)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
+            className="btn-primary group/cta-primary"
           >
             Get in Touch
-            <Arrow />
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              aria-hidden
+              className="transition-transform duration-300 ease-out motion-reduce:transition-none group-hover/cta-primary:translate-x-1"
+            >
+              <path
+                d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </a>
-          <a
-            href="/product"
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/25 px-7 py-3.5 text-sm font-medium text-white transition-all duration-300 ease-out motion-reduce:transition-none hover:border-brand-accent hover:bg-brand-accent hover:shadow-[0_6px_24px_-8px_rgba(255,116,52,0.55)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
-          >
+          <a href="/product" className="btn-secondary group/cta-secondary">
             See How It Works
-            <Arrow />
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              aria-hidden
+              className="transition-transform duration-300 ease-out motion-reduce:transition-none group-hover/cta-secondary:translate-x-1"
+            >
+              <path
+                d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </a>
         </div>
 
@@ -91,25 +121,25 @@ export function AboutClosingCTA() {
           className="mx-auto mt-16 max-w-[56ch]"
           style={reveal(380)}
         >
-          <p className="font-serif text-[13.5px] italic text-white/55">
+          <p className="font-serif text-[13.5px] italic text-ink-muted">
             Or reach Steven directly
           </p>
-          <p className="mt-4 text-[15px] leading-relaxed text-white/80 md:text-[16px]">
-            <span className="text-white">Steven Amiel</span>, CEO
-            <span aria-hidden className="mx-3 text-white/30">
+          <p className="mt-4 text-[15px] leading-relaxed text-ink md:text-[16px]">
+            <span className="font-medium text-ink">Steven Amiel</span>, CEO
+            <span aria-hidden className="mx-3 text-ink/30">
               &middot;
             </span>
             <a
-              className="text-white/80 underline decoration-white/25 underline-offset-4 transition-colors hover:text-brand-accent hover:decoration-brand-accent"
+              className="text-ink-soft underline decoration-ink/20 underline-offset-4 transition-colors hover:text-brand-accent hover:decoration-brand-accent"
               href="mailto:steven@chronilogix.com"
             >
               steven@chronilogix.com
             </a>
-            <span aria-hidden className="mx-3 text-white/30">
+            <span aria-hidden className="mx-3 text-ink/30">
               &middot;
             </span>
             <a
-              className="text-white/80 underline decoration-white/25 underline-offset-4 transition-colors hover:text-brand-accent hover:decoration-brand-accent"
+              className="text-ink-soft underline decoration-ink/20 underline-offset-4 transition-colors hover:text-brand-accent hover:decoration-brand-accent"
               href="tel:+16465221447"
             >
               (646) 522 1447
@@ -118,14 +148,14 @@ export function AboutClosingCTA() {
         </div>
 
         {/* Bottom legal strip — folded into the CTA so this section acts
-            as the page footer (the global Footer has been removed from
-            /about). Calm, low-contrast, keeps the dark slab balanced. */}
+            as the page footer (the global Footer is omitted from /about).
+            Hairline + muted ink colors keep it calm. */}
         <div
-          className="relative mt-20 border-t border-white/[0.08] pt-7 md:mt-24"
+          className="relative mt-20 border-t border-ink/10 pt-7 md:mt-24"
           style={reveal(500)}
         >
           <div className="flex flex-col items-center justify-between gap-4 text-left md:flex-row md:gap-6">
-            <p className="text-[12.5px] text-white/45">
+            <p className="text-[12.5px] text-ink-muted">
               &copy; {new Date().getFullYear()} Chronilogix, Inc. All rights reserved.
             </p>
             <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
@@ -138,7 +168,7 @@ export function AboutClosingCTA() {
                 <li key={l.label}>
                   <a
                     href={l.href}
-                    className="text-[12.5px] font-medium text-white/55 transition-colors duration-200 ease-out hover:text-white"
+                    className="text-[12.5px] font-medium text-ink-muted transition-colors duration-200 ease-out hover:text-ink"
                   >
                     {l.label}
                   </a>
@@ -152,16 +182,3 @@ export function AboutClosingCTA() {
   );
 }
 
-function Arrow() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-      <path
-        d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}

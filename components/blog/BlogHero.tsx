@@ -8,7 +8,7 @@ export function BlogHero() {
             In Practice
           </h1>
           <p className="body-prose max-w-xl text-balance text-ink-muted">
-            Where behavioral science meets clinical-grade AI. Research,
+            Where behavioral science meets clinical grade AI. Research,
             product notes, and field reports from the Chronilogix team.
           </p>
         </div>

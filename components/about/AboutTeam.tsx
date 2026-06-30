@@ -1,37 +1,48 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AIOrb } from "@/components/AIOrb";
 
-type Leader = {
+type Person = {
   name: string;
   role: string;
+  // Portrait file under /public.
+  photo: string;
+  // Optional in-page anchor to a deeper section. Used to hand the reader
+  // off to a longer treatment of this person's work (e.g. Resnicow → the
+  // science slab) without crowding the card with copy.
+  more?: { href: string; label: string };
 };
 
-type Advisor = {
-  name: string;
-  role: string;
-};
-
-const LEADERS: Leader[] = [
-  { name: "Steven Amiel", role: "CEO and Cofounder" },
-  { name: "Dr. Kenneth Resnicow", role: "Chief Science Officer" },
-  { name: "Lou Ramery", role: "Chief Marketing Officer" },
-  { name: "Michael Lazor", role: "Fractional CTO" },
+const LEADERS: Person[] = [
+  { name: "Steven Amiel", role: "CEO and Cofounder", photo: "/team/steven.png" },
+  {
+    name: "Dr. Kenneth Resnicow",
+    role: "Chief Science Officer",
+    photo: "/team/ken.png",
+    more: { href: "#science", label: "Read the science" },
+  },
+  { name: "Lou Ramery", role: "Chief Marketing Officer", photo: "/team/lou.png" },
+  { name: "Michael Lazor", role: "Fractional CTO", photo: "/team/michael.png" },
 ];
 
-const ADVISORS: Advisor[] = [
+// Advisors reuse the Reference portrait set so the entire team band keeps
+// one visual style. The intent is consistency of imagery, not literal
+// identity — these stand in until the advisors' own portraits ship.
+const ADVISORS: Person[] = [
   {
     name: "Nelson Griswold",
     role: "CEO, NextGen Benefits. One of the benefits industry’s most recognized strategic voices.",
+    photo: "/team/steven.png",
   },
   {
     name: "Geoffrey C. Williams, M.D., Ph.D.",
     role: "Global expert in the treatment of behavioral and chronic conditions.",
+    photo: "/team/lou.png",
   },
   {
     name: "Julian Lago",
     role: "Entrepreneur and advisor with two healthcare tech exits in the last 24 months.",
+    photo: "/team/michael.png",
   },
 ];
 
@@ -84,22 +95,9 @@ export function AboutTeam() {
         }}
       />
 
-      <div className="container-page relative pt-36 pb-10 md:pt-44 md:pb-12 lg:pt-52 lg:pb-14">
-        <div className="flex items-center gap-3" style={reveal(0)}>
-          <AIOrb size={18} />
-          <p className="eyebrow">
-            Our team
-            <span aria-hidden className="mx-2 text-ink/25">
-              ·
-            </span>
-            <span className="font-serif italic text-ink-muted">
-              {LEADERS.length} leaders. One conviction.
-            </span>
-          </p>
-        </div>
-
+      <div className="container-page relative pt-36 pb-14 md:pt-44 md:pb-16 lg:pt-52 lg:pb-20">
         <h1
-          className="mt-8 max-w-[20ch] font-serif font-normal leading-[1.02] tracking-[-0.025em] text-ink text-[2.5rem] sm:text-[3.25rem] md:text-[4rem] lg:text-[5rem] xl:text-[5.5rem]"
+          className="max-w-[20ch] font-serif font-normal leading-[1.02] tracking-[-0.025em] text-ink text-[2.5rem] sm:text-[3.25rem] md:text-[4rem] lg:text-[5rem] xl:text-[5.5rem]"
           style={
             {
               textWrap: "balance",
@@ -122,99 +120,128 @@ export function AboutTeam() {
           conviction that the people most in need of behavioral support
           are the least served by the systems designed to help them.
         </p>
-      </div>
 
-      {/* Portrait band — touching tiles, no card chrome, no gap between
-          portraits. Label sits inside the same grid cell as its portrait so
-          name/role align column-by-column with the photo above. */}
-      <ul
-        className="grid grid-cols-2 lg:grid-cols-4"
-        style={reveal(280)}
-      >
-        {LEADERS.map((leader, i) => (
-          <li
-            key={leader.name}
-            className="flex flex-col"
-            style={reveal(280 + i * 70)}
-          >
-            <PhotoPlaceholder index={i} />
-            <div className="px-5 pb-2 pt-6 md:px-7 md:pt-7">
-              <h3 className="font-serif text-[20px] font-normal leading-tight tracking-[-0.012em] text-ink md:text-[22px]">
-                {leader.name}
-              </h3>
-              <p className="mt-1.5 text-[13.5px] font-medium tracking-[-0.005em] text-brand-700">
-                {leader.role}
-              </p>
-            </div>
-          </li>
-        ))}
-      </ul>
+        {/* Leader grid — portraits sit on the section's paper-tint with no
+            white container chrome. The photo IS the surface; name + role
+            live below it on the paper, the way the home page handles its
+            card content (image fills, no boxed white surface). */}
+        <ul
+          className="mt-14 grid grid-cols-2 gap-5 md:mt-16 md:gap-6 lg:mt-20 lg:grid-cols-4 lg:gap-7"
+          style={reveal(280)}
+        >
+          {LEADERS.map((leader, i) => (
+            <PersonCard
+              key={leader.name}
+              person={leader}
+              size="lead"
+              style={reveal(280 + i * 80)}
+            />
+          ))}
+        </ul>
 
-      <div className="container-page mt-20 pb-24 md:mt-24 md:pb-32 lg:mt-28 lg:pb-40">
-        <div style={reveal(700)}>
-          <p className="eyebrow-subtle">Advisory board</p>
-          <ul className="mt-6 grid grid-cols-1 gap-x-10 gap-y-5 border-t border-ink/[0.08] pt-7 md:grid-cols-3">
-            {ADVISORS.map((a) => (
-              <li
-                key={a.name}
-                className="grid grid-cols-[6px_1fr] items-baseline gap-3"
-              >
-                <span
-                  aria-hidden
-                  className="mt-[0.6em] inline-block h-1.5 w-1.5 rounded-full bg-brand"
+        {/* Advisory board — same portrait treatment as the leaders so the
+            two rows read as one continuous people-band. Compact 3-up grid
+            with shorter copy beneath. */}
+        <div className="mt-20 md:mt-24 lg:mt-28" style={reveal(640)}>
+          {/* The eyebrow and the grid share one centered block so the
+              "Advisory board" label hangs above the left edge of the
+              first advisor card rather than floating against the section
+              edge while the grid sits indented. */}
+          <div className="lg:mx-auto lg:max-w-[75%]">
+            <p className="eyebrow-subtle">Advisory board</p>
+            <ul className="mt-6 grid grid-cols-2 gap-5 md:gap-6 lg:grid-cols-3 lg:gap-7">
+              {ADVISORS.map((a, i) => (
+                <PersonCard
+                  key={a.name}
+                  person={a}
+                  size="advisor"
+                  style={reveal(700 + i * 90)}
                 />
-                <div>
-                  <p className="text-[14.5px] font-medium tracking-[-0.005em] text-ink md:text-[15px]">
-                    {a.name}
-                  </p>
-                  <p className="mt-1 text-[13px] leading-snug text-ink-muted md:text-[13.5px]">
-                    {a.role}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-/**
- * Editorial portrait placeholder. 4:5 aspect, flush edges (no rounding)
- * so the four tiles read as one continuous band when laid side-by-side
- * with zero gap. Subtle column-to-column shade variation prevents the
- * row from reading as a single flat block.
- */
-function PhotoPlaceholder({ index }: { index: number }) {
-  const shades = [
-    "linear-gradient(180deg, #E9E3D8 0%, #D9D2C5 100%)",
-    "linear-gradient(180deg, #DCD5C8 0%, #C8C1B3 100%)",
-    "linear-gradient(180deg, #E2DCCF 0%, #CFC8BA 100%)",
-    "linear-gradient(180deg, #D5CEC0 0%, #C2BBAC 100%)",
-  ];
+function PersonCard({
+  person,
+  size,
+  style,
+}: {
+  person: Person;
+  size: "lead" | "advisor";
+  style: React.CSSProperties;
+}) {
+  const isLead = size === "lead";
   return (
-    <div
-      aria-hidden
-      className="relative aspect-[4/5] w-full overflow-hidden"
-      style={{ background: shades[index % shades.length] }}
-    >
-      <span
-        className="pointer-events-none absolute inset-0"
+    <li style={style} className="flex flex-col">
+      {/* The portrait. Rounded, subtle soft shadow so it sits on the paper
+          page rather than floating in a hard white box. */}
+      <div
+        className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-ink/[0.06]"
         style={{
-          background:
-            "radial-gradient(60% 50% at 50% 30%, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 65%)",
+          boxShadow:
+            "0 1px 2px rgba(40,25,15,0.05), 0 18px 40px -24px rgba(40,25,15,0.22)",
         }}
-      />
-      <svg
-        className="absolute left-1/2 top-1/2 h-[42%] w-auto -translate-x-1/2 -translate-y-1/2 text-ink/[0.10]"
-        viewBox="0 0 64 64"
-        fill="currentColor"
-        aria-hidden
       >
-        <circle cx="32" cy="22" r="11" />
-        <path d="M8 60 C 8 44, 20 38, 32 38 C 44 38, 56 44, 56 60 L 56 64 L 8 64 Z" />
-      </svg>
-    </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={person.photo}
+          alt={`Portrait of ${person.name}`}
+          draggable={false}
+          className="h-full w-full select-none object-cover"
+          style={{ objectPosition: "50% 30%" }}
+        />
+      </div>
+
+      {/* Labels — sit directly on the section paper, no card chrome. */}
+      <div className="flex flex-col px-0.5 pt-5 md:pt-6">
+        <h3
+          className={
+            isLead
+              ? "font-serif text-[18px] font-normal leading-tight tracking-[-0.012em] text-ink md:text-[20px]"
+              : "text-[14.5px] font-medium tracking-[-0.005em] text-ink md:text-[15px]"
+          }
+        >
+          {person.name}
+        </h3>
+        <p
+          className={
+            isLead
+              ? "mt-1.5 text-[13px] font-medium tracking-[-0.005em] text-brand-700"
+              : "mt-1.5 text-[13px] leading-snug text-ink-muted md:text-[13.5px]"
+          }
+        >
+          {person.role}
+        </p>
+        {person.more ? (
+          <a
+            href={person.more.href}
+            className="group/more mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-ink-muted transition-colors duration-200 ease-out hover:text-ink"
+          >
+            {person.more.label}
+            <svg
+              width="11"
+              height="11"
+              viewBox="0 0 14 14"
+              fill="none"
+              aria-hidden
+              className="transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/more:translate-x-0.5"
+            >
+              <path
+                d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
+        ) : null}
+      </div>
+    </li>
   );
 }

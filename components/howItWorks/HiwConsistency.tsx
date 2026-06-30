@@ -17,7 +17,7 @@ const INVARIANTS: Invariant[] = [
   {
     index: "02",
     category: "Tone",
-    body: "Non-judgmental, warm, and direct — always.",
+    body: "Non judgmental, warm, and direct. Always.",
   },
   {
     index: "03",
@@ -55,20 +55,20 @@ export function HiwConsistency() {
             <div className="space-y-6 body-prose">
               <p>
                 The best human coaches are extraordinary. They are also
-                human — subject to burnout, overloaded caseloads, turnover,
+                human, subject to burnout, overloaded caseloads, turnover,
                 and the natural variation that comes with being a person
                 rather than a system.
               </p>
               <p>
                 In chronic care and behavioral health, consistency is not a
-                nice-to-have. It is the mechanism of change. The member who
+                nice to have. It is the mechanism of change. The member who
                 receives the same quality of engagement on their worst day
                 as on their best day stays engaged. The member who shows
-                up after a lapse and finds the same non-judgmental voice
-                waiting — that member comes back.
+                up after a lapse and finds the same non judgmental voice
+                waiting, that member comes back.
               </p>
               <p>
-                Chronilogix delivers evidence-based behavioral engagement
+                Chronilogix delivers evidence based behavioral engagement
                 at the same standard every single session. Not because it
                 is robotic. Because its conversational frameworks are
                 built on clinical method, not on how the coach is feeling
@@ -77,8 +77,8 @@ export function HiwConsistency() {
               <p>
                 That consistency scales in a way human care cannot. One
                 coach can reach one member. Chronilogix can reach all of
-                them — simultaneously, at any hour, in any time zone, for
-                any condition — without adding a single hire.
+                them, simultaneously, at any hour, in any time zone, for
+                any condition, without adding a single hire.
               </p>
             </div>
           </div>

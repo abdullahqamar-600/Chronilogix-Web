@@ -118,9 +118,9 @@ export function SessionWalkthrough({
         </Heading>
         <p className="mt-5 max-w-[72ch] body-quiet md:mt-6">
           Chronilogix&rsquo;s AI coaches aren&rsquo;t generic chatbots
-          or simple symptom-checkers. The platform is built for
+          or simple symptom checkers. The platform is built for
           ongoing, therapeutically informed, efficacious coaching
-          rooted in evidence-based behavioral science — founded on{" "}
+          rooted in evidence based behavioral science. Founded on{" "}
           <span className="text-ink">Dr. Ken Resnicow&rsquo;s</span>{" "}
           Motivational Interviewing research, with cultural
           sensitivity built into every interaction.

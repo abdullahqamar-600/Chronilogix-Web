@@ -18,7 +18,7 @@ export function NamedQuote({
           <span className="text-brand-600">”</span>
         </blockquote>
         <figcaption className="mt-6 text-sm uppercase tracking-[0.18em] text-ink-muted">
-          — {attribution}
+          {attribution}
         </figcaption>
       </figure>
     );
@@ -31,7 +31,7 @@ export function NamedQuote({
         <span className="text-brand-600">”</span>
       </blockquote>
       <figcaption className="mt-5 text-sm uppercase tracking-[0.16em] text-ink-muted">
-        — {attribution}
+        {attribution}
       </figcaption>
     </figure>
   );
