@@ -97,6 +97,14 @@
   to   { opacity: 1; transform: translateY(0);   }
 }
 
+/* Phone illustration rising into view from below the frame — the taller
+   translate distance sells the "handset poking up" idea; used by the
+   White-label visual on the product page. */
+@keyframes phonePeek {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
 /* Notification toast that slides in from the top-right with subtle scale. */
 @keyframes toastIn {
   0%   { opacity: 0; transform: translate(6px, -6px) scale(0.96); }

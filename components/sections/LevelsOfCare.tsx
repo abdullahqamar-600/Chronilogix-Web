@@ -56,7 +56,7 @@ const LEVELS: Level[] = [
       "Anyone in between scheduled appointments",
       "Available 24/7 when live coaches are not",
       "Bridges the typical 2 to 6 week wait for a human appointment",
-      "Cost efficient access for almost anyone",
+      "Cost efficient access for virtually anyone",
     ],
     visualBg: "/card-1-bg.jpg",
     Artifact: AvailabilityArtifact,
@@ -86,7 +86,7 @@ const LEVELS: Level[] = [
     ordinal: "Level 03",
     label: "Digital Only",
     subhead: "For those who prefer it this way",
-    lead: "A growing category of cohorts who get better outcomes with a fully digital coach:",
+    lead: "A growing category of demographics who get better outcomes with a fully digital coach:",
     bullets: [
       "Certain ethnic and cultural backgrounds where a digital coach reduces barriers",
       "No bias, no judgment. Consistent every session",

@@ -69,9 +69,9 @@ export function CoreCapabilities() {
             className="mt-4 text-hero font-serif font-normal text-ink"
             style={{ textWrap: "balance" } as React.CSSProperties}
           >
-            Real coaching does many things at once.{" "}
+            Real coaching does a lot at once.{" "}
             <span className="text-brand-700">
-              Chronilogix does them every time.
+              Every Chronilogix reply carries it all.
             </span>
           </h2>
           <p className="mt-5 max-w-[60ch] body-quiet">
@@ -178,18 +178,87 @@ function CapabilityRow({ block, index }: { block: Block; index: number }) {
         the closing affirmation of the architecture above, not an
         orphan element fighting the headline for attention. */
 
-const TRUST_PILLARS: { title: string; body: string }[] = [
+type TrustPillar = {
+  title: string;
+  body: string;
+  Icon: React.ComponentType<{ className?: string }>;
+};
+
+/* Line-art icons for the trust pillars. Kept at the same 24x24 viewBox
+   and 1.6 stroke weight as the eyebrow-anchor padlock so all four icons
+   in this block read as one family. */
+function ShieldCrossIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M12 3 L20 6 V12 C20 16.5 16.5 20 12 21 C7.5 20 4 16.5 4 12 V6 Z" />
+      <path d="M12 9 V15 M9 12 H15" />
+    </svg>
+  );
+}
+
+function LockIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <rect x="5" y="10.5" width="14" height="9.5" rx="2" />
+      <path d="M8.5 10.5 V7.5 C8.5 5.6 10.1 4 12 4 C13.9 4 15.5 5.6 15.5 7.5 V10.5" />
+      <path d="M12 14 V16.5" />
+    </svg>
+  );
+}
+
+function ControlsIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M5 7 H19" />
+      <circle cx="9" cy="7" r="2" />
+      <path d="M5 17 H19" />
+      <circle cx="15" cy="17" r="2" />
+    </svg>
+  );
+}
+
+const TRUST_PILLARS: TrustPillar[] = [
   {
     title: "Built for Healthcare",
     body: "Designed for healthcare from the ground up. Encryption in transit and at rest. HIPAA compliant access controls baked in, not bolted on.",
+    Icon: ShieldCrossIcon,
   },
   {
     title: "Data Stays Yours",
     body: "Conversations are never shared, sold, or used to improve our models. What members tell Chronilogix belongs to them and to you.",
+    Icon: LockIcon,
   },
   {
     title: "Enterprise Controls",
     body: "Single tenant deployment available. Role based access. Clinical grade audit logging. The controls your IT and legal teams already require.",
+    Icon: ControlsIcon,
   },
 ];
 
@@ -206,79 +275,111 @@ function PrivacyByDesign() {
           "opacity 800ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 800ms cubic-bezier(0.22, 0.61, 0.36, 1)",
       }}
     >
-      <div
-        className="relative overflow-hidden rounded-[24px] px-8 py-14 md:px-12 md:py-20 lg:px-16 lg:py-24"
-        style={{
-          background:
-            "linear-gradient(140deg, #14181D 0%, #1B2129 55%, #14181D 100%)",
-        }}
-      >
-        {/* Soft warm glow in the upper-left so the dark ground reads as
-            "lit" rather than flat. Echoes the brand orange without
-            tinting the type. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(55% 45% at 10% 15%, rgba(249,144,77,0.16), transparent 70%)",
-          }}
-        />
-
-        {/* Beat 1 — the absolute claim, centered and dominant. */}
+      <div className="relative overflow-hidden rounded-[24px] bg-paper-warm px-6 py-10 md:px-10 md:py-14 lg:px-14 lg:py-16">
+        {/* Beat 1 — the absolute claim. Padlock in the same brand-tinted
+            icon-in-circle recipe HiwIntegration uses on light ground.
+            Compact vertical rhythm between anchor, eyebrow, and h3 so
+            the block doesn't feel padded. */}
         <div className="relative mx-auto max-w-3xl text-center">
-          <p className="text-[13px] font-medium tracking-tight text-brand-400/90">
+          <span
+            aria-hidden
+            className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-brand-600/10 text-brand-700 ring-1 ring-brand-600/20"
+          >
+            <svg
+              className="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <rect x="5" y="10.5" width="14" height="9.5" rx="2" />
+              <path d="M8.5 10.5 V7.5 C8.5 5.6 10.1 4 12 4 C13.9 4 15.5 5.6 15.5 7.5 V10.5" />
+              <path d="M12 14 V16.5" />
+            </svg>
+          </span>
+          <p className="mt-4 text-[13px] font-medium tracking-tight text-brand-700/90">
             Privacy by design
           </p>
           <h3
-            className="mt-5 font-serif text-[34px] font-normal leading-[1.08] text-white md:text-[44px] lg:text-[52px]"
+            className="mt-3 font-serif text-[28px] font-normal leading-[1.1] text-ink md:text-[36px] lg:text-[42px]"
             style={{ textWrap: "balance" } as React.CSSProperties}
           >
             Member data is never used to train our models.{" "}
-            <span className="text-brand-400">Not now. Not ever.</span>
+            <span className="text-brand-700">Not now. Not ever.</span>
           </h3>
         </div>
 
-        {/* Hairline divider — marks the seam between the headline claim
-            and the three pillars that back it up. */}
+        {/* Hairline divider — same seam pattern the rest of the site
+            uses (see HiwIntegration, AboutScience). Kept short. */}
         <div
           aria-hidden
-          className="relative mx-auto mt-12 h-px w-16 bg-white/15 md:mt-16"
+          className="relative mx-auto mt-8 h-px w-16 bg-ink/12 md:mt-10"
         />
 
-        {/* Beat 2 — three trust pillars. Three stacked beats on mobile,
-            three columns side by side on md+. Each pillar reads as its
-            own commitment, not a bullet under the headline. */}
-        <div className="relative mt-12 grid grid-cols-1 gap-10 md:mt-16 md:grid-cols-3 md:gap-10 lg:gap-14">
-          {TRUST_PILLARS.map((pillar) => (
+        {/* Beat 2 — three trust pillars. Naked text with icon + ordinal
+            anchor, matching HiwIntegration / HiwMethod. Grid gap tuned
+            for a compact three-across read on desktop. */}
+        <div className="relative mt-8 grid grid-cols-1 gap-8 md:mt-10 md:grid-cols-3 md:gap-8 lg:gap-10">
+          {TRUST_PILLARS.map((pillar, i) => (
             <div key={pillar.title} className="flex flex-col">
-              <h4 className="font-serif text-[20px] font-normal leading-tight text-white md:text-[22px]">
+              <div className="flex items-center gap-4">
+                <span
+                  aria-hidden
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-600/10 text-brand-700 ring-1 ring-brand-600/20"
+                >
+                  <pillar.Icon className="h-5 w-5" />
+                </span>
+                <span className="font-serif text-[13px] font-medium tabular-nums text-brand-700">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+              </div>
+              <h4 className="mt-4 font-serif text-[19px] font-normal leading-tight text-ink md:text-[21px]">
                 {pillar.title}
               </h4>
-              <p className="mt-3 text-[14.5px] leading-relaxed text-white/65 md:text-[15px]">
+              <p className="mt-2.5 text-[14px] leading-relaxed text-ink-soft md:text-[14.5px]">
                 {pillar.body}
               </p>
             </div>
           ))}
         </div>
 
-        {/* Beat 3 — compliance footer. HIPAA badge centered at the
-            bottom, sitting above a quiet "Compliance posture" label so
-            it reads as the formal affirmation of the trust commitments
-            above. */}
-        <div className="relative mt-12 flex flex-col items-center gap-3 md:mt-16">
-          <p className="text-[12px] font-medium tracking-tight text-white/45">
+        {/* Beat 3 — compliance footer. HIPAA pill with live pulse dot;
+            BAA chip beside so the row reads as a posture, not one lonely
+            badge. Light-block chip recipe: white ground, ink-hairline
+            border, ink type. */}
+        <div className="relative mt-10 flex flex-col items-center gap-3 md:mt-12">
+          <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-muted">
             Compliance posture
           </p>
-          <div className="inline-flex items-center gap-3 rounded-full border border-white/12 bg-white/[0.04] px-5 py-2.5 backdrop-blur-sm">
-            <span
-              aria-hidden
-              className="block h-3 w-[2px] rounded-full bg-brand-400"
-            />
-            <span className="text-[14px] font-medium text-white">
-              HIPAA
-            </span>
-            <span className="text-[12.5px] text-white/55">Compliant</span>
+          <div className="flex flex-wrap items-center justify-center gap-2.5">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-ink/10 bg-white/80 px-4 py-1.5 backdrop-blur-sm">
+              <span aria-hidden className="relative flex h-2 w-2">
+                <span className="absolute inset-0 animate-ping rounded-full bg-brand-500/60" />
+                <span className="relative inline-block h-2 w-2 rounded-full bg-brand-500" />
+              </span>
+              <span className="text-[13px] font-medium text-ink">HIPAA</span>
+              <span className="text-[12px] text-ink-muted">Compliant</span>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-ink/8 bg-white/60 px-4 py-1.5">
+              <svg
+                className="h-3.5 w-3.5 text-ink-soft"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M3 6.5 L7 10.5 L13 4.5" />
+              </svg>
+              <span className="text-[12.5px] text-ink-soft">
+                BAA available on request
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -829,7 +930,7 @@ function CrisisSafeVisual({ active }: { active: boolean }) {
 const BLOCKS: Block[] = [
   {
     eyebrow: "01. MI Engine",
-    heading: "Therapeutically informed, not a chatbot.",
+    heading: "A coach, not a chatbot.",
     body: (
       <>
         Every Chronilogix conversation runs on the{" "}
@@ -846,7 +947,7 @@ const BLOCKS: Block[] = [
   },
   {
     eyebrow: "02. Access",
-    heading: "An emotionally safe entry point.",
+    heading: "The first honest conversation.",
     body: (
       <>
         Stigma, fear of judgment, and confidentiality worries keep many
@@ -863,7 +964,7 @@ const BLOCKS: Block[] = [
   },
   {
     eyebrow: "03. Oversight",
-    heading: "Consistent, with humans in the loop.",
+    heading: "AI at scale. Clinicians in the loop.",
     body: (
       <>
         AI coaching doesn&rsquo;t vary with fatigue, caseload, or
@@ -879,7 +980,7 @@ const BLOCKS: Block[] = [
   },
   {
     eyebrow: "04. Multilingual",
-    heading: "Coaching in the member's own language.",
+    heading: "Native, not translated.",
     body: (
       <>
         Conversations adapt to the language each member chooses,
@@ -892,7 +993,7 @@ const BLOCKS: Block[] = [
   },
   {
     eyebrow: "05. Emotion aware",
-    heading: "Reads what the words are doing.",
+    heading: "Reads the mood, not just the message.",
     body: (
       <>
         Calibrated to recognize distress, disengagement, frustration,
@@ -907,7 +1008,7 @@ const BLOCKS: Block[] = [
   },
   {
     eyebrow: "06. Crisis safe",
-    heading: "988 escalation, built in.",
+    heading: "988, built into the conversation.",
     body: (
       <>
         Millie is designed to recognize crisis level distress signals

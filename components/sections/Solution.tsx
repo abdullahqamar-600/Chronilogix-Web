@@ -29,14 +29,19 @@ const AGENTS: Agent[] = [
     name: "Roni AI",
     condition: "Diabetes",
     body: "Adaptive coaching for the food, activity, and medication choices that happen between clinic visits. Built around the member, not a template.",
-    // Topic pills speak in member-voice moments, not clinical metrics —
-    // mirrors how Omada / Livongo / Welldoc actually market between-visit
-    // coaching, and the MI literature's emphasis on small wins, barriers,
-    // and ambivalence over lab values. "After-dinner walks" anchors the
-    // high-glucose window where post-meal coaching actually fires; "Habit
-    // stacking" echoes the featured exchange's MI lens; "Spikes and dips"
-    // is the member-facing read on glucose variability.
-    topics: ["Before meals", "Evening walks", "Habit stacking", "Midnight cravings", "Spikes and dips"],
+    // Pills name the MITI fidelity dimensions Roni is scored against on
+    // every turn — the same rubric Chronilogix's MI whitepaper describes.
+    // Adherence contexts lean on autonomy support (respecting medication
+    // decisions) and change-talk elicitation (mobilizing statements about
+    // taking care of oneself); the remaining two ride along in the SR
+    // overflow so the full rubric is present for assistive tech.
+    topics: [
+      "Open questions",
+      "Autonomy support",
+      "Change talk",
+      "Complex reflections",
+      "MI-adherent",
+    ],
     // The single most cited high-value diabetes coaching moment in the MI
     // literature (ADA Clinical Diabetes, NIDDK): medication ambivalence.
     // It's the moment where a generic chatbot would lecture and an
@@ -45,7 +50,7 @@ const AGENTS: Agent[] = [
     featuredQ: "I keep skipping my evening dose.",
     featuredA:
       "Sounds like the evening dose isn't fitting your life right now. Tell me what gets in the way: the timing, the way it sits with you, or something else? We can move it before we fight it.",
-    featuredContext: "Roni AI · Adherence · MI informed",
+    featuredContext: "Roni AI · Reflective adherence coaching · MI fidelity",
     pattern: "/roni-pattern.webp",
     image: "/roni.png",
     haloColor: "#F9904D",
@@ -54,14 +59,18 @@ const AGENTS: Agent[] = [
     name: "Millie AI",
     condition: "Mental Health",
     body: "Reflective coaching for the 2 AM spiral and the long stretch between therapy sessions. Therapeutically informed, never prescriptive.",
-    // Same moment-language framing as Roni — the kinds of things a
-    // member actually opens the app for between therapy sessions. The
-    // five together map the full surface: anticipatory anxiety, rumination,
-    // negative self-talk, interpersonal stress, and limit-setting. "Inner
-    // critic" is the pop-psych member label for self-criticism that shows
-    // up across Wysa / Woebot / Headspace coaching surfaces; "Racing
-    // thoughts" pairs with the featured exchange.
-    topics: ["Anxiety waves", "Racing thoughts", "Inner critic", "Hard conversations", "Boundaries"],
+    // Same MITI rubric as Roni. Mental-health contexts weight complex
+    // reflections (emotional deepening), empathy (validating experience),
+    // and evocation (drawing forth values) more visibly than adherence
+    // work does; open questions and change talk remain in the rubric and
+    // carry to the SR overflow.
+    topics: [
+      "Complex reflections",
+      "Empathy",
+      "Evocation",
+      "Open questions",
+      "Change talk",
+    ],
     // Late-night racing thoughts is the single most common reason members
     // open a mental-health app outside of scheduled sessions. The
     // response uses 3-3-3 grounding — a validated MI-friendly variant of
@@ -69,7 +78,7 @@ const AGENTS: Agent[] = [
     featuredQ: "I can't get my mind to slow down.",
     featuredA:
       "Racing thoughts aren't yours to solve at midnight. Try this with me. Name three things you can see, three you can hear, three you can feel. Your body lands first, the mind follows.",
-    featuredContext: "Millie AI · Grounding (3 3 3) · MI informed",
+    featuredContext: "Millie AI · Grounding + reflective listening · MI fidelity",
     pattern: "/millie-pattern.webp",
     image: "/millie.png",
     haloColor: "#B8617C",

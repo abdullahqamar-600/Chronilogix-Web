@@ -15,6 +15,7 @@ import { AIOrb } from "@/components/AIOrb";
 const STEPS = [
   {
     label: "Engage",
+    skill: "Open question",
     blurb:
       "Build partnership. Listen first, in the member's own language.",
     Visual: EngageVisual,
@@ -22,6 +23,7 @@ const STEPS = [
   },
   {
     label: "Focus",
+    skill: "Member-led agenda",
     blurb:
       "Find what matters now. Short summaries keep the agenda the member's, not ours.",
     Visual: FocusVisual,
@@ -29,6 +31,7 @@ const STEPS = [
   },
   {
     label: "Evoke",
+    skill: "Reflective listening",
     blurb:
       "Draw motivation out. Reflective listening offers back precise change talk.",
     Visual: EvokeVisual,
@@ -36,6 +39,7 @@ const STEPS = [
   },
   {
     label: "Plan",
+    skill: "Chosen, not prescribed",
     blurb:
       "Translate intent into one small next step, chosen by the member.",
     Visual: PlanVisual,
@@ -60,8 +64,8 @@ export function MIExplainer() {
             Motivational Interviewing explained
           </h2>
           <p className="mt-6 max-w-[72ch] body-prose md:mt-7">
-            MI is a collaborative way of speaking that moves through four
-            processes,{" "}
+            Motivational Interviewing (MI) is a collaborative way of
+            speaking that moves through four processes,{" "}
             <span className="text-ink">engage, focus, evoke, plan</span>
             , and four micro skills called{" "}
             <span className="text-ink">OARS</span>: open questions,
@@ -127,6 +131,7 @@ function ProcessCard({
 }: {
   step: {
     label: string;
+    skill: string;
     blurb: string;
     Visual: React.ComponentType<{ active: boolean }>;
     Icon: React.ComponentType<{ className?: string }>;
@@ -175,6 +180,18 @@ function ProcessCard({
             sequence without claiming label space below. */}
         <span className="pointer-events-none absolute left-3 top-3 font-mono text-[10px] font-medium tabular-nums tracking-[0.1em] text-ink-subtle">
           {ordinal}
+        </span>
+        {/* Skill chip — names the OARS technique the card demonstrates.
+            Right-corner counterweight to the ordinal, so the reader
+            can pattern-match "which MI move am I seeing here." */}
+        <span
+          className="pointer-events-none absolute right-3 top-3 rounded-full bg-white/85 px-2 py-[3px] text-[9.5px] font-medium uppercase tracking-[0.08em] text-brand-700 ring-1 ring-brand-600/20 backdrop-blur-sm"
+          style={{
+            opacity: inView ? 1 : 0,
+            transition: `opacity 500ms cubic-bezier(0.22, 0.61, 0.36, 1) ${staggerMs + 360}ms`,
+          }}
+        >
+          {step.skill}
         </span>
       </div>
 

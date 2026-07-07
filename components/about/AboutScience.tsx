@@ -10,8 +10,8 @@ type Metric = {
 
 // Numbers are kept aligned with the home hero's stats pill (30+ years,
 // 70+ clinical studies, 400+ peer-reviewed publications) so the about
-// page never undercuts or contradicts the front door. $110M funding and
-// 10,000+ clinicians extend that base — they don't replace it.
+// page never undercuts or contradicts the front door. 10,000+ clinicians
+// extends that base — it doesn't replace it.
 const METRICS: Metric[] = [
   {
     value: "400+",
@@ -24,18 +24,62 @@ const METRICS: Metric[] = [
     sub: "Across diverse populations",
   },
   {
-    value: "$110M",
-    label: "In research funding",
-    sub: "Across NIH backed programs",
-  },
-  {
     value: "10,000+",
     label: "Clinicians trained",
     sub: "Worldwide, across health systems",
   },
 ];
 
-const DEPLOYMENTS = ["Aetna", "Kaiser Permanente", "University of Michigan", "NIH"];
+// Ordering: flagship payer, second national payer, academic anchor
+// (Dr. Resnicow's home institution), regional payers. Puts the
+// university at position 3 so a 3-per-row grid never orphans it.
+const DEPLOYMENTS = [
+  "Aetna",
+  "Kaiser Permanente",
+  "University of Minnesota",
+  "AmeriHealth",
+  "Caritas",
+  "Active Health",
+];
+
+// Recent writing / research — a horizontal-scroll rail whose vertical
+// center sits on the section's bottom edge. Placeholder anchors follow
+// the `#TODO-*` convention used elsewhere on the site — swap in real
+// URLs when the blog goes live. Cards are text-only until real articles
+// land; author byline carries the credibility signal.
+type BlogCard = {
+  title: string;
+  byline: string;
+  href: string;
+};
+
+const BLOG_CARDS: BlogCard[] = [
+  {
+    title: "Motivational Interviewing, engineered for every member",
+    byline: "Dr. Ken Resnicow",
+    href: "#TODO-blog-mi-engineered",
+  },
+  {
+    title: "Inside Roni AI: clinical-grade coaching at scale",
+    byline: "Chronilogix Research",
+    href: "#TODO-blog-roni-inside",
+  },
+  {
+    title: "The MI fidelity rubric, in practice",
+    byline: "Dr. Ken Resnicow",
+    href: "#TODO-blog-fidelity-rubric",
+  },
+  {
+    title: "What a complex reflection actually does",
+    byline: "Chronilogix Research",
+    href: "#TODO-blog-complex-reflection",
+  },
+  {
+    title: "From 200+ RCTs to a coaching platform",
+    byline: "Dr. Ken Resnicow",
+    href: "#TODO-blog-rcts-to-platform",
+  },
+];
 
 export function AboutScience() {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -67,19 +111,31 @@ export function AboutScience() {
     <section
       id="science"
       ref={ref}
-      className="relative overflow-hidden rounded-[28px] bg-paper-warm py-24 md:py-32 lg:py-40"
+      // overflow-visible so the blog rail can straddle the bottom edge.
+      // The bg-paper-warm ground + rounded-[28px] corners still clip
+      // visually via border-radius on the background surface. The
+      // radial wash gets its own overflow-hidden wrapper below so its
+      // gradient stays inside the rounded shape.
+      className="relative rounded-[28px] bg-paper-warm pt-24 pb-24 md:pt-32 md:pb-28 lg:pt-40 lg:pb-32"
     >
       {/* Brand-orange radial wash from the top-right — same idiom as the
           home page's Outcome section. Carries the "gravitational pull"
-          this section needs without resorting to a dark slab. */}
+          this section needs without resorting to a dark slab. Nested
+          in its own overflow-hidden rounded wrapper so it stays clipped
+          to the section's rounded corners even though the section
+          itself allows overflow (for the straddling blog rail). */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(120% 80% at 100% 0%, rgba(249,144,77,0.18) 0%, rgba(249,144,77,0.05) 38%, transparent 68%)",
-        }}
-      />
+        className="pointer-events-none absolute inset-0 overflow-hidden rounded-[28px]"
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(120% 80% at 100% 0%, rgba(249,144,77,0.18) 0%, rgba(249,144,77,0.05) 38%, transparent 68%)",
+          }}
+        />
+      </div>
 
       <div className="container-page relative">
         <div className="max-w-[52rem]">
@@ -115,8 +171,8 @@ export function AboutScience() {
                 </p>
               </div>
               <p className="text-right font-serif text-[13px] italic text-ink-muted">
-                Irwin M. Rosenstock<br />
-                Collegiate Professor, U-M
+                Professor,<br />
+                University of Minnesota
               </p>
             </figcaption>
           </figure>
@@ -141,12 +197,12 @@ export function AboutScience() {
               style={reveal(300)}
             >
               When Aetna integrated his MI framework into their disease
-              management programs, member engagement rose by 43% and dropout
+              management programs, member engagement rose by 40% and dropout
               rates fell by more than half.
             </p>
 
             <dl
-              className="mt-10 grid grid-cols-2 gap-x-6 gap-y-7 border-t border-ink/10 pt-9"
+              className="mt-10 grid grid-cols-2 gap-x-6 gap-y-7 border-t border-ink/10 pt-9 sm:grid-cols-3"
               style={reveal(380)}
             >
               {METRICS.map((m) => (
@@ -173,7 +229,11 @@ export function AboutScience() {
               <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-ink-subtle">
                 Deployed across
               </p>
-              <ul className="mt-4 flex flex-wrap gap-x-7 gap-y-3">
+              {/* 3-per-row grid at md+ so six deployments read as a
+                  balanced 3×2 block (never 5+1 or 4+2). Columns hug
+                  content width so shorter names don't get stranded in
+                  wide cells. Mobile stays flex-wrap for organic flow. */}
+              <ul className="mt-4 flex flex-wrap gap-x-7 gap-y-3 md:grid md:grid-cols-[auto_auto_auto] md:justify-start md:gap-x-10 md:gap-y-4">
                 {DEPLOYMENTS.map((d) => (
                   <li
                     key={d}
@@ -186,8 +246,78 @@ export function AboutScience() {
             </div>
           </div>
         </div>
+
+        {/* Blog rail LABEL — sits close to the credentials block above
+            (no oversized gap) and directly above the cards below. */}
+        <div
+          className="mt-12 flex items-baseline justify-between md:mt-14"
+          style={reveal(520)}
+        >
+          <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-brand-700">
+            Recent writing
+          </p>
+          <a
+            href="/resources/blog"
+            className="text-[13px] font-medium tracking-tight text-ink-muted transition-colors hover:text-brand-700"
+          >
+            All posts &rarr;
+          </a>
+        </div>
+
+        {/* Blog rail CARDS — normal flow inside the section so the
+            bottom of the section is a balanced editorial block instead
+            of a straddling floating rail. */}
+        <div className="mt-6 md:mt-8">
+          <BlogScrollRail reveal={reveal} />
+        </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Horizontal-scroll rail of recent writing / research cards. Snap
+ * carousel with native-feeling scroll — no arrows, no dots, just a
+ * quiet scrollbar hidden with the site's `hide-scrollbar` idiom.
+ */
+function BlogScrollRail({
+  reveal,
+}: {
+  reveal: (delay?: number) => React.CSSProperties;
+}) {
+  return (
+    <div style={reveal(600)}>
+      <ul
+        className="-mx-4 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-4 px-4 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:-mx-0 md:scroll-px-0 md:px-0 md:gap-6 [&::-webkit-scrollbar]:hidden"
+      >
+        {BLOG_CARDS.map((card, i) => (
+          <BlogCardTile key={card.href} card={card} index={i} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function BlogCardTile({ card, index }: { card: BlogCard; index: number }) {
+  return (
+    <li
+      className="shrink-0 snap-start"
+      style={{
+        transitionDelay: `${index * 60}ms`,
+      }}
+    >
+      <a
+        href={card.href}
+        className="group/blog flex h-full w-[300px] flex-col justify-between rounded-[20px] border border-ink/[0.06] bg-white p-7 shadow-[0_1px_2px_rgba(15,20,25,0.04),0_18px_40px_-18px_rgba(20,8,2,0.16)] transition-shadow duration-300 hover:border-brand-600/25 hover:shadow-[0_2px_4px_rgba(15,20,25,0.06),0_22px_50px_-18px_rgba(20,8,2,0.22)] md:w-[360px] md:p-8"
+      >
+        <h3 className="font-serif text-[20px] font-normal leading-[1.25] tracking-[-0.008em] text-ink md:text-[22px]">
+          {card.title}
+        </h3>
+        <p className="mt-10 text-[13px] font-medium tracking-tight text-ink-muted md:mt-12 md:text-[13.5px]">
+          {card.byline}
+        </p>
+      </a>
+    </li>
   );
 }
 

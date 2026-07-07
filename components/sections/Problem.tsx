@@ -160,8 +160,8 @@ export function Problem() {
           <div className="lg:sticky lg:top-2">
             <div className="relative aspect-[4/3] overflow-hidden rounded-[24px] lg:aspect-auto lg:h-[calc(100vh-1rem)]">
               <img
-                src="/section-3.png"
-                alt="A woman stands still and in focus while a blurred crowd rushes past around her."
+                src="/problem-portrait.png"
+                alt="A man sits cross-legged on a bed in afternoon light, alone, mid-thought."
                 className="absolute inset-0 h-full w-full object-cover"
               />
               <div
@@ -192,7 +192,7 @@ export function Problem() {
             <p className="mt-8 max-w-md body-prose">
               The world is short more than{" "}
               <span className="text-ink">15 million</span> behavioral and
-              chronic care coaches. Wait times stretch into weeks. Costs put
+              chronic care coaches. Average wait times are typically measured in weeks and months. Costs put
               live coverage out of reach. And the moments that decide
               outcomes, the 11 PM stress eating, the skipped medication,
               the quiet slide back into old habits when no one is watching,

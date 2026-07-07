@@ -586,7 +586,7 @@ function MiModal({ open, onClose }: { open: boolean; onClose: () => void }) {
               Chronilogix&rsquo;s Co-Founder and Chief Science Officer.
               Professor in the Division of Epidemiology &amp; Community Health
               at the{" "}
-              <span className="text-ink">University of Michigan School of Public Health</span>{" "}
+              <span className="text-ink">University of Minnesota School of Public Health</span>{" "}
               and author of more than 400 peer-reviewed publications on
               motivational interviewing, cultural tailoring, and chronic
               disease behavior change. His randomized trials in nutrition,

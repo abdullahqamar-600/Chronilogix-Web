@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 type Metric = {
   lead: string;
@@ -18,7 +18,10 @@ type Persona = {
   label: string;
   intro: string;
   headline: [string, string];
-  description: string;
+  // string for simple single-paragraph copy; ReactNode when a persona
+  // needs multiple paragraphs or an inline link (e.g. Employers → Aetna
+  // case study).
+  description: string | ReactNode;
   metrics?: Metric[];
   signals?: Signal[];
 };
@@ -29,18 +32,36 @@ const PERSONAS: Persona[] = [
     label: "Employers",
     intro: "For HR leaders & benefits owners",
     headline: ["Reach every employee.", "Not just the few who ask."],
-    description:
-      "Reach the roughly 250 in 1,000 employees living with chronic conditions before they become high-cost claims. Chronilogix lowers PEPM costs, improves adherence, and reduces sick days, saving an estimated $300 to $700 per engaged member, per year.",
+    description: (
+      <>
+        <p className="body-prose">
+          Chronilogix engages an additional 40% of your employees who
+          show up pre chronic but have never engaged with you &mdash; a
+          benchmark drawn from the{" "}
+          <a
+            href="#aetna-case-study"
+            className="underline decoration-brand-500/40 decoration-1 underline-offset-[3px] transition-colors hover:text-brand-700 hover:decoration-brand-600"
+          >
+            Aetna case study
+          </a>
+          .
+        </p>
+        <p className="mt-4 body-prose">
+          Average diabetic driven ER visits in the US run about $2,000;
+          severe cases range from $7,000 to $30,000. You do the math.
+        </p>
+      </>
+    ),
     metrics: [
       {
-        lead: "8×",
-        caption: "Engagement vs. typical EAPs",
-        comparison: "3% utilization → 25% engaged",
+        lead: "+40%",
+        caption: "Additional employees engaged",
+        comparison: "Pre chronic and never engaged → reached, per Aetna",
       },
       {
         lead: "~50%",
         caption: "Lower cost than live coaching",
-        comparison: "$60 to $70 PMPM → $20 to $30 PMPM",
+        comparison: "$60 to $70 PEPM → $20 to $30 PEPM",
       },
       {
         lead: "24/7",
@@ -55,19 +76,15 @@ const PERSONAS: Persona[] = [
     intro: "For benefits consultants & brokers",
     headline: ["Defensible ROI.", "Not another point solution."],
     description:
-      "Chronilogix gives brokers a story that ends in measurable cost curve impact, not a fragmented add on. AI health coaching moves clients upstream on the spend curve, differentiates beyond plan design, and retains self funded accounts through proactive, continuous member engagement.",
+      "Chronilogix lowers cost by engaging an average of 40+% more pre chronic and chronic employees who have not previously accepted support. That translates to reaching members earlier at less costly stages of care, healthier and more productive employees, and, for many, their first and only resource.",
     signals: [
       {
-        label: "Defensible ROI in renewal conversations",
-        body: "Not a feature to demo. A measurable shift in the cost curve clients can put in front of their CFO.",
+        label: "Executive Credibility",
+        body: "Chronilogix is a unique door opener that uses AI to benefit the prospect in every way. It builds immediate credibility as more than an insurance guy.",
       },
       {
-        label: "Upstream on the spend curve",
-        body: "Members engaged weeks before they show up in claims data, replacing reactive triage with proactive outreach.",
-      },
-      {
-        label: "Stickier self funded accounts",
-        body: "Value led retention beyond plan design: the book of business that doesn't compete on premium alone.",
+        label: "What CFOs Love",
+        body: "Members engage weeks and months before they show up in claims data, replacing reactive triage with proactive outreach. A direct correlation between spend and value.",
       },
     ],
   },
@@ -247,7 +264,11 @@ export function WhoWeServe() {
             reducedMotion={reducedMotion}
             autoAdvancing={autoAdvancing}
           />
-          <div className="min-w-0">
+          {/* Panel wrapper reserves the tallest persona's compacted
+              height so tab changes never collapse the section and yank
+              everything below up. Pairs with the sticky tab rail — no
+              scroll jump, no vertical jerk on tab change. */}
+          <div className="min-w-0 lg:min-h-[1020px]">
             <PersonaPanel
               persona={persona}
               reducedMotion={reducedMotion}
@@ -432,8 +453,8 @@ function PersonaPanel({
         reducedMotion={reducedMotion}
       />
 
-      <p
-        className="mt-6 max-w-2xl body-prose md:mt-8"
+      <div
+        className="mt-5 max-w-2xl md:mt-6"
         style={{
           opacity: 0,
           animation: reducedMotion
@@ -441,8 +462,12 @@ function PersonaPanel({
             : "wordReveal 600ms cubic-bezier(0.22, 0.61, 0.36, 1) 540ms forwards",
         }}
       >
-        {persona.description}
-      </p>
+        {typeof persona.description === "string" ? (
+          <p className="body-prose">{persona.description}</p>
+        ) : (
+          persona.description
+        )}
+      </div>
 
       {persona.metrics?.length ? (
         <MetricsStrip
@@ -460,7 +485,7 @@ function PersonaPanel({
 
       <a
         href="#book-a-demo"
-        className="group/cta btn-primary mt-12 w-fit md:mt-14"
+        className="group/cta btn-primary mt-10 w-fit md:mt-12"
         style={{
           opacity: 0,
           animation: reducedMotion
@@ -547,13 +572,13 @@ function MetricsStrip({
       ? ROMAN[0]
       : `${ROMAN[0]} to ${ROMAN[metrics.length - 1]}`;
   return (
-    <div className="mt-14 md:mt-16">
+    <div className="mt-10 md:mt-12">
       <SectionLabel
         eyebrow="By the numbers"
         meta={range}
         reducedMotion={reducedMotion}
       />
-      <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 sm:gap-x-7">
+      <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 sm:gap-x-7">
         {metrics.map((m, i) => (
           <MetricColumn
             key={`${m.lead}-${i}`}
@@ -663,13 +688,13 @@ function SignalsList({
       ? ROMAN[0]
       : `${ROMAN[0]} to ${ROMAN[signals.length - 1]}`;
   return (
-    <div className="mt-14 md:mt-16">
+    <div className="mt-10 md:mt-12">
       <SectionLabel
         eyebrow="What changes"
         meta={range}
         reducedMotion={reducedMotion}
       />
-      <ol className="mt-8 flex flex-col">
+      <ol className="mt-6 flex flex-col">
         {signals.map((s, i) => (
           <SignalRow
             key={`${s.label}-${i}`}

@@ -49,7 +49,7 @@ export function HiwIntegration() {
   return (
     <section
       id="integration"
-      className="relative overflow-hidden rounded-[28px] bg-white pt-24 pb-24 md:pt-32 md:pb-32 lg:pt-40 lg:pb-40"
+      className="relative overflow-hidden rounded-[28px] bg-white pt-24 pb-10 md:pt-32 md:pb-12 lg:pt-40 lg:pb-14"
     >
       <div className="container-page">
         {/* Header */}
@@ -216,7 +216,7 @@ const PATHS: (Path & { heading: string })[] = [
   {
     index: "01",
     label: "Subscription access",
-    heading: "Direct PMPM contracts with health plans.",
+    heading: "Direct PEPM contracts with health plans.",
     body: (
       <>
         Member month pricing inside an existing plan footprint, without
@@ -253,7 +253,7 @@ const PATHS: (Path & { heading: string })[] = [
   },
   {
     index: "04",
-    label: "Chronic care vendors",
+    label: "Vendors of Chronic Care Supplies",
     heading: "Co deployed with supplies and devices.",
     body: (
       <>

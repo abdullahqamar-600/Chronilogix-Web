@@ -39,6 +39,6 @@ export function NamedQuote({
 
 export const AETNA_QUOTE = {
   quote:
-    "We identified and engaged an additional 25% of employees not receiving care.",
+    "We identified and engaged an additional 40% of employees not receiving care.",
   attribution: "Aetna",
 };

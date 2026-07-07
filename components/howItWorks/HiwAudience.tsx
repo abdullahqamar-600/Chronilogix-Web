@@ -8,6 +8,11 @@ type Profile = {
   intro: string;
   headline: [string, string];
   description: string;
+  extended?: string;
+  // Small eyebrow label above the `extended` paragraph so a follow-on
+  // block (e.g. Solida Health under Underserved communities) reads as
+  // a deliberate sub-section instead of a runaway continuation.
+  extendedLabel?: string;
   pull?: { lead: string; caption: string };
 };
 
@@ -52,6 +57,9 @@ const PROFILES: Profile[] = [
     headline: ["Standard programs miss.", "Chronilogix adapts."],
     description:
       "Hispanic men face a 64% higher rate of diabetes, yet represent just 2% of participants in the CDC's National Diabetes Prevention Program. Standard coaching fails these members linguistically, culturally, and financially. Chronilogix's MI based approach is built to adapt to cultural context, dietary norms, literacy levels, and behavioral readiness, not just translate the same program into another language.",
+    extendedLabel: "Solida Health",
+    extended:
+      "That is why Chronilogix created Solida Health, a Hispanic and Latin division that runs as its own operation with the same commitment to the underlying clinical IP. Dr. Renata B, its president and a practicing physician, health coach, and cultural voice, has spent years delivering culturally attuned coaching on weight, body image, food, and movement to thousands of Hispanic men and women.",
     pull: { lead: "64%", caption: "Higher diabetes rate for Hispanic men" },
   },
 ];
@@ -146,34 +154,23 @@ export function HiwAudience() {
       />
 
       <div className="container-page py-24 md:py-28 lg:py-32">
-        {/* Section-level header — sits above the tab rail so the section
-            still reads as "Who Chronilogix reaches" before the rail
-            unpacks the five member archetypes. */}
-        <div className="max-w-3xl">
-          <h3
-            className="mt-4 max-w-[24ch] font-serif text-section font-normal text-ink"
-            style={{ textWrap: "balance" } as React.CSSProperties}
-          >
-            Built for the people{" "}
-            <span className="text-ink-muted">standard programs keep missing.</span>
-          </h3>
-          <p className="mt-5 max-w-[58ch] body-prose">
-            Chronilogix wasn&rsquo;t designed for the already engaged
-            wellness consumer. It was built for the members traditional
-            care fails to reach, and for the organizations trying to
-            reach them.
-          </p>
-        </div>
-
-        {/* Tab rail + panel — the home persona pattern. */}
-        <div className="mt-14 grid grid-cols-1 gap-12 md:mt-16 lg:grid-cols-[300px_1fr] lg:gap-16 xl:grid-cols-[340px_1fr] xl:gap-24">
+        {/* Tab rail + panel — the home persona pattern. The manifesto
+            intro that used to live here (night shift nurse / diabetic
+            patient / underinsured worker …) now lives on /about in the
+            AboutPurpose section so the same beat doesn't play twice on
+            /product. */}
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[300px_1fr] lg:gap-16 xl:grid-cols-[340px_1fr] xl:gap-24">
           <ProfileTabs
             active={active}
             onSelect={handleSelect}
             reducedMotion={reducedMotion}
             autoAdvancing={autoAdvancing}
           />
-          <div className="min-w-0">
+          {/* Panel wrapper reserves the tallest tab's compacted height
+              so switching between tabs never collapses the section and
+              yanks everything below up. Sticky tab rail + stable-height
+              panel = no visual jerk on tab change, no scroll jump. */}
+          <div className="min-w-0 lg:min-h-[740px]">
             <ProfilePanel
               profile={profile}
               reducedMotion={reducedMotion}
@@ -358,7 +355,7 @@ function ProfilePanel({
       />
 
       <p
-        className="mt-6 max-w-2xl body-prose md:mt-8"
+        className="mt-5 max-w-2xl body-prose md:mt-6"
         style={{
           opacity: 0,
           animation: reducedMotion
@@ -368,6 +365,29 @@ function ProfilePanel({
       >
         {profile.description}
       </p>
+
+      {profile.extended ? (
+        <div
+          className="mt-6 max-w-2xl md:mt-7"
+          style={{
+            opacity: 0,
+            animation: reducedMotion
+              ? "none"
+              : "wordReveal 600ms cubic-bezier(0.22, 0.61, 0.36, 1) 700ms forwards",
+          }}
+        >
+          {profile.extendedLabel ? (
+            <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-brand-700">
+              {profile.extendedLabel}
+            </p>
+          ) : null}
+          <p
+            className={`body-prose text-ink-soft ${profile.extendedLabel ? "mt-3" : ""}`}
+          >
+            {profile.extended}
+          </p>
+        </div>
+      ) : null}
 
       {profile.pull ? (
         <PullStat
@@ -441,7 +461,7 @@ function PullStat({
 }) {
   return (
     <div
-      className="mt-12 flex items-baseline gap-5 border-t border-ink/10 pt-7 md:mt-14"
+      className="mt-10 flex items-baseline gap-5 border-t border-ink/10 pt-6 md:mt-12"
       style={{
         opacity: 0,
         animation: reducedMotion

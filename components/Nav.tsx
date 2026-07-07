@@ -116,6 +116,7 @@ const RESOURCES_MENU: MegaMenu = {
 const NAV_LINKS: NavLink[] = [
   { href: "/product", label: "Product" },
   { href: "/about", label: "About" },
+  { href: "/faq", label: "FAQ" },
   { href: "/resources", label: "Resources", megaMenu: RESOURCES_MENU },
 ];
 

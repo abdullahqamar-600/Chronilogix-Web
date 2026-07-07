@@ -113,11 +113,34 @@ export function AboutPurpose() {
           <p className="body-prose" style={reveal(640)}>
             They are the reason Chronilogix exists.
           </p>
+
+          {/* Closing beat — pulls the aperture wider from "the four faces
+              above" out to "everyone the system leaves at the door." The
+              first line lands as a standalone declaration (slightly weightier
+              than surrounding prose); the next two paragraphs carry the
+              coverage-agnostic promise and the aftercare bridge. */}
+          <p
+            className="pt-4 font-serif text-[22px] font-normal italic leading-[1.35] text-ink md:text-[26px]"
+            style={reveal(720)}
+          >
+            We are here to help everyone.
+          </p>
+          <p className="body-prose" style={reveal(800)}>
+            Filling the gaps includes everyone across all economic
+            spectrum. No matter their coverage, whether insured through a
+            plan, self-insured, or without a job, this is built to serve
+            them all.
+          </p>
+          <p className="body-prose" style={reveal(880)}>
+            Where affordability creates barriers, we bridge them,
+            extending care from between visits through to ongoing
+            aftercare support.
+          </p>
         </div>
 
         <figure
           className="mx-auto mt-20 max-w-3xl md:mt-24"
-          style={reveal(620)}
+          style={reveal(960)}
         >
           <blockquote className="relative text-center">
             {/* Decorative serif open quote glyph sits behind the quote

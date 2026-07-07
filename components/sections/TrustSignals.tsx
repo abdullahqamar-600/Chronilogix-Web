@@ -10,7 +10,7 @@ const STATS = [
     label: "Reduction in live-coaching cost for health plans",
   },
   {
-    value: "25%",
+    value: "40%",
     label: "Additional employees engaged in care (Aetna)",
   },
 ];

@@ -52,7 +52,7 @@ const PROOF_POINTS: ProofPoint[] = [
   { lead: "430+", label: "Peer reviewed studies" },
   { lead: "$110M", label: "Research funding" },
   { lead: "70", label: "Global clinical studies" },
-  { lead: "+43%", label: "Engagement increase at Aetna" },
+  { lead: "+40%", label: "Engagement increase at Aetna" },
   { lead: "-55%", label: "Reduction in dropout rates" },
   { lead: "-58%", label: "Type 2 diabetes onset (US DPP, CDC/NIH)" },
 ];

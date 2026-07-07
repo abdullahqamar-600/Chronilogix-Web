@@ -7,6 +7,12 @@ type Row = {
   heading: string;
   body: React.ReactNode;
   Visual: React.ComponentType<{ active: boolean }>;
+  // Optional per-row aspect override for the illustration frame.
+  // Defaults to the White-label portrait (4/5 → md:5/6). Coverage
+  // overrides to a shorter frame so the module grid fills without
+  // leaving a big empty top and so the left content column reads as
+  // balanced weight against the illustration.
+  aspectClass?: string;
 };
 
 /**
@@ -49,7 +55,7 @@ export function HiwPlatform() {
   return (
     <section
       id="platform"
-      className="relative overflow-hidden rounded-[28px] bg-white pt-24 pb-24 md:pt-32 md:pb-32 lg:pt-40 lg:pb-40"
+      className="relative overflow-hidden rounded-[28px] bg-white pt-10 pb-24 md:pt-12 md:pb-32 lg:pt-14 lg:pb-40"
     >
       <div className="container-page">
         {/* Header */}
@@ -114,7 +120,11 @@ function PlatformRow({ row }: { row: Row; index: number }) {
             "opacity 800ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1)",
         }}
       >
-        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[24px] border border-ink/[0.08] bg-paper shadow-[0_10px_28px_-18px_rgba(20,8,2,0.18)] md:aspect-[5/6]">
+        <div
+          className={`relative w-full overflow-hidden rounded-[24px] border border-ink/[0.08] bg-paper shadow-[0_10px_28px_-18px_rgba(20,8,2,0.18)] ${
+            row.aspectClass ?? "aspect-[4/5] md:aspect-[5/6]"
+          }`}
+        >
           <Visual active={inView} />
         </div>
       </div>
@@ -142,21 +152,42 @@ type PartnerBrand = {
 
 const PARTNER_BRANDS: PartnerBrand[] = [
   {
+    // Health plan archetype — soft shield silhouette with a discreet cross.
+    // Reads instantly as "insurer / medical benefits" without copying any
+    // real trademark. Fill-plus-stroke gives the mark real body next to
+    // the wordmark, not a lonely outline.
     name: "BlueCircle Health",
     mark: ({ className }) => (
       <svg
         className={className}
         viewBox="0 0 16 16"
-        fill="currentColor"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
         aria-hidden
       >
-        <circle cx="8" cy="8" r="6" fillOpacity="0.18" />
-        <circle cx="8" cy="8" r="3" />
+        <path
+          d="M8 1.5 L13.5 3.8 V8.4 C13.5 11.4 11.1 13.9 8 14.5 C4.9 13.9 2.5 11.4 2.5 8.4 V3.8 Z"
+          fill="currentColor"
+          fillOpacity="0.18"
+        />
+        <path
+          d="M8 1.5 L13.5 3.8 V8.4 C13.5 11.4 11.1 13.9 8 14.5 C4.9 13.9 2.5 11.4 2.5 8.4 V3.8 Z"
+        />
+        <path
+          d="M8 5.4 V10.4 M5.5 7.9 H10.5"
+          strokeWidth="1.55"
+          strokeLinecap="round"
+        />
       </svg>
     ),
-    tint: "#3A6FB5",
+    tint: "#2F6DB1",
   },
   {
+    // Wellness / employer benefit archetype — a stylised leaf with a vein.
+    // Organic silhouette and a single interior line do the wellness cue
+    // without leaning on the tired "water drop" cliché.
     name: "Wellspring Co.",
     mark: ({ className }) => (
       <svg
@@ -165,14 +196,39 @@ const PARTNER_BRANDS: PartnerBrand[] = [
         fill="currentColor"
         aria-hidden
       >
-        <path d="M8 2c2 3 2 5 0 7-2-2-2-4 0-7Z" />
-        <path d="M3 9c3 1 5 1 7 0-1 3-3 5-7 0Z" fillOpacity="0.5" />
-        <path d="M13 9c-3 1-5 1-7 0 1 3 3 5 7 0Z" fillOpacity="0.5" />
+        <path
+          d="M8 2.2 C 4.6 4.4, 3.6 8.4, 8 14 C 12.4 8.4, 11.4 4.4, 8 2.2 Z"
+          fillOpacity="0.95"
+        />
+        <path
+          d="M8 5.4 V12.6"
+          stroke="#ffffff"
+          strokeWidth="0.9"
+          strokeLinecap="round"
+          fill="none"
+        />
+        <path
+          d="M8 8.4 C 6.8 8.6, 6.2 9.2, 6 10"
+          stroke="#ffffff"
+          strokeWidth="0.7"
+          strokeLinecap="round"
+          fill="none"
+        />
+        <path
+          d="M8 10 C 9.2 10.2, 9.8 10.8, 10 11.6"
+          stroke="#ffffff"
+          strokeWidth="0.7"
+          strokeLinecap="round"
+          fill="none"
+        />
       </svg>
     ),
-    tint: "#3F8C66",
+    tint: "#2F8A63",
   },
   {
+    // Placeholder — dashed ring + soft plus. The circle rhymes with
+    // BlueCircle's shield so all three marks feel like they belong to
+    // the same family of "brand tiles" rather than random doodles.
     name: "Your brand here",
     mark: ({ className }) => (
       <svg
@@ -180,13 +236,13 @@ const PARTNER_BRANDS: PartnerBrand[] = [
         viewBox="0 0 16 16"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="1.35"
         strokeLinecap="round"
         strokeLinejoin="round"
         aria-hidden
       >
-        <rect x="2.5" y="2.5" width="11" height="11" rx="2.5" strokeDasharray="2 1.5" />
-        <path d="M8 5.5v5M5.5 8h5" />
+        <circle cx="8" cy="8" r="6" strokeDasharray="2 1.8" />
+        <path d="M8 5.5 V10.5 M5.5 8 H10.5" />
       </svg>
     ),
     tint: "#E45A1C",
@@ -218,7 +274,7 @@ function WhiteLabelVisual({ active }: { active: boolean }) {
 
   return (
     <div className="absolute inset-0">
-      {/* Soft warm wash behind the device card. */}
+      {/* Soft warm wash behind the device. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/card-1-bg.jpg"
@@ -227,119 +283,173 @@ function WhiteLabelVisual({ active }: { active: boolean }) {
       />
       <div className="absolute inset-0 bg-paper/60" />
 
-      <div className="relative flex h-full items-center justify-center p-7 md:p-9">
-        {/* Device card */}
-        <figure
-          className="relative w-full max-w-[300px] overflow-hidden rounded-[22px] bg-white ring-1 ring-ink/[0.06]"
-          style={{
-            animation: "fadeUp 600ms ease-out 100ms forwards",
-            animationPlayState: playState,
-            opacity: 0,
-            boxShadow:
-              "0 22px 50px -22px rgba(40,25,15,0.28), 0 4px 12px -4px rgba(40,25,15,0.10)",
-          }}
-        >
-          {/* Brand chrome — this is the part that swaps. The chat below
-              stays put. */}
-          <div
-            className="relative flex items-center justify-between border-b border-ink/[0.06] px-5 py-3.5"
-            style={{
-              background:
-                "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)",
-            }}
-          >
-            <div
-              key={brand.name}
-              className="flex items-center gap-2"
-              style={{
-                animation:
-                  "fadeUp 360ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards",
-                opacity: 0,
-              }}
-            >
-              <span style={{ color: brand.tint }}>
-                <Mark className="h-[18px] w-[18px]" />
-              </span>
-              <span className="text-[13.5px] font-semibold tracking-tight text-ink">
-                {brand.name}
-              </span>
-            </div>
-            {/* The little tab marks — three quiet vertical bars to imply nav. */}
-            <span aria-hidden className="flex items-end gap-[3px]">
-              <span className="block h-3 w-[2px] rounded-full bg-ink/15" />
-              <span className="block h-3 w-[2px] rounded-full bg-ink/15" />
-              <span className="block h-3 w-[2px] rounded-full bg-ink/15" />
-            </span>
-          </div>
-
-          {/* Coaching content — identical across every brand. */}
-          <div className="relative space-y-3 px-5 py-6">
-            {/* Member message */}
-            <div
-              className="ml-auto max-w-[78%] rounded-[14px] rounded-br-[6px] px-3.5 py-2.5 text-[13px] leading-snug text-ink"
-              style={{
-                background: "rgba(252, 230, 205, 0.72)",
-                border: "1px solid rgba(232, 188, 142, 0.55)",
-                animation: "fadeUp 500ms ease-out 360ms forwards",
-                animationPlayState: playState,
-                opacity: 0,
-              }}
-            >
-              Honestly, today felt impossible.
-            </div>
-
-            {/* Coach reply */}
-            <div
-              className="flex items-start gap-2"
-              style={{
-                animation: "fadeUp 500ms ease-out 760ms forwards",
-                animationPlayState: playState,
-                opacity: 0,
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/roni.png"
-                alt=""
-                className="mt-0.5 h-6 w-6 shrink-0 rounded-full object-cover ring-2 ring-white"
-                draggable={false}
-              />
-              <div
-                className="max-w-[88%] rounded-[14px] rounded-bl-[6px] border border-white/70 bg-white/95 px-3.5 py-2.5 text-[13px] leading-snug text-ink"
-                style={{
-                  boxShadow:
-                    "0 1px 2px rgba(15,20,25,0.04), 0 6px 18px -10px rgba(15,20,25,0.10)",
-                }}
-              >
-                What made today feel that way?
-              </div>
-            </div>
-          </div>
-
-          {/* Footer attribution — the only place Chronilogix is named.
-              Reads quiet, the way a "powered by" line should. */}
-          <div className="relative flex items-center justify-between border-t border-ink/[0.06] px-5 py-2.5">
-            <span className="text-[11.5px] font-medium tracking-tight text-ink-muted">
-              Powered by
-            </span>
-            <span className="font-serif text-[13px] tracking-tight text-ink">
-              Chronilogix
-            </span>
-          </div>
-        </figure>
-      </div>
-
-      {/* Tiny caption below the card — names what the eye is watching. */}
+      {/* Caption — sits above the phone so the eye reads "same coach, any
+          brand" before it lands on the swapping chrome. */}
       <p
-        className="pointer-events-none absolute inset-x-0 bottom-5 mx-auto max-w-[28ch] text-center font-serif text-[12px] italic leading-snug text-ink-muted md:bottom-6"
+        className="pointer-events-none absolute inset-x-0 top-6 mx-auto max-w-[28ch] text-center font-serif text-[12px] italic leading-snug text-ink-muted md:top-8"
         style={{
-          animation: "fadeUp 600ms ease-out 1400ms forwards",
+          animation: "fadeUp 600ms ease-out 200ms forwards",
           animationPlayState: playState,
           opacity: 0,
         }}
       >
         Same coach. Any brand.
       </p>
+
+      {/* Phone — rises from below the frame and pokes up. The bottom
+          third is intentionally pushed past the parent card's edge so
+          the device reads as a partial handset (clipped by the parent's
+          overflow-hidden), not a floating rectangle. Bezel + dynamic
+          island + side buttons carry the "real phone" cue. */}
+      <div
+        className="absolute inset-x-0 flex justify-center"
+        style={{
+          bottom: "-24%",
+          animation:
+            "phonePeek 900ms cubic-bezier(0.22, 0.61, 0.36, 1) 120ms forwards",
+          animationPlayState: playState,
+          opacity: 0,
+          transform: "translateY(24px)",
+        }}
+      >
+        <div className="relative w-[240px] md:w-[272px] lg:w-[292px]">
+          {/* Volume + power side buttons — hairlines glued to the bezel. */}
+          <span
+            aria-hidden
+            className="absolute -left-[3px] top-[54px] h-[22px] w-[3px] rounded-l-full bg-ink/40"
+          />
+          <span
+            aria-hidden
+            className="absolute -left-[3px] top-[86px] h-[34px] w-[3px] rounded-l-full bg-ink/40"
+          />
+          <span
+            aria-hidden
+            className="absolute -left-[3px] top-[128px] h-[34px] w-[3px] rounded-l-full bg-ink/40"
+          />
+          <span
+            aria-hidden
+            className="absolute -right-[3px] top-[104px] h-[46px] w-[3px] rounded-r-full bg-ink/40"
+          />
+
+          {/* Bezel — dark rim, deeper drop-shadow, over-extended height so
+              the bottom clips out of the frame and the device reads as
+              genuinely rising into view. */}
+          <div
+            className="relative rounded-t-[40px] rounded-b-[40px] bg-ink/90 p-[6px] pb-[120px]"
+            style={{
+              boxShadow:
+                "0 34px 60px -22px rgba(20,15,10,0.42), 0 12px 26px -12px rgba(20,15,10,0.22)",
+            }}
+          >
+            {/* Screen — brand chrome sits at the top, chat below. */}
+            <div className="relative overflow-hidden rounded-t-[34px] rounded-b-[34px] bg-white">
+              {/* Dynamic-island — pill-shaped inset at the top of the screen. */}
+              <span
+                aria-hidden
+                className="absolute left-1/2 top-2 z-10 h-[18px] w-[74px] -translate-x-1/2 rounded-full bg-ink"
+              />
+
+              {/* Status-bar row — quiet time + signal glyphs sit beside
+                  the dynamic-island so the top of the screen doesn't
+                  feel empty. */}
+              <div className="flex items-center justify-between px-5 pt-2.5 pb-1 text-[9.5px] font-semibold tracking-tight text-ink/70">
+                <span>9:41</span>
+                <span aria-hidden className="flex items-center gap-[3px]">
+                  <span className="block h-[6px] w-[2px] rounded-sm bg-ink/60" />
+                  <span className="block h-[8px] w-[2px] rounded-sm bg-ink/60" />
+                  <span className="block h-[10px] w-[2px] rounded-sm bg-ink/60" />
+                  <span className="ml-[3px] block h-[8px] w-[14px] rounded-[2px] border border-ink/60" />
+                </span>
+              </div>
+
+              {/* Brand chrome — this is the part that swaps. */}
+              <div
+                className="relative flex items-center justify-between border-b border-ink/[0.06] px-5 py-3"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 100%)",
+                }}
+              >
+                <div
+                  key={brand.name}
+                  className="flex items-center gap-2"
+                  style={{
+                    animation:
+                      "fadeUp 360ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards",
+                    opacity: 0,
+                  }}
+                >
+                  <span style={{ color: brand.tint }}>
+                    <Mark className="h-[18px] w-[18px]" />
+                  </span>
+                  <span className="text-[13.5px] font-semibold tracking-tight text-ink">
+                    {brand.name}
+                  </span>
+                </div>
+                <span aria-hidden className="flex items-end gap-[3px]">
+                  <span className="block h-3 w-[2px] rounded-full bg-ink/15" />
+                  <span className="block h-3 w-[2px] rounded-full bg-ink/15" />
+                  <span className="block h-3 w-[2px] rounded-full bg-ink/15" />
+                </span>
+              </div>
+
+              {/* Coaching content — identical across every brand. */}
+              <div className="relative space-y-3 px-5 py-6">
+                {/* Member message */}
+                <div
+                  className="ml-auto max-w-[78%] rounded-[14px] rounded-br-[6px] px-3.5 py-2.5 text-[13px] leading-snug text-ink"
+                  style={{
+                    background: "rgba(252, 230, 205, 0.72)",
+                    border: "1px solid rgba(232, 188, 142, 0.55)",
+                    animation: "fadeUp 500ms ease-out 480ms forwards",
+                    animationPlayState: playState,
+                    opacity: 0,
+                  }}
+                >
+                  Honestly, today felt impossible.
+                </div>
+
+                {/* Coach reply */}
+                <div
+                  className="flex items-start gap-2"
+                  style={{
+                    animation: "fadeUp 500ms ease-out 880ms forwards",
+                    animationPlayState: playState,
+                    opacity: 0,
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/roni.png"
+                    alt=""
+                    className="mt-0.5 h-6 w-6 shrink-0 rounded-full object-cover ring-2 ring-white"
+                    draggable={false}
+                  />
+                  <div
+                    className="max-w-[88%] rounded-[14px] rounded-bl-[6px] border border-white/70 bg-white/95 px-3.5 py-2.5 text-[13px] leading-snug text-ink"
+                    style={{
+                      boxShadow:
+                        "0 1px 2px rgba(15,20,25,0.04), 0 6px 18px -10px rgba(15,20,25,0.10)",
+                    }}
+                  >
+                    What made today feel that way?
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer attribution — the only place Chronilogix is named. */}
+              <div className="relative flex items-center justify-between border-t border-ink/[0.06] px-5 py-2.5">
+                <span className="text-[11.5px] font-medium tracking-tight text-ink-muted">
+                  Powered by
+                </span>
+                <span className="font-serif text-[13px] tracking-tight text-ink">
+                  Chronilogix
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -372,28 +482,28 @@ const MODULES: Module[] = [
     Icon: WaveIcon,
   },
   {
-    name: "Cardiac",
-    domain: "Heart & blood pressure",
+    name: "GLP-1 Weight",
+    domain: "GLP-1 & weight management",
     state: "dev",
-    Icon: HeartIcon,
+    Icon: ScaleIcon,
   },
   {
-    name: "Retinopathy",
-    domain: "Diabetic eye screening",
-    state: "dev",
-    Icon: EyeIcon,
-  },
-  {
-    name: "Sleep",
-    domain: "Sleep & circadian rhythm",
+    name: "Addiction",
+    domain: "Substance use & recovery",
     state: "dev",
     Icon: MoonIcon,
   },
   {
-    name: "Metabolic",
-    domain: "Weight & metabolism",
+    name: "Hypertension",
+    domain: "Blood pressure & cardiovascular",
     state: "dev",
-    Icon: ScaleIcon,
+    Icon: HeartIcon,
+  },
+  {
+    name: "Cancer",
+    domain: "Screening, treatment, and survivorship",
+    state: "dev",
+    Icon: RibbonIcon,
   },
 ];
 
@@ -410,7 +520,7 @@ function CoverageVisual({ active }: { active: boolean }) {
       />
       <div className="absolute inset-0 bg-paper/65" />
 
-      <div className="relative flex h-full flex-col justify-center gap-5 p-7 md:p-9">
+      <div className="relative flex h-full flex-col justify-center gap-4 p-6 md:gap-5 md:p-8">
         {/* Active row label */}
         <div
           className="flex items-baseline justify-between"
@@ -420,14 +530,14 @@ function CoverageVisual({ active }: { active: boolean }) {
             opacity: 0,
           }}
         >
-          <p className="text-[12px] font-medium tracking-tight text-brand-700">
+          <p className="text-[12px] font-medium tracking-tight text-brand-700 md:text-[13px]">
             Active, 02
           </p>
           <span aria-hidden className="h-px flex-1 ml-3 self-center bg-ink/12" />
         </div>
 
         {/* Active modules — 2 cards in a row */}
-        <ul className="grid grid-cols-2 gap-3">
+        <ul className="grid grid-cols-2 gap-3.5 md:gap-4">
           {MODULES.filter((m) => m.state === "active").map((m, i) => (
             <ModuleTile
               key={m.name}
@@ -440,21 +550,21 @@ function CoverageVisual({ active }: { active: boolean }) {
 
         {/* In-dev row label */}
         <div
-          className="mt-2 flex items-baseline justify-between"
+          className="mt-1 flex items-baseline justify-between"
           style={{
             animation: "fadeUp 500ms ease-out 800ms forwards",
             animationPlayState: playState,
             opacity: 0,
           }}
         >
-          <p className="text-[12px] font-medium tracking-tight text-ink-muted">
+          <p className="text-[12px] font-medium tracking-tight text-ink-muted md:text-[13px]">
             In development, 04
           </p>
           <span aria-hidden className="h-px flex-1 ml-3 self-center bg-ink/12" />
         </div>
 
         {/* In-dev modules — 2x2 grid of dashed tiles */}
-        <ul className="grid grid-cols-2 gap-3">
+        <ul className="grid grid-cols-2 gap-3.5 md:gap-4">
           {MODULES.filter((m) => m.state === "dev").map((m, i) => (
             <ModuleTile
               key={m.name}
@@ -483,7 +593,7 @@ function ModuleTile({
 
   return (
     <li
-      className={`relative overflow-hidden rounded-[14px] px-3.5 py-3 ${
+      className={`relative overflow-hidden rounded-[16px] px-4 py-3.5 md:px-5 md:py-4 ${
         isActive
           ? "border border-ink/[0.08] bg-white shadow-[0_8px_22px_-14px_rgba(20,8,2,0.22)]"
           : "border border-dashed border-ink/25 bg-white/55"
@@ -494,28 +604,28 @@ function ModuleTile({
         opacity: 0,
       }}
     >
-      <div className="flex items-start gap-2.5">
+      <div className="flex items-start gap-3">
         <span
-          className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
+          className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full md:h-10 md:w-10 ${
             isActive
               ? "bg-brand-600/12 text-brand-700"
               : "bg-ink/[0.06] text-ink-muted"
           }`}
         >
-          <Icon className="h-4 w-4" />
+          <Icon className="h-[18px] w-[18px] md:h-5 md:w-5" />
         </span>
         <div className="min-w-0">
           <p
-            className={`font-serif text-[14px] leading-tight tracking-tight ${
+            className={`font-serif text-[15px] leading-tight tracking-tight ${
               isActive ? "text-ink" : "text-ink-soft"
-            } md:text-[15px]`}
+            } md:text-[17px]`}
           >
             {module.name}
           </p>
           <p
-            className={`mt-1 text-[11px] leading-snug ${
+            className={`mt-1 text-[11.5px] leading-snug ${
               isActive ? "text-ink-muted" : "text-ink-muted/85"
-            }`}
+            } md:text-[12.5px]`}
           >
             {module.domain}
           </p>
@@ -599,7 +709,7 @@ function HeartIcon({ className }: { className?: string }) {
   );
 }
 
-function EyeIcon({ className }: { className?: string }) {
+function RibbonIcon({ className }: { className?: string }) {
   return (
     <svg
       className={className}
@@ -611,8 +721,9 @@ function EyeIcon({ className }: { className?: string }) {
       strokeLinejoin="round"
       aria-hidden
     >
-      <path d="M2 10s3-5 8-5 8 5 8 5-3 5-8 5-8-5-8-5Z" />
-      <circle cx="10" cy="10" r="2.4" />
+      <path d="M10 12.5 6.4 18l-1.8-2.6L2.5 15l3.6-5.4" />
+      <path d="M10 12.5 13.6 18l1.8-2.6 2.1-.4-3.6-5.4" />
+      <path d="M10 12.5 6.5 6.9a4 4 0 1 1 7 0L10 12.5Z" />
     </svg>
   );
 }
@@ -664,6 +775,15 @@ const ROWS: Row[] = [
         app, employer benefit, or wellness platform. Your chrome on top;
         the same MI trained coach underneath. The coaching layer without
         building clinical IP from scratch.
+        {/* Customization callout — two-line beat, kept as a block-level
+            <span> so it opens its own paragraph inside the parent <p>
+            without producing invalid nested <p> HTML. */}
+        <span className="mt-4 block">
+          We can customize by Universities, Unions, Missions and industry
+          specific needs.
+          <br />
+          Globally, regionally and locally.
+        </span>
       </>
     ),
     Visual: WhiteLabelVisual,
@@ -680,5 +800,9 @@ const ROWS: Row[] = [
       </>
     ),
     Visual: CoverageVisual,
+    // Coverage carries a module grid, not a phone card — a less-tall
+    // frame lets the grid fill the canvas edge-to-edge and reads as
+    // balanced weight against the left content column.
+    aspectClass: "aspect-[5/6] md:aspect-[8/7]",
   },
 ];

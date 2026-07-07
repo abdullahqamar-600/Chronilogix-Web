@@ -114,7 +114,7 @@ function Intro() {
           className="mt-4 text-hero font-serif font-normal text-ink"
           style={{ textWrap: "balance" } as React.CSSProperties}
         >
-          Twenty years in the making.{" "}
+          Thirty years in the making.{" "}
           <span className="text-ink-muted">Built for right now.</span>
         </h2>
       </Reveal>
@@ -123,7 +123,7 @@ function Intro() {
           Chronilogix didn&rsquo;t start with a pitch deck. It started with
           research. The intellectual foundation of our platform, Motivational
           Interviewing as a scalable intervention for chronic and behavioral
-          health, has been in development for over two decades. What&rsquo;s
+          health, has been in development for over three decades. What&rsquo;s
           changed is the technology available to deliver it.
         </p>
       </Reveal>

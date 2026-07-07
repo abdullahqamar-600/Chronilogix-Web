@@ -12,24 +12,32 @@ import { useEffect, useMemo, useState } from "react";
 //   z-20  Text row (eyebrow + headline + CTA on left; Resnicow caption
 //         + stats on right) — crisp, floats on the fog
 
-// Maria, 2:04 AM — same MI exchange used in earlier V5: open question
-// → reflect → name the feeling → safety check. Member lines stay
-// lowercase + casual; Roni's reflections do the careful clinical work.
-type ChatTurn = { who: "member" | "roni"; text: string; time: string };
+// A four-turn 2am arc: symptom → phenomenon → specific thought → Millie
+// names the thought AS the loop and offers a small piece of perspective
+// (the closing beat that turns rumination into observation). MI stays
+// strict: affirm, open question, then a complex reflection that ties the
+// specific thought back to the opener and quietly normalizes the hour.
+// Member lines stay lowercase + casual; Millie's replies do the careful
+// clinical work.
+type ChatTurn = { who: "member" | "millie"; text: string; time: string };
 const CHAT: ChatTurn[] = [
+  { who: "member", text: "can't sleep. thoughts keep looping.", time: "02:04" },
   {
-    who: "roni",
-    text: "Didn't see you check in tonight. What's keeping you up?",
-    time: "16:19",
+    who: "millie",
+    text: "That sounds exhausting. What's the loudest thought right now?",
+    time: "02:04",
   },
-  { who: "member", text: "Mind won't stop", time: "16:18" },
-  { who: "roni", text: "What's loudest right now?", time: "16:19" },
-  { who: "roni", text: "We can sit with it.", time: "16:19" },
+  { who: "member", text: "that i'm falling behind.", time: "02:05" },
+  {
+    who: "millie",
+    text: "You've been carrying a heavy weight, and the pressure of feeling left behind is making it difficult for your mind to settle. When these thoughts start cycling at night, what have you tried in the past to get some traction?",
+    time: "02:05",
+  },
 ];
 
 const TYPING_MS = 950;
 const MEMBER_DWELL_MS = 1350;
-const RONI_DWELL_MS = 1850;
+const MILLIE_DWELL_MS = 1850;
 const HOLD_MS = 4400;
 const EXIT_MS = 600;
 const RESET_PAUSE_MS = 520;
@@ -70,7 +78,7 @@ export function HeroV5() {
     return () => cancelAnimationFrame(rafId);
   }, [reducedMotion]);
 
-  // Conversation timeline — each Roni reply is preceded by a typing
+  // Conversation timeline — each Millie reply is preceded by a typing
   // indicator so the rhythm feels like a real coach composing a reply.
   useEffect(() => {
     if (reducedMotion) {
@@ -100,7 +108,7 @@ export function HeroV5() {
       }
 
       const msg = CHAT[i];
-      if (msg.who === "roni") {
+      if (msg.who === "millie") {
         setTypingFor(i);
         setPhase("typing");
         timer = window.setTimeout(() => {
@@ -108,7 +116,7 @@ export function HeroV5() {
           setTypingFor(null);
           setActiveIndex(i);
           setPhase("running");
-          timer = window.setTimeout(() => advance(i + 1), RONI_DWELL_MS);
+          timer = window.setTimeout(() => advance(i + 1), MILLIE_DWELL_MS);
         }, TYPING_MS);
       } else {
         setActiveIndex(i);
@@ -447,7 +455,7 @@ function ScreenChrome() {
       </svg>
       <div className="flex flex-col items-center">
         <div className="text-[7px] font-bold tracking-[-0.005em] text-ink md:text-[9px] lg:text-[10px]">
-          Diabetes Initial
+          Mental Health Check-in
         </div>
         <div className="mt-[1px] text-[5px] text-[#9CA3AF] md:text-[6.5px] lg:text-[7.5px]">
           listening...
@@ -465,7 +473,7 @@ function ScreenAvatar() {
       <div className="relative h-[22px] w-[22px] md:h-[28px] md:w-[28px] lg:h-[32px] lg:w-[32px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/roni-avatar.png"
+          src="/millie.png"
           alt=""
           aria-hidden
           draggable={false}
@@ -565,12 +573,12 @@ function ChatMessage({
   visible: boolean;
   exiting: boolean;
 }) {
-  const isRoni = turn.who === "roni";
-  const label = isRoni ? "Roni" : "You";
+  const isMillie = turn.who === "millie";
+  const label = isMillie ? "Millie" : "You";
 
   return (
     <div
-      className={`flex w-full flex-col gap-[1px] ${isRoni ? "items-start text-left" : "items-end text-right"}`}
+      className={`flex w-full flex-col gap-[1px] ${isMillie ? "items-start text-left" : "items-end text-right"}`}
       style={{
         opacity: exiting ? 0 : visible ? 1 : 0,
         transform: exiting
