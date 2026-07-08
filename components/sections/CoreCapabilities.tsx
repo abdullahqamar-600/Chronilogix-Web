@@ -60,7 +60,7 @@ export function CoreCapabilities() {
       // would create a scrolling box that captures them and kills the
       // stack effect. Rounded corners still clip because nothing inside
       // extends past the section bounds.
-      className="relative rounded-[28px] bg-white pt-24 pb-24 md:pt-32 md:pb-32 lg:pt-40 lg:pb-40"
+      className="relative rounded-[28px] bg-white pt-24 md:pt-32 lg:pt-40"
     >
       <div className="container-page">
         {/* Header */}
@@ -91,12 +91,12 @@ export function CoreCapabilities() {
             <CapabilityRow key={block.heading} block={block} index={i} />
           ))}
         </div>
-
-        {/* Privacy by design — the closing beat. Inverted treatment so
-            the trust posture lands as a section of its own, not as
-            another card in the grid. */}
-        <PrivacyByDesign />
       </div>
+
+      {/* Privacy by design — the closing beat. Full-width cream that
+          matches the section's rounded bottom, so the trust posture
+          reads as an inverted band, not another rounded card. */}
+      <PrivacyByDesign />
     </section>
   );
 }
@@ -147,10 +147,16 @@ function CapabilityRow({ block, index }: { block: Block; index: number }) {
           <div
             className={`order-2 lg:order-none lg:row-start-1 ${contentSide} flex flex-col justify-center`}
           >
-            <p className="eyebrow-muted">{block.eyebrow}</p>
-            <h3 className="mt-3 max-w-[22ch] text-row font-serif font-normal text-ink">
+            <h3 className="max-w-[22ch] text-row font-serif font-normal text-ink">
               {block.heading}
             </h3>
+            {/* Ordinal + section label sits below the headline as a mono
+                signature — a different typographic family than both the
+                serif heading and the sans body, so it reads as an
+                anchoring tag, not a lead-in. */}
+            <p className="mt-3 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-brand-700">
+              {block.eyebrow}
+            </p>
             <p className="mt-5 max-w-[42ch] body-quiet">{block.body}</p>
           </div>
 
@@ -267,7 +273,7 @@ function PrivacyByDesign() {
   return (
     <div
       ref={ref}
-      className="mt-24 md:mt-32"
+      className="mt-24 md:mt-32 lg:mt-40"
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? "translateY(0)" : "translateY(18px)",
@@ -275,111 +281,108 @@ function PrivacyByDesign() {
           "opacity 800ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 800ms cubic-bezier(0.22, 0.61, 0.36, 1)",
       }}
     >
-      <div className="relative overflow-hidden rounded-[24px] bg-paper-warm px-6 py-10 md:px-10 md:py-14 lg:px-14 lg:py-16">
-        {/* Beat 1 — the absolute claim. Padlock in the same brand-tinted
-            icon-in-circle recipe HiwIntegration uses on light ground.
-            Compact vertical rhythm between anchor, eyebrow, and h3 so
-            the block doesn't feel padded. */}
-        <div className="relative mx-auto max-w-3xl text-center">
-          <span
-            aria-hidden
-            className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-brand-600/10 text-brand-700 ring-1 ring-brand-600/20"
-          >
-            <svg
-              className="h-5 w-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+      {/* Full-width cream band. `rounded-b-[28px]` matches the parent
+          section's rounded corners at the bottom so the band reads as
+          the closing lip of the capabilities section, not a stray card
+          floating inside it. */}
+      <div className="relative overflow-hidden rounded-b-[28px] bg-paper-warm px-6 py-14 md:px-10 md:py-20 lg:px-14 lg:py-24">
+        <div className="container-page">
+          {/* Beat 1 — the absolute claim. Padlock anchor + eyebrow +
+              headline stacked centre-aligned. Compliance chips land as
+              the immediate proof beneath the promise. */}
+          <div className="relative mx-auto max-w-3xl text-center">
+            <span
               aria-hidden
+              className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-brand-600/10 text-brand-700 ring-1 ring-brand-600/20"
             >
-              <rect x="5" y="10.5" width="14" height="9.5" rx="2" />
-              <path d="M8.5 10.5 V7.5 C8.5 5.6 10.1 4 12 4 C13.9 4 15.5 5.6 15.5 7.5 V10.5" />
-              <path d="M12 14 V16.5" />
-            </svg>
-          </span>
-          <p className="mt-4 text-[13px] font-medium tracking-tight text-brand-700/90">
-            Privacy by design
-          </p>
-          <h3
-            className="mt-3 font-serif text-[28px] font-normal leading-[1.1] text-ink md:text-[36px] lg:text-[42px]"
-            style={{ textWrap: "balance" } as React.CSSProperties}
-          >
-            Member data is never used to train our models.{" "}
-            <span className="text-brand-700">Not now. Not ever.</span>
-          </h3>
-        </div>
+              <svg
+                className="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <rect x="5" y="10.5" width="14" height="9.5" rx="2" />
+                <path d="M8.5 10.5 V7.5 C8.5 5.6 10.1 4 12 4 C13.9 4 15.5 5.6 15.5 7.5 V10.5" />
+                <path d="M12 14 V16.5" />
+              </svg>
+            </span>
+            <p className="mt-4 text-[13px] font-medium tracking-tight text-brand-700/90">
+              Privacy by design
+            </p>
+            <h3
+              className="mt-3 font-serif text-[28px] font-normal leading-[1.1] text-ink md:text-[36px] lg:text-[42px]"
+              style={{ textWrap: "balance" } as React.CSSProperties}
+            >
+              Member data is never used to train our models.{" "}
+              <span className="text-brand-700">Not now. Not ever.</span>
+            </h3>
 
-        {/* Hairline divider — same seam pattern the rest of the site
-            uses (see HiwIntegration, AboutScience). Kept short. */}
-        <div
-          aria-hidden
-          className="relative mx-auto mt-8 h-px w-16 bg-ink/12 md:mt-10"
-        />
+            {/* Compliance chips — HIPAA + BAA sit directly under the
+                headline as the immediate proof. Live pulse dot on HIPAA;
+                checkmark glyph on BAA. Both keep the light-block chip
+                recipe (white ground, ink-hairline border, ink type). */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+              <div className="inline-flex items-center gap-2.5 rounded-full border border-ink/10 bg-white/80 px-4 py-1.5 backdrop-blur-sm">
+                <span aria-hidden className="relative flex h-2 w-2">
+                  <span className="absolute inset-0 animate-ping rounded-full bg-brand-500/60" />
+                  <span className="relative inline-block h-2 w-2 rounded-full bg-brand-500" />
+                </span>
+                <span className="text-[13px] font-medium text-ink">HIPAA</span>
+                <span className="text-[12px] text-ink-muted">Compliant</span>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-ink/8 bg-white/60 px-4 py-1.5">
+                <svg
+                  className="h-3.5 w-3.5 text-ink-soft"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                >
+                  <path d="M3 6.5 L7 10.5 L13 4.5" />
+                </svg>
+                <span className="text-[12.5px] text-ink-soft">
+                  BAA available on request
+                </span>
+              </div>
+            </div>
+          </div>
 
-        {/* Beat 2 — three trust pillars. Naked text with icon + ordinal
-            anchor, matching HiwIntegration / HiwMethod. Grid gap tuned
-            for a compact three-across read on desktop. */}
-        <div className="relative mt-8 grid grid-cols-1 gap-8 md:mt-10 md:grid-cols-3 md:gap-8 lg:gap-10">
-          {TRUST_PILLARS.map((pillar, i) => (
-            <div key={pillar.title} className="flex flex-col">
-              <div className="flex items-center gap-4">
+          {/* Hairline divider — same seam pattern the rest of the site
+              uses (see HiwIntegration, AboutScience). */}
+          <div
+            aria-hidden
+            className="relative mx-auto mt-10 h-px w-16 bg-ink/12 md:mt-12"
+          />
+
+          {/* Beat 2 — three trust pillars. Naked text with just an icon
+              anchor (no ordinal) — the icon carries enough identity, and
+              the numbers were doing double duty with the row headings.
+              Matches the naked-pillar language used across the rest of
+              the site (HiwIntegration, HiwMethod, TrustSignals). */}
+          <div className="relative mt-10 grid grid-cols-1 gap-8 md:mt-12 md:grid-cols-3 md:gap-8 lg:gap-10">
+            {TRUST_PILLARS.map((pillar) => (
+              <div key={pillar.title} className="flex flex-col">
                 <span
                   aria-hidden
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-600/10 text-brand-700 ring-1 ring-brand-600/20"
                 >
                   <pillar.Icon className="h-5 w-5" />
                 </span>
-                <span className="font-serif text-[13px] font-medium tabular-nums text-brand-700">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
+                <h4 className="mt-4 font-serif text-[19px] font-normal leading-tight text-ink md:text-[21px]">
+                  {pillar.title}
+                </h4>
+                <p className="mt-2.5 text-[14px] leading-relaxed text-ink-soft md:text-[14.5px]">
+                  {pillar.body}
+                </p>
               </div>
-              <h4 className="mt-4 font-serif text-[19px] font-normal leading-tight text-ink md:text-[21px]">
-                {pillar.title}
-              </h4>
-              <p className="mt-2.5 text-[14px] leading-relaxed text-ink-soft md:text-[14.5px]">
-                {pillar.body}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* Beat 3 — compliance footer. HIPAA pill with live pulse dot;
-            BAA chip beside so the row reads as a posture, not one lonely
-            badge. Light-block chip recipe: white ground, ink-hairline
-            border, ink type. */}
-        <div className="relative mt-10 flex flex-col items-center gap-3 md:mt-12">
-          <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-muted">
-            Compliance posture
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-2.5">
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-ink/10 bg-white/80 px-4 py-1.5 backdrop-blur-sm">
-              <span aria-hidden className="relative flex h-2 w-2">
-                <span className="absolute inset-0 animate-ping rounded-full bg-brand-500/60" />
-                <span className="relative inline-block h-2 w-2 rounded-full bg-brand-500" />
-              </span>
-              <span className="text-[13px] font-medium text-ink">HIPAA</span>
-              <span className="text-[12px] text-ink-muted">Compliant</span>
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-ink/8 bg-white/60 px-4 py-1.5">
-              <svg
-                className="h-3.5 w-3.5 text-ink-soft"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden
-              >
-                <path d="M3 6.5 L7 10.5 L13 4.5" />
-              </svg>
-              <span className="text-[12.5px] text-ink-soft">
-                BAA available on request
-              </span>
-            </div>
+            ))}
           </div>
         </div>
       </div>
@@ -405,7 +408,7 @@ function MethodVisual({ active }: { active: boolean }) {
         alt=""
         className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
       />
-      <div className="absolute inset-0 bg-paper/60" />
+      <div className="absolute inset-0 bg-paper/70" />
 
       <div className="relative flex h-full flex-col items-stretch justify-center gap-5 p-8 md:p-10">
         {/* The big, abstract challenge */}
@@ -490,7 +493,7 @@ function AccessVisual({ active }: { active: boolean }) {
         alt=""
         className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
       />
-      <div className="absolute inset-0 bg-paper/62" />
+      <div className="absolute inset-0 bg-paper/70" />
 
       <div className="relative flex h-full flex-col justify-center gap-3 p-8 md:p-10">
         {/* Member, in English — the honest thing */}
@@ -555,10 +558,10 @@ function OversightVisual({ active }: { active: boolean }) {
         alt=""
         className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
       />
-      <div className="absolute inset-0 bg-paper/60" />
+      <div className="absolute inset-0 bg-paper/70" />
 
       <div className="relative flex h-full flex-col items-center justify-center gap-10 p-8 md:p-10">
-        <div className="w-full max-w-[300px]">
+        <div className={`${PUFFY_CARD} w-full max-w-[300px] p-6 md:p-7`}>
           <p
             className="text-[14px] font-medium leading-snug text-ink-soft"
             style={{
@@ -678,7 +681,7 @@ function MultilingualVisual({ active }: { active: boolean }) {
         alt=""
         className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
       />
-      <div className="absolute inset-0 bg-paper/60" />
+      <div className="absolute inset-0 bg-paper/70" />
 
       <div className="relative flex h-full flex-col justify-center gap-3.5 p-8 md:p-10">
         <p
@@ -753,7 +756,7 @@ function EmotionAwareVisual({ active }: { active: boolean }) {
         alt=""
         className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
       />
-      <div className="absolute inset-0 bg-paper/62" />
+      <div className="absolute inset-0 bg-paper/70" />
 
       <div className="relative flex h-full flex-col justify-center gap-6 p-8 md:p-10">
         {EMOTION_EXCHANGES.map((ex, i) => (
@@ -773,7 +776,7 @@ function EmotionAwareVisual({ active }: { active: boolean }) {
 
             {/* Detected state — labelled chip, mid-row, with a hairline
                 glyph to imply the read happens between input and reply. */}
-            <div className="flex items-center gap-2 self-center">
+            <div className="surface-glass inline-flex items-center gap-2 rounded-full self-center px-3 py-1">
               <span
                 aria-hidden
                 className="block h-px w-6 bg-ink/20"
@@ -820,7 +823,7 @@ function CrisisSafeVisual({ active }: { active: boolean }) {
         alt=""
         className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
       />
-      <div className="absolute inset-0 bg-paper/60" />
+      <div className="absolute inset-0 bg-paper/70" />
 
       <div className="relative flex h-full flex-col justify-center gap-4 p-8 md:p-10">
         {/* Member message — concerning language */}

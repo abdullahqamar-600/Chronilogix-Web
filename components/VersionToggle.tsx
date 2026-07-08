@@ -7,20 +7,23 @@ import { usePathname } from "next/navigation";
 // Roni pill, but high enough to sit above page content. Purely a build-time
 // preview affordance — should be removed before production.
 //
-// V3 and V4 access points are hidden after the renumbering pass: the
-// design that used to live at /v5 was promoted into the V1 slot (/) and
-// the original V1 was moved to /v3. The deprecated /v3 (old) and /v4
-// routes have been removed.
+// V4 is the current iteration slot — reintroduced after the earlier
+// renumbering pass (V5 → V1, original V1 → /v3). V4 begins the "trim
+// on-page text, push detail into a shared DetailModal" iteration; the
+// first section it reworks is Problem (see ProblemV2).
 const VERSIONS = [
   { label: "V1", href: "/" },
   { label: "V2", href: "/v2" },
   { label: "V3", href: "/v3" },
+  { label: "V4", href: "/v4" },
 ] as const;
 
 export function VersionToggle() {
   const pathname = usePathname() ?? "/";
   const activeHref =
-    pathname.startsWith("/v3")
+    pathname.startsWith("/v4")
+      ? "/v4"
+      : pathname.startsWith("/v3")
       ? "/v3"
       : pathname.startsWith("/v2")
       ? "/v2"

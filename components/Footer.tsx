@@ -105,7 +105,9 @@ export function Footer() {
               Book a Demo
             </a>
             <a
-              href="#whitepaper"
+              href="/chronilogix-mi-whitepaper.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               className="group/wp btn-secondary"
             >
               Download the Whitepaper

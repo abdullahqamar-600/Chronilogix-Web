@@ -30,7 +30,7 @@ const CHAT: ChatTurn[] = [
   { who: "member", text: "that i'm falling behind.", time: "02:05" },
   {
     who: "millie",
-    text: "You've been carrying a heavy weight, and the pressure of feeling left behind is making it difficult for your mind to settle. When these thoughts start cycling at night, what have you tried in the past to get some traction?",
+    text: "You've been carrying a heavy weight, and feeling left behind is keeping your mind from settling. When thoughts cycle like this at night, what's helped you get traction before?",
     time: "02:05",
   },
 ];
@@ -144,13 +144,15 @@ export function HeroV5() {
     <section
       id="hero"
       aria-label="Chronilogix, AI coaching for mental health and chronic care"
-      className="relative flex flex-col overflow-hidden rounded-t-[28px]"
+      // Fixed viewport height so the composition always reads as a
+      // full-screen hero. Mobile min-h is dropped (was 660px) so short
+      // portrait viewports (iPhone SE 1st gen ~568px) and any landscape
+      // phone still fit within one viewport instead of clipping the CTA
+      // under `overflow-hidden`. Desktop keeps the 660px floor so the
+      // 3-band composition doesn't collapse on tiny windows.
+      className="relative flex flex-col overflow-hidden rounded-t-[28px] md:min-h-[660px]"
       style={{
-        // Locks the hero into the user's viewport. min/max guard against
-        // very short or very tall windows so the composition never
-        // collapses or stretches past usable proportions.
         height: "min(100svh - 1.5rem, 1000px)",
-        minHeight: "660px",
         // Soft creamy ground tone — warmer than white, lets the
         // dissolved hand and the ambient halos read as part of the
         // same warm-paper page. Matches Tailwind's `paper.warm` token
@@ -204,9 +206,11 @@ export function HeroV5() {
 
         {/* Left — Heading. Sits high in the desktop column so it
             shoulders the phone from above; on smaller viewports flows
-            in normal column order. */}
+            in normal column order. Mobile top padding trimmed so short
+            viewports (iPhone SE portrait) leave enough middle-band
+            space for the phone to render at usable size. */}
         <div
-          className="relative z-20 flex-none pt-20 md:pt-24 lg:self-start lg:pt-36 xl:pt-44"
+          className="relative z-20 flex-none pt-12 sm:pt-16 md:pt-24 lg:self-start lg:pt-36 xl:pt-44"
           style={{
             opacity: textFade,
             transform: `translateY(${(1 - textFade) * 10}px)`,
@@ -232,10 +236,12 @@ export function HeroV5() {
         {/* Centre — Phone. Anchored to the section's bottom edge so
             the hand reaches the viewport floor and reads as held up
             from below. Phone height is capped well under section
-            height so it doesn't dominate the composition. */}
+            height so it doesn't dominate the composition. min-h floor
+            keeps the phone at a legible size on short viewports where
+            the flex-1 middle band would otherwise get crushed. */}
         <div
           className="relative z-0 flex w-full flex-1 items-end justify-center pt-3 md:pt-4 lg:self-stretch lg:pt-0"
-          style={{ minHeight: 0 }}
+          style={{ minHeight: 200 }}
         >
           <div
             style={{
@@ -243,7 +249,7 @@ export function HeroV5() {
               transform: `translateY(${(1 - phoneFade) * 14}px)`,
               willChange: "opacity, transform",
             }}
-            className="h-[68%] lg:h-[76%]"
+            className="h-[80%] sm:h-[74%] lg:h-[76%]"
           >
             <div className="h-full" style={{ aspectRatio: "1013 / 986" }}>
               <PhoneFrame
@@ -441,7 +447,7 @@ function ScreenChrome() {
     <div className="absolute inset-x-0 top-0 flex h-[12%] items-center justify-between px-[5%]">
       <svg
         viewBox="0 0 8 14"
-        className="h-[8px] w-[5px] text-ink md:h-[10px] md:w-[6.5px] lg:h-[11px] lg:w-[7px]"
+        className="h-[7px] w-[4px] flex-none text-ink md:h-[10px] md:w-[6.5px] lg:h-[11px] lg:w-[7px]"
         aria-hidden
         fill="none"
       >
@@ -453,16 +459,17 @@ function ScreenChrome() {
           strokeLinejoin="round"
         />
       </svg>
-      <div className="flex flex-col items-center">
-        <div className="text-[7px] font-bold tracking-[-0.005em] text-ink md:text-[9px] lg:text-[10px]">
-          Mental Health Check-in
+      <div className="flex min-w-0 flex-1 flex-col items-center px-1">
+        <div className="whitespace-nowrap text-[6.5px] font-bold tracking-[-0.005em] text-ink md:text-[9px] lg:text-[10px]">
+          <span className="md:hidden">Check-in</span>
+          <span className="hidden md:inline">Mental Health Check-in</span>
         </div>
-        <div className="mt-[1px] text-[5px] text-[#9CA3AF] md:text-[6.5px] lg:text-[7.5px]">
+        <div className="mt-[1px] whitespace-nowrap text-[5px] text-[#9CA3AF] md:text-[6.5px] lg:text-[7.5px]">
           listening...
         </div>
       </div>
       {/* right-side spacer, matches back-arrow footprint */}
-      <span aria-hidden className="block h-[8px] w-[5px] md:h-[10px] md:w-[6.5px] lg:h-[11px] lg:w-[7px]" />
+      <span aria-hidden className="block h-[7px] w-[4px] flex-none md:h-[10px] md:w-[6.5px] lg:h-[11px] lg:w-[7px]" />
     </div>
   );
 }

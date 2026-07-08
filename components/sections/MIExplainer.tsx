@@ -113,7 +113,9 @@ export function MIExplainer() {
 
         <div className="mt-10 md:mt-12">
           <a
-            href="#motivational-interviewing-paper"
+            href="/chronilogix-mi-whitepaper.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
             className="btn-primary group/mi-cta"
           >
             Read the full white paper

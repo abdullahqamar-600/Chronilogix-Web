@@ -4,7 +4,7 @@ import { PageLoader } from "@/components/PageLoader";
 import { SectionGuide } from "@/components/widget/SectionGuide";
 import { Hero } from "@/components/sections/Hero";
 import { Statement } from "@/components/sections/Statement";
-import { Problem } from "@/components/sections/Problem";
+import { ProblemV2 } from "@/components/sections/ProblemV2";
 import { Outcome } from "@/components/sections/Outcome";
 import { Solution } from "@/components/sections/Solution";
 import { WhoWeServe } from "@/components/sections/WhoWeServe";
@@ -25,7 +25,7 @@ export default function HomePageV3() {
           <Solution />
         </div>
         <div className="flex flex-col">
-          <Problem />
+          <ProblemV2 />
           <Outcome />
           <WhoWeServe />
         </div>

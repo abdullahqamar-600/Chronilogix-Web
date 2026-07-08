@@ -24,6 +24,10 @@ type Persona = {
   description: string | ReactNode;
   metrics?: Metric[];
   signals?: Signal[];
+  // If present, adds a quiet "Read the full story →" link that carries
+  // engaged visitors from this elevator tab into the persona's deep-dive
+  // page. Only Brokers and Wellness Platforms have live deep-dives today.
+  deepLink?: { href: string; label: string };
 };
 
 const PERSONAS: Persona[] = [
@@ -87,6 +91,10 @@ const PERSONAS: Persona[] = [
         body: "Members engage weeks and months before they show up in claims data, replacing reactive triage with proactive outreach. A direct correlation between spend and value.",
       },
     ],
+    deepLink: {
+      href: "/solutions/brokers",
+      label: "Read the full Brokers story",
+    },
   },
   {
     key: "health-plans",
@@ -134,6 +142,10 @@ const PERSONAS: Persona[] = [
         body: "Skip the years of methodology work and the headcount that comes with it. Plug in, ship.",
       },
     ],
+    deepLink: {
+      href: "/solutions/app-partners",
+      label: "Read the full App Partners story",
+    },
   },
   {
     key: "underserved",
@@ -483,9 +495,8 @@ function PersonaPanel({
         />
       ) : null}
 
-      <a
-        href="#book-a-demo"
-        className="group/cta btn-primary mt-10 w-fit md:mt-12"
+      <div
+        className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4 md:mt-12"
         style={{
           opacity: 0,
           animation: reducedMotion
@@ -493,14 +504,30 @@ function PersonaPanel({
             : "wordReveal 500ms cubic-bezier(0.22, 1, 0.36, 1) 980ms forwards",
         }}
       >
-        Talk to our team
-        <span
-          aria-hidden
-          className="transition-transform duration-300 ease-out group-hover/cta:translate-x-1"
-        >
-          <ArrowRight />
-        </span>
-      </a>
+        <a href="#book-a-demo" className="group/cta btn-primary w-fit">
+          Talk to our team
+          <span
+            aria-hidden
+            className="transition-transform duration-300 ease-out group-hover/cta:translate-x-1"
+          >
+            <ArrowRight />
+          </span>
+        </a>
+        {persona.deepLink && (
+          <a
+            href={persona.deepLink.href}
+            className="group/deep inline-flex items-center gap-1.5 text-sm font-medium text-ink-soft transition-colors duration-200 ease-out motion-reduce:transition-none hover:text-brand-700"
+          >
+            {persona.deepLink.label}
+            <span
+              aria-hidden
+              className="transition-transform duration-300 ease-out group-hover/deep:translate-x-1"
+            >
+              <ArrowRight />
+            </span>
+          </a>
+        )}
+      </div>
     </div>
   );
 }

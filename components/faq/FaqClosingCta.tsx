@@ -74,7 +74,9 @@ export function FaqClosingCta() {
               </svg>
             </a>
             <a
-              href="/resources/whitepapers"
+              href="/chronilogix-mi-whitepaper.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-[15px] font-medium tracking-tight text-paper/80 underline decoration-paper/30 decoration-1 underline-offset-[4px] transition-colors hover:text-paper hover:decoration-paper/70"
             >
               Read the whitepaper

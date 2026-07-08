@@ -55,7 +55,12 @@ export function HiwClosingCTA() {
             Book a Demo
             <Arrow />
           </a>
-          <a href="#whitepaper" className="group/wp btn-secondary">
+          <a
+            href="/chronilogix-mi-whitepaper.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group/wp btn-secondary"
+          >
             Download the Clinical Overview
             <Arrow />
           </a>

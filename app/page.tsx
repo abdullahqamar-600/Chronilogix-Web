@@ -3,10 +3,11 @@ import { Footer } from "@/components/Footer";
 import { PageLoader } from "@/components/PageLoader";
 import { SectionGuide } from "@/components/widget/SectionGuide";
 import { CoachLauncher } from "@/components/CoachLauncher";
+import { VersionToggle } from "@/components/VersionToggle";
 import { HeroV5 } from "@/components/sections/HeroV5";
 import { StatementV5 } from "@/components/sections/StatementV5";
 import { MIExplainer } from "@/components/sections/MIExplainer";
-import { Problem } from "@/components/sections/Problem";
+import { ProblemV3 } from "@/components/sections/ProblemV3";
 import { Outcome } from "@/components/sections/Outcome";
 import { Solution } from "@/components/sections/Solution";
 import { WhoWeServe } from "@/components/sections/WhoWeServe";
@@ -31,7 +32,7 @@ export default function HomePage() {
           <Solution />
         </div>
         <div className="flex flex-col">
-          <Problem />
+          <ProblemV3 />
           <Outcome />
           <WhoWeServe />
         </div>
@@ -45,6 +46,7 @@ export default function HomePage() {
       <SectionGuide />
 
       <CoachLauncher />
+      <VersionToggle />
     </>
   );
 }
