@@ -3,49 +3,30 @@
 import { useReveal } from "@/components/hooks/useReveal";
 
 /**
- * VendorsAfterDelivery — the pressure beat.
+ * VendorsAfterDelivery — "The Reality Vendors Face: Delivery Isn't the
+ * Finish Line" (Section 2).
  *
- * Names the four post-delivery pressures every chronic care vendor is
- * absorbing. Directly derived from the audio: "prescribed, shipped, and
- * then quietly underused"; "adherence drops after the first 30 to 90
- * days"; "retention suffers"; "payers, employers, and partners are no
- * longer impressed by logistics alone — they want outcomes."
+ * Layout (referenced from a three-panel band on a full-bleed background):
+ * two translucent side panels of pill chips — what patients do (left) and
+ * what it costs the vendor (right) — flank an elevated cream center card
+ * carrying the narrative and the closing reframe. The whole band sits on
+ * the Card 3 background image.
  *
- * Structural mirror of BrokersReality so /solutions/vendors and
- * /solutions/brokers stay in the same visual family.
+ * TODO(assets): /card-3-bg.jpg is a placeholder stock image — swap for a
+ * licensed background before launch.
  */
 
-type Pressure = {
-  title: string;
-  detail: string;
-  glyph: "underused" | "adherence" | "retention" | "outcomes";
-};
+const BEHAVIORS = [
+  "Patients lose motivation",
+  "Treatment routines become difficult",
+  "Life gets in the way",
+  "Engagement slowly disappears",
+];
 
-const PRESSURES: Pressure[] = [
-  {
-    title: "Prescribed, shipped, then quietly underused",
-    detail:
-      "The device leaves the warehouse and the box gets opened. What happens next rarely shows up in your dashboard.",
-    glyph: "underused",
-  },
-  {
-    title: "Adherence drops after the first 30 to 90 days",
-    detail:
-      "The honeymoon window closes fast. By month three, most of your users have stopped engaging with the product they were prescribed.",
-    glyph: "adherence",
-  },
-  {
-    title: "Retention suffers where it hurts the most",
-    detail:
-      "Renewal conversations get harder every quarter, because the story you're telling still leads with logistics.",
-    glyph: "retention",
-  },
-  {
-    title: "Payers, employers, and partners want outcomes",
-    detail:
-      "They're no longer impressed by logistics alone. The bar has moved from \"you shipped it\" to \"did it work.\"",
-    glyph: "outcomes",
-  },
+const RESULTS = [
+  "Adherence declines",
+  "Retention drops",
+  "Value gets harder to prove",
 ];
 
 export function VendorsAfterDelivery() {
@@ -54,129 +35,143 @@ export function VendorsAfterDelivery() {
   return (
     <section
       aria-labelledby="vendors-after-delivery-label"
-      className="relative overflow-hidden rounded-[28px] bg-white"
+      className="relative overflow-hidden rounded-[28px] bg-paper-warm"
     >
       <div
         ref={ref}
         data-revealed={inView ? "true" : "false"}
         className="container-page relative py-24 md:py-32 lg:py-40"
       >
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16">
-          <div>
-            <p className="reveal-row eyebrow [transition-delay:80ms]">
-              The pressure
-            </p>
+        <div className="grid grid-cols-1 gap-4 md:gap-5 lg:grid-cols-3 lg:items-center">
+          {/* Left — what patients do (chips). */}
+          <ChipPanel
+            label="What patients do"
+            sub="After the product ships"
+            items={BEHAVIORS}
+            trend={false}
+            baseDelay={320}
+          />
+
+          {/* Center — narrative + reframe, elevated. */}
+          <div
+            className="reveal-row order-first rounded-[24px] bg-white p-8 shadow-[0_30px_70px_-24px_rgba(15,20,25,0.35)] md:p-10 lg:order-none lg:-my-8 lg:z-10 [transition-delay:200ms]"
+          >
+            <p className="eyebrow">The reality vendors face</p>
             <h2
               id="vendors-after-delivery-label"
-              className="reveal-row mt-4 max-w-[22ch] font-serif font-normal text-section text-ink [transition-delay:180ms]"
+              className="mt-4 font-serif font-normal text-section text-ink"
               style={{ textWrap: "balance" } as React.CSSProperties}
             >
-              Chronic care vendors are under pressure from every direction.{" "}
-              <span className="text-ink-muted italic">
-                Not on the shelf. After delivery.
-              </span>
+              Delivery isn&rsquo;t the{" "}
+              <span className="text-ink-muted italic">finish line.</span>
             </h2>
-            <p className="reveal-row mt-6 max-w-[44ch] body-quiet [transition-delay:260ms]">
-              You&rsquo;re not losing the deal on features. You&rsquo;re
-              losing it in the ninety days between prescription and
-              real-world use &mdash; the exact window your product
-              can&rsquo;t see.
+            <p className="mt-5 text-[15px] leading-relaxed text-ink-soft">
+              Products get prescribed, shipped, and then quietly underused.
+              If you&rsquo;re still competing on features, price, or
+              distribution, you&rsquo;re already losing.
             </p>
+            <div className="mt-7 border-t border-ink/10 pt-6">
+              <p
+                className="font-serif text-xl font-normal leading-snug text-ink md:text-2xl"
+                style={{ textWrap: "balance" } as React.CSSProperties}
+              >
+                The product isn&rsquo;t the problem.{" "}
+                <span className="text-brand-700">
+                  What happens after delivery is.
+                </span>
+              </p>
+            </div>
           </div>
 
-          <ol className="flex flex-col divide-y divide-ink/10 border-y border-ink/10">
-            {PRESSURES.map((pressure, i) => {
-              const numeral = ["I", "II", "III", "IV"][i] ?? String(i + 1);
-              const delay = 320 + i * 110;
-              return (
-                <li
-                  key={pressure.title}
-                  className="reveal-row grid grid-cols-[2rem_44px_1fr] items-start gap-x-4 py-6 md:grid-cols-[2.25rem_52px_1fr]"
-                  style={{ transitionDelay: `${delay}ms` }}
-                >
-                  <span className="mt-1 font-serif text-[13px] italic text-brand-700">
-                    {numeral}.
-                  </span>
-                  <span className="mt-0.5 inline-flex h-11 w-11 items-center justify-center rounded-full border border-brand-200 bg-brand-50 text-brand-700 md:h-12 md:w-12">
-                    <PressureGlyph kind={pressure.glyph} />
-                  </span>
-                  <div>
-                    <h3 className="text-base font-medium leading-snug text-ink md:text-lg">
-                      {pressure.title}
-                    </h3>
-                    <p className="mt-1.5 max-w-[48ch] body-quiet">
-                      {pressure.detail}
-                    </p>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
+          {/* Right — what it costs you (chips). */}
+          <ChipPanel
+            label="What it costs you"
+            sub="Within the first few months"
+            items={RESULTS}
+            trend
+            baseDelay={380}
+          />
         </div>
-
-        {/* Pull-line — closes the pressure section on the audio's
-            hardest sentence. Serif-italic, ink-soft, so it reads as a
-            felt sentence rather than a marketing beat. */}
-        <p
-          className="reveal-row mx-auto mt-16 max-w-[54ch] text-center font-serif text-2xl italic leading-snug text-ink md:mt-20 md:text-3xl [transition-delay:820ms]"
-          style={{ textWrap: "balance" } as React.CSSProperties}
-        >
-          &ldquo;In today&rsquo;s market, the product isn&rsquo;t the problem.
-          What happens after delivery is.&rdquo;
-        </p>
       </div>
     </section>
   );
 }
 
-function PressureGlyph({ kind }: { kind: Pressure["glyph"] }) {
-  const commonProps = {
-    width: 20,
-    height: 20,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.6,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    "aria-hidden": true,
-  };
-  if (kind === "underused") {
-    // A shipped box with a dashed lid — implied "unopened / underused."
-    return (
-      <svg {...commonProps}>
-        <path d="M4 8l8-4 8 4v10l-8 4-8-4V8z" />
-        <path d="M4 8l8 4 8-4" />
-        <path d="M12 12v10" strokeDasharray="2 2" />
-      </svg>
-    );
-  }
-  if (kind === "adherence") {
-    // Downward-sloping trend — adherence decay curve.
-    return (
-      <svg {...commonProps}>
-        <path d="M3 6l5 4 4-2 5 6 4-3" />
-        <path d="M3 20h18" />
-      </svg>
-    );
-  }
-  if (kind === "retention") {
-    // A cracking retention loop — arrow bending open at the seam.
-    return (
-      <svg {...commonProps}>
-        <path d="M6 12a6 6 0 0 1 10-4.5" />
-        <path d="M17 4v4h-4" />
-        <path d="M18 14a6 6 0 0 1-9 4.5" strokeDasharray="3 2" />
-        <path d="M8 20v-4h4" />
-      </svg>
-    );
-  }
-  // outcomes — a target with a checked bullseye ring.
+function ChipPanel({
+  label,
+  sub,
+  items,
+  trend,
+  baseDelay,
+}: {
+  label: string;
+  sub: string;
+  items: string[];
+  trend: boolean;
+  baseDelay: number;
+}) {
   return (
-    <svg {...commonProps}>
-      <circle cx="12" cy="12" r="8" />
-      <circle cx="12" cy="12" r="4" />
-      <circle cx="12" cy="12" r="1" fill="currentColor" />
+    <div
+      className="reveal-row rounded-[24px] border border-ink/10 bg-white p-6 shadow-soft md:p-7"
+      style={{ transitionDelay: `${baseDelay}ms` }}
+    >
+      <p className="font-serif text-xl font-normal leading-snug text-ink md:text-2xl">
+        {label}
+      </p>
+      <p className="mt-1 text-[13px] text-ink-muted">{sub}</p>
+
+      <div className="mt-6 flex flex-col items-start gap-2.5">
+        {items.map((item) => (
+          <span
+            key={item}
+            className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-paper-warm px-3.5 py-2 text-[13.5px] font-medium text-ink"
+          >
+            <span className="text-brand-700">
+              {trend ? <DownTrendGlyph /> : <DotGlyph />}
+            </span>
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DotGlyph() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="12" cy="12" r="7.5" />
+      <path d="M12 8.5v4" />
+      <circle cx="12" cy="15.5" r="0.6" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function DownTrendGlyph() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M3 7l6 6 4-4 8 8" />
+      <path d="M21 12v5h-5" />
     </svg>
   );
 }

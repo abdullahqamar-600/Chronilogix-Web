@@ -5,17 +5,18 @@ import { CoachLauncher } from "@/components/CoachLauncher";
 import { BrokersHero } from "@/components/solutions/brokers/BrokersHero";
 import { BrokersReality } from "@/components/solutions/brokers/BrokersReality";
 import { BrokersStrategy } from "@/components/solutions/brokers/BrokersStrategy";
-import { BrokersWhyItWorks } from "@/components/solutions/brokers/BrokersWhyItWorks";
 import { BrokersMemberExperience } from "@/components/solutions/brokers/BrokersMemberExperience";
-import { BrokersBrokerValue } from "@/components/solutions/brokers/BrokersBrokerValue";
-import { BrokersConditions } from "@/components/solutions/brokers/BrokersConditions";
-import { BrokersTrust } from "@/components/solutions/brokers/BrokersTrust";
+import { BrokersWhyItWorks } from "@/components/solutions/brokers/BrokersWhyItWorks";
 import { BrokersClosingCTA } from "@/components/solutions/brokers/BrokersClosingCTA";
+import {
+  BrokersAudioProvider,
+  BrokersStickyAudio,
+} from "@/components/solutions/brokers/brokersAudio";
 
 export const metadata: Metadata = {
   title: "Brokers · Chronilogix",
   description:
-    "A front-door claims mitigation strategy for benefits brokers and consultants. 24/7 AI chronic and behavioral care coaching — grounded in thirty years of Motivational Interviewing research — that reduces claims, improves access, and stays affordable.",
+    "Help your self-funded clients reduce healthcare costs before claims escalate. Chronilogix gives benefits brokers a proactive, AI-powered coaching strategy that addresses chronic conditions, behavioral health, and delayed care at the root — not just another point solution.",
 };
 
 export default function BrokersPage() {
@@ -23,36 +24,40 @@ export default function BrokersPage() {
     <>
       <PageLoader />
       <Nav />
+      <BrokersAudioProvider>
       <main className="flex flex-col">
         {/* Single padded card system — same rhythm as /about, /solutions/*
             and the home shell. Every section is a rounded card sitting on
-            the outer paper surface; the dark Broker Value slab lives
-            inside this same padded group so it reads as a rounded dark
-            card, not a full-bleed interruption.
+            the outer paper surface; the dark slabs live inside this same
+            padded group so they read as rounded dark cards, not full-bleed
+            interruptions.
 
-            Section order follows the one-sheet narrative:
-              1. Hero               — positioning + tagline + CTAs
-              2. The Reality        — four cost pressures
-              3. Front-door strategy — how Chronilogix engages upstream
-              4. Why it works       — five defensible reasons
-              5. Member experience  — a coach in every member's pocket
-              6. Broker value       — four broker-specific benefits (dark)
-              7. Conditions         — where Chronilogix bends outcomes
-              8. Trust & security   — compliance posture
-              9. Closing CTA        — "Coaching that clicks."
+            Section order follows the broker narrative arc — why should I
+            care? what's causing the problem? why don't current solutions
+            work? how does Chronilogix solve it? why is it good for me?
+            why should I book a demo?
+
+              1. Hero               — the cost problem, not the product
+              2. The Reality        — what's causing the problem
+              3. Strategy           — introducing Chronilogix (front door)
+              4. Member experience  — meet Rooney AI
+              5. Why it works       — the business impact for employers
+              6. Closing CTA        — book a demo
         */}
         <div className="flex flex-col gap-2 p-2 md:gap-3 md:p-3">
           <BrokersHero />
           <BrokersReality />
           <BrokersStrategy />
-          <BrokersWhyItWorks />
           <BrokersMemberExperience />
-          <BrokersBrokerValue />
-          <BrokersConditions />
-          <BrokersTrust />
+          <BrokersWhyItWorks />
           <BrokersClosingCTA />
         </div>
       </main>
+
+      {/* Full-width sticky player, revealed when the hero's Play Now is
+          pressed; keeps playing across scroll. */}
+      <BrokersStickyAudio />
+      </BrokersAudioProvider>
 
       {/* Site-wide "Questions?" widget per CLAUDE.md. */}
       <CoachLauncher />

@@ -1,109 +1,98 @@
 "use client";
 
-import { useReveal } from "@/components/hooks/useReveal";
-
 /**
- * BrokersClosingCTA — final beat, closing on the one-sheet's tagline
- * ("Behavioral and Chronic Care Coaching that Clicks!"). Carries both
- * primary actions and the phone number from the doc's footer.
+ * BrokersClosingCTA — the sign-off (Section 11, Final CTA).
+ *
+ * Mirrors the site Footer's closing treatment (and /solutions/vendors): a
+ * cream rounded card with a full-bleed marquee of soft portrait cards over a
+ * centered demo CTA — re-voiced for the broker page ("Help your clients
+ * control costs before they become claims").
  */
-export function BrokersClosingCTA() {
-  const { ref, inView } = useReveal<HTMLDivElement>();
 
+const CAROUSEL = [
+  { src: "/card-1-bg.jpg", aspect: "3/4", w: "w-[260px] md:w-[300px]" },
+  {
+    src: "/generated-images/chronilogix-soft-flower-senior-portrait.png",
+    aspect: "3/4",
+    w: "w-[260px] md:w-[300px]",
+  },
+  { src: "/card-3-bg.jpg", aspect: "3/4", w: "w-[260px] md:w-[300px]" },
+  {
+    src: "/generated-images/chronilogix-soft-flower-family-portrait.png",
+    aspect: "3/4",
+    w: "w-[260px] md:w-[300px]",
+  },
+];
+
+export function BrokersClosingCTA() {
   return (
     <section
       id="book-a-demo"
       aria-labelledby="brokers-closing-label"
-      className="relative overflow-hidden rounded-[28px] bg-paper-warm"
+      className="relative overflow-hidden rounded-[28px] bg-paper-warm pt-24 pb-20 md:pt-32 md:pb-28 lg:pt-40"
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(70% 50% at 50% 0%, rgba(249,144,77,0.18) 0%, rgba(249,144,77,0.05) 40%, transparent 75%)",
-        }}
-      />
+      {/* Full-bleed marquee carousel — identical treatment to the footer. */}
+      <div className="relative mt-14 overflow-hidden md:mt-16 lg:mt-20" aria-hidden>
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-paper-warm to-transparent md:w-24" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-paper-warm to-transparent md:w-24" />
 
-      {/* Slow-drifting ambient orbs — reuse existing orbRotate keyframes
-          so the reduced-motion behavior stays consistent site-wide. */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full opacity-40 blur-3xl animate-orb-rotate-a"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(249,144,77,0.55) 0%, rgba(249,144,77,0) 65%)",
-          transformOrigin: "60% 60%",
-        }}
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute -right-16 bottom-16 h-80 w-80 rounded-full opacity-30 blur-3xl animate-orb-rotate-b"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(255,116,52,0.45) 0%, rgba(255,116,52,0) 65%)",
-          transformOrigin: "40% 40%",
-        }}
-      />
+        <ul
+          className="flex w-max items-end gap-6"
+          style={{
+            animation: "footerMarquee 56s linear infinite",
+            willChange: "transform",
+            backfaceVisibility: "hidden",
+          }}
+        >
+          {[0, 1, 2, 3].flatMap((loopIndex) =>
+            CAROUSEL.map((img, i) => {
+              const offsets = ["mb-0", "mb-6", "mb-2", "mb-8", "mb-3", "mb-5"];
+              const offset = offsets[i % offsets.length];
+              return (
+                <li key={`${loopIndex}-${i}`} className={`shrink-0 ${img.w} ${offset}`}>
+                  <div
+                    className="overflow-hidden rounded-[22px] border border-ink/[0.04] bg-paper shadow-[0_10px_28px_-18px_rgba(20,8,2,0.22)]"
+                    style={{ aspectRatio: img.aspect }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={img.src}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  </div>
+                </li>
+              );
+            }),
+          )}
+        </ul>
+      </div>
 
-      <div
-        ref={ref}
-        data-revealed={inView ? "true" : "false"}
-        className="container-page relative py-28 text-center md:py-36 lg:py-44"
-      >
-        <p className="eyebrow">For your next pitch</p>
-
+      {/* Centered closing CTA. */}
+      <div className="container-page mt-24 text-center md:mt-32 lg:mt-40">
         <h2
           id="brokers-closing-label"
-          className="reveal-row mx-auto mt-6 max-w-[20ch] font-serif font-normal text-display text-ink [transition-delay:120ms]"
+          className="mx-auto text-display font-serif font-normal text-ink"
           style={{ textWrap: "balance" } as React.CSSProperties}
         >
-          Coaching that
+          <span className="md:whitespace-nowrap">Help your clients control costs</span>
           <br />
-          <span className="text-brand-700">clicks.</span>
+          <span className="text-brand-700">before they become claims.</span>
         </h2>
-
-        <div className="reveal-row mx-auto mt-8 max-w-[58ch] space-y-5 body-prose [transition-delay:280ms]">
-          <p>
-            Reduce claims. Improve access. Stay affordable. Bring
-            Chronilogix into your next self-funded conversation &mdash; a
-            behavioral and chronic care coaching layer your clients can
-            measure, your CFO peers will defend, and members actually use.
-          </p>
-        </div>
-
-        <div className="reveal-row mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4 [transition-delay:440ms]">
-          <a
-            href="/chronilogix-mi-whitepaper.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group/wp btn-primary"
-          >
-            Download the Broker One-Sheet
+        <p className="mx-auto mt-7 max-w-[52ch] body-quiet">
+          Book a 30 minute demo. We&rsquo;ll walk through a live coaching
+          session, the clinical method behind it, and how it reduces avoidable
+          spending for your self-funded clients.
+        </p>
+        <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+          {/* TODO: Calendly URL */}
+          <a href="#book-a-demo" className="group/cta btn-primary">
+            Book a Demo
             <Arrow />
           </a>
-          {/* TODO: Calendly URL */}
-          <a href="#book-a-demo" className="btn-secondary">
-            Book a partnership call
-          </a>
-        </div>
-
-        {/* Contact strip — mirrors the doc's footer bar. */}
-        <div className="reveal-row mx-auto mt-14 flex flex-col items-center justify-center gap-x-6 gap-y-2 border-t border-ink/10 pt-8 font-serif text-[14px] italic text-ink-muted sm:flex-row [transition-delay:600ms]">
-          <span>Behavioral and chronic care coaching that clicks.</span>
-          <span aria-hidden className="hidden h-[3px] w-[3px] rounded-full bg-ink/25 sm:inline-block" />
-          <a
-            href="tel:+16465221447"
-            className="not-italic font-medium text-ink transition-colors duration-200 ease-out-quart hover:text-brand-700"
-          >
-            (646) 522-1447
-          </a>
-          <span aria-hidden className="hidden h-[3px] w-[3px] rounded-full bg-ink/25 sm:inline-block" />
-          <a
-            href="https://chronilogix.com"
-            className="not-italic font-medium text-ink transition-colors duration-200 ease-out-quart hover:text-brand-700"
-          >
-            Chronilogix.com
+          <a href="#how-it-works" className="btn-secondary">
+            See How Chronilogix Works
           </a>
         </div>
       </div>
@@ -119,7 +108,7 @@ function Arrow() {
       viewBox="0 0 12 12"
       fill="none"
       aria-hidden
-      className="transition-transform duration-300 ease-out motion-reduce:transition-none group-hover/wp:translate-x-1"
+      className="transition-transform duration-300 ease-out motion-reduce:transition-none group-hover/cta:translate-x-1"
     >
       <path
         d="M3 7h6m0 0L6 4m3 3-3 3"

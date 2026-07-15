@@ -182,18 +182,6 @@ const BriefcaseIcon = (
   </Icon>
 );
 
-// App partners — filled puzzle piece silhouette.
-const PuzzleIcon = (
-  <Icon variant="coral">
-    <svg viewBox="0 0 20 20" className="h-6 w-6">
-      <path
-        fill="currentColor"
-        d="M4 5h4v1.75a1.75 1.75 0 0 0 3.5 0V5h4v4h-1.75a1.75 1.75 0 0 0 0 3.5H15v4H4V5z"
-      />
-    </svg>
-  </Icon>
-);
-
 // Employers — building with a door cutout in the middle (single
 // evenodd path). A minimal detail that reads as "the way in."
 const BuildingIcon = (
@@ -278,12 +266,6 @@ const SOLUTIONS_MENU: MegaMenu = {
           label: "Benefits Brokers",
           description: "A defensible door-opener for your book",
           icon: BriefcaseIcon,
-        },
-        {
-          href: "/solutions/app-partners",
-          label: "App Partners",
-          description: "Embed clinical coaching in your app",
-          icon: PuzzleIcon,
         },
         {
           href: "/solutions/vendors",
