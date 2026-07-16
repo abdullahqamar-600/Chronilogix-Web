@@ -288,8 +288,15 @@ const GROUPS: FaqGroup[] = [
             The platform is built on three decades of peer-reviewed
             clinical science in Motivational Interviewing &mdash; the
             most rigorously validated behavioral change methodology in
-            the world. When Aetna integrated Dr. Resnicow&rsquo;s MI
-            framework into their disease management programs,{" "}
+            the world. When{" "}
+            <a
+              href="/case-studies/aetna"
+              className="underline decoration-brand-500/40 decoration-1 underline-offset-[3px] transition-colors hover:text-brand-700 hover:decoration-brand-600"
+            >
+              Aetna
+            </a>{" "}
+            integrated Dr. Resnicow&rsquo;s MI framework into their disease
+            management programs,{" "}
             <span className="text-ink">
               member engagement rose by 40%
             </span>{" "}

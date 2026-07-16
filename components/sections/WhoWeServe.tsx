@@ -189,7 +189,7 @@ const PERSONAS: Persona[] = [
           were not previously receiving care &mdash; the benchmark Aetna
           reported from the{" "}
           <a
-            href="#aetna-case-study"
+            href="/case-studies/aetna"
             className="underline decoration-brand-500/40 decoration-1 underline-offset-[3px] transition-colors hover:text-brand-700 hover:decoration-brand-600"
           >
             Aetna case study

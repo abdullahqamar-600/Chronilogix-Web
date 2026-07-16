@@ -119,38 +119,42 @@ const DocIcon = (
   </Icon>
 );
 
+// Webinars + White Paper are hidden for the POC (see RESOURCES_MENU below).
+// Their glyphs are preserved here, commented out, so the two menu items can
+// be restored in one step when those resources ship.
+//
 // Webinars — filled screen with a triangle play button cut out (the
 // warm background shows through) and a small stand at the bottom.
-const PlayIcon = (
-  <Icon variant="ember">
-    <svg viewBox="0 0 20 20" className="h-6 w-6">
-      <path
-        fill="currentColor"
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M4 4.5A1 1 0 0 1 5 3.5h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-8zm4.5 1.5v5l4.25-2.5L8.5 6z"
-      />
-      <rect x="7" y="15.75" width="6" height="1" rx="0.5" fill="currentColor" />
-    </svg>
-  </Icon>
-);
+// const PlayIcon = (
+//   <Icon variant="ember">
+//     <svg viewBox="0 0 20 20" className="h-6 w-6">
+//       <path
+//         fill="currentColor"
+//         fillRule="evenodd"
+//         clipRule="evenodd"
+//         d="M4 4.5A1 1 0 0 1 5 3.5h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-8zm4.5 1.5v5l4.25-2.5L8.5 6z"
+//       />
+//       <rect x="7" y="15.75" width="6" height="1" rx="0.5" fill="currentColor" />
+//     </svg>
+//   </Icon>
+// );
 
 // White paper — open book: two filled pages meeting at a valley in the
 // middle. Each page tapers inward at the top so the spine reads.
-const BookIcon = (
-  <Icon variant="coral">
-    <svg viewBox="0 0 20 20" className="h-6 w-6">
-      <path
-        fill="currentColor"
-        d="M4 4.5h5A1.5 1.5 0 0 1 10 6v10a1.5 1.5 0 0 0-1.5-1.5H4V4.5z"
-      />
-      <path
-        fill="currentColor"
-        d="M16 4.5h-5A1.5 1.5 0 0 0 10 6v10a1.5 1.5 0 0 1 1.5-1.5h4.5V4.5z"
-      />
-    </svg>
-  </Icon>
-);
+// const BookIcon = (
+//   <Icon variant="coral">
+//     <svg viewBox="0 0 20 20" className="h-6 w-6">
+//       <path
+//         fill="currentColor"
+//         d="M4 4.5h5A1.5 1.5 0 0 1 10 6v10a1.5 1.5 0 0 0-1.5-1.5H4V4.5z"
+//       />
+//       <path
+//         fill="currentColor"
+//         d="M16 4.5h-5A1.5 1.5 0 0 0 10 6v10a1.5 1.5 0 0 1 1.5-1.5h4.5V4.5z"
+//       />
+//     </svg>
+//   </Icon>
+// );
 
 // Case studies — folder with a raised tab on the top-left. All one
 // filled path — the tab lifts the whole folder just above the shelf
@@ -239,9 +243,11 @@ const RESOURCES_MENU: MegaMenu = {
       heading: "Explore",
       items: [
         { href: "/resources/blog", label: "Blog", description: "Insights, ideas, news", icon: DocIcon },
-        { href: "/resources/webinars", label: "Webinars", description: "Events, demos, discussions", icon: PlayIcon },
-        { href: "/chronilogix-mi-whitepaper.pdf", label: "White Paper", description: "Motivational Interviewing in AI coaches", icon: BookIcon },
-        { href: "/resources/case-studies", label: "Case Studies", description: "How partners deploy Chronilogix", icon: CaseStudyIcon },
+        // Hidden for the POC — restore alongside the PlayIcon/BookIcon glyphs above.
+        // { href: "/resources/webinars", label: "Webinars", description: "Events, demos, discussions", icon: PlayIcon },
+        // { href: "/chronilogix-mi-whitepaper.pdf", label: "White Paper", description: "Motivational Interviewing in AI coaches", icon: BookIcon },
+        // A single case study for now — points straight at the Aetna story.
+        { href: "/case-studies/aetna", label: "Case Studies", description: "How Aetna transformed member engagement", icon: CaseStudyIcon },
       ],
     },
   ],

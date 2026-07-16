@@ -196,9 +196,16 @@ export function AboutScience() {
               className="mt-5 font-serif text-[18px] italic leading-[1.45] text-ink-soft md:text-[20px]"
               style={reveal(300)}
             >
-              When Aetna integrated his MI framework into their disease
-              management programs, member engagement rose by 40% and dropout
-              rates fell by more than half.
+              When{" "}
+              <a
+                href="/case-studies/aetna"
+                className="underline decoration-brand-500/40 decoration-1 underline-offset-[3px] transition-colors hover:text-brand-700 hover:decoration-brand-600"
+              >
+                Aetna
+              </a>{" "}
+              integrated his MI framework into their disease management
+              programs, member engagement rose by 40% and dropout rates fell
+              by more than half.
             </p>
 
             <dl

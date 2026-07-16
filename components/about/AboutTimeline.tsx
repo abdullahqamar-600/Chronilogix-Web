@@ -5,7 +5,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 type Milestone = {
   era: string;
   title: string;
-  body: string;
+  // ReactNode so an entry can inline a link (e.g. the Aetna case study).
+  body: React.ReactNode;
 };
 
 // Oldest first — the visitor reads left to right in natural Western
@@ -26,8 +27,19 @@ const MILESTONES: Milestone[] = [
   {
     era: "2010 to 2015",
     title: "Market entry",
-    body:
-      "Partnered with AmeriHealth, Caritas, and launched the Global MI program for Aetna.",
+    body: (
+      <>
+        Partnered with AmeriHealth, Caritas, and launched the Global MI
+        program for{" "}
+        <a
+          href="/case-studies/aetna"
+          className="underline decoration-brand-500/40 decoration-1 underline-offset-[3px] transition-colors hover:text-brand-700 hover:decoration-brand-600"
+        >
+          Aetna
+        </a>
+        .
+      </>
+    ),
   },
   {
     era: "2015 to present",
