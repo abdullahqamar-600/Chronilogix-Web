@@ -1,6 +1,13 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import {
+  GlyphTile,
+  LINK_PERSONAS,
+  PersonaDetailPopup,
+  type PopupPersona,
+  POPUP_PERSONAS,
+} from "@/components/personas/personaData";
 
 type MenuItem = {
   href: string;
@@ -35,6 +42,10 @@ type NavLink = {
   href: string;
   label: string;
   megaMenu?: MegaMenu;
+  // Solutions uses a bespoke panel driven by the shared persona model
+  // rather than a generic MegaMenu: sub-page personas on the left,
+  // popup personas on the right.
+  personaMenu?: boolean;
 };
 
 // Icon container — small illustration block, taking direct inspiration
@@ -170,73 +181,6 @@ const CaseStudyIcon = (
   </Icon>
 );
 
-// ── Solutions ─────────────────────────────────────────────────────────
-// Benefits brokers — filled briefcase silhouette with the handle
-// cutout above (evenodd).
-const BriefcaseIcon = (
-  <Icon variant="ember">
-    <svg viewBox="0 0 20 20" className="h-6 w-6">
-      <path
-        fill="currentColor"
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M8 3.25A1.75 1.75 0 0 0 6.25 5v0.75H4a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2.25V5A1.75 1.75 0 0 0 12 3.25H8zm3.75 2.5V5a.75.75 0 0 0-.75-.75h-2a.75.75 0 0 0-.75.75v0.75h3.5z"
-      />
-    </svg>
-  </Icon>
-);
-
-// App partners — filled puzzle piece silhouette.
-const PuzzleIcon = (
-  <Icon variant="coral">
-    <svg viewBox="0 0 20 20" className="h-6 w-6">
-      <path
-        fill="currentColor"
-        d="M4 5h4v1.75a1.75 1.75 0 0 0 3.5 0V5h4v4h-1.75a1.75 1.75 0 0 0 0 3.5H15v4H4V5z"
-      />
-    </svg>
-  </Icon>
-);
-
-// Employers — building with a door cutout in the middle (single
-// evenodd path). A minimal detail that reads as "the way in."
-const BuildingIcon = (
-  <Icon variant="coral">
-    <svg viewBox="0 0 20 20" className="h-6 w-6">
-      <path
-        fill="currentColor"
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M4.5 3.5h11v13.5h-4V13h-3v4h-4V3.5zm2 2.75h1.75V8H6.5V6.25zm3.5 0h1.75V8h-1.75V6.25zm3.25 0h-1.75V8h1.75V6.25zM6.5 9.75h1.75v1.75H6.5V9.75zm3.5 0h1.75v1.75h-1.75V9.75zm3.25 0h-1.75v1.75h1.75V9.75z"
-      />
-    </svg>
-  </Icon>
-);
-
-// Health plans & ACOs — filled shield silhouette.
-const ShieldIcon = (
-  <Icon variant="peach">
-    <svg viewBox="0 0 20 20" className="h-6 w-6">
-      <path
-        fill="currentColor"
-        d="M10 3l6 2v5c0 3.5-2.5 6.2-6 7-3.5-.8-6-3.5-6-7V5l6-2z"
-      />
-    </svg>
-  </Icon>
-);
-
-// Underserved & uninsured — filled heart silhouette.
-const HeartIcon = (
-  <Icon variant="ember">
-    <svg viewBox="0 0 20 20" className="h-6 w-6">
-      <path
-        fill="currentColor"
-        d="M10 16.5s-6.5-3.6-6.5-8a3.75 3.75 0 0 1 6.5-2.5A3.75 3.75 0 0 1 16.5 8.5c0 4.4-6.5 8-6.5 8z"
-      />
-    </svg>
-  </Icon>
-);
-
 const RESOURCES_MENU: MegaMenu = {
   groups: [
     {
@@ -274,79 +218,9 @@ const RESOURCES_MENU: MegaMenu = {
   },
 };
 
-const SOLUTIONS_MENU: MegaMenu = {
-  groups: [
-    {
-      heading: "Who we serve",
-      items: [
-        {
-          href: "/solutions/brokers",
-          label: "Benefits Brokers",
-          description: "A defensible door-opener for your book",
-          icon: BriefcaseIcon,
-        },
-        {
-          href: "/solutions/app-partners",
-          label: "App Partners",
-          description: "Embed clinical coaching in your app",
-          icon: PuzzleIcon,
-        },
-        {
-          href: "/solutions/vendors",
-          label: "Vendors",
-          description: "The outcomes upgrade for chronic care products",
-          icon: BuildingIcon,
-        },
-        {
-          href: "#",
-          label: "Employers",
-          description: "For HR leaders & benefits owners",
-          icon: BuildingIcon,
-          soon: true,
-        },
-        {
-          href: "#",
-          label: "Health Plans & ACOs",
-          description: "Claims mitigation, before the claim",
-          icon: ShieldIcon,
-          soon: true,
-        },
-        {
-          href: "#",
-          label: "Underserved & Uninsured",
-          description: "Care without the gate",
-          icon: HeartIcon,
-          soon: true,
-        },
-      ],
-    },
-  ],
-  featured: {
-    heading: "Start with the proof",
-    articles: [
-      {
-        href: "/chronilogix-mi-whitepaper.pdf",
-        title: "The ROI whitepaper. The math your CFO will accept.",
-        tag: "Download",
-        readTime: "12 pages",
-        gradient: "from-[#F9904D] via-[#FF7434] to-[#E45A1C]",
-        eyebrow: "Proof",
-      },
-      {
-        href: "/product",
-        title: "The Chronilogix platform, top to bottom.",
-        tag: "Tour",
-        readTime: "4 min read",
-        gradient: "from-[#1F2937] via-[#2C3D55] to-[#3F5572]",
-        eyebrow: "Product",
-      },
-    ],
-  },
-};
-
 const NAV_LINKS: NavLink[] = [
   { href: "/product", label: "Product" },
-  { href: "/solutions", label: "Solutions", megaMenu: SOLUTIONS_MENU },
+  { href: "/solutions", label: "Solutions", personaMenu: true },
   { href: "/about", label: "About" },
   { href: "/faq", label: "FAQ" },
   { href: "/resources", label: "Resources", megaMenu: RESOURCES_MENU },
@@ -358,6 +232,16 @@ export function Nav() {
   const [open, setOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+  // Persona popup opened from the Solutions menu (desktop or mobile).
+  // Mirrors the WhoWeServe section's popup, driven by the same data.
+  const [openPersonaKey, setOpenPersonaKey] = useState<string | null>(null);
+  const openPersona = POPUP_PERSONAS.find((p) => p.key === openPersonaKey) ?? null;
+
+  const openPersonaPopup = (key: string) => {
+    setOpenMenu(null);
+    setOpen(false);
+    setOpenPersonaKey(key);
+  };
 
   useEffect(() => {
     const onScroll = () => {
@@ -379,20 +263,42 @@ export function Nav() {
     };
   }, []);
 
+  // While the mobile menu is open: lock body scroll, close on Escape, and
+  // close automatically if the viewport grows past the desktop breakpoint.
+  useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    const onResize = () => {
+      if (window.innerWidth >= 1024) setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("resize", onResize);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [open]);
+
   // Always use dark-ink styles unless we're explicitly over a dark-toned
   // section (e.g. the AetnaCard, FinalCTA). The hero is now a light pastel
   // surface, so the nav reads as solid from the first paint.
   const solid = !overDark;
+  // The mobile menu forces a light surface + dark content regardless of the
+  // section behind it, and pins the bar to the very top while open.
+  const isSolid = solid || open;
 
   return (
     <header
       className={`fixed left-0 right-0 z-40 w-full transition-all duration-400 ease-out-quart motion-reduce:transition-none ${
-        scrolled ? "top-0" : "top-4 md:top-6"
+        scrolled || open ? "top-0" : "top-4 md:top-6"
       } ${
-        solid
-          ? scrolled
-            ? "border-b border-ink/5 bg-paper/85 backdrop-blur-md"
-            : "border-b border-transparent bg-transparent"
+        open || (solid && scrolled)
+          ? "border-b border-ink/5 bg-paper/95 backdrop-blur-md"
           : "border-b border-transparent bg-transparent"
       }`}
     >
@@ -403,7 +309,7 @@ export function Nav() {
         {/* Left: nav links (desktop) */}
         <nav className="hidden lg:flex items-center gap-8 justify-self-start">
           {NAV_LINKS.map((link) => {
-            const hasMenu = !!link.megaMenu;
+            const hasMenu = !!link.megaMenu || !!link.personaMenu;
             const isOpen = openMenu === link.label;
             return (
               <div
@@ -473,7 +379,11 @@ export function Nav() {
                         : "pointer-events-none -translate-y-1 opacity-0"
                     }`}
                   >
-                    <MegaPanel menu={link.megaMenu!} />
+                    {link.personaMenu ? (
+                      <SolutionsPanel onOpenPersona={openPersonaPopup} />
+                    ) : (
+                      <MegaPanel menu={link.megaMenu!} />
+                    )}
                   </div>
                 )}
               </div>
@@ -491,7 +401,7 @@ export function Nav() {
         >
           <img
             src={
-              solid
+              isSolid
                 ? "/Logo%20Packs/Primary%20Logo/Chronilogix_Logo-FullColor.svg"
                 : "/Logo%20Packs/Primary%20Logo/Chronilogix_Logo-White.svg"
             }
@@ -512,28 +422,33 @@ export function Nav() {
 
           <button
             type="button"
-            aria-label="Toggle menu"
+            aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
+            aria-controls="mobile-nav"
             onClick={() => setOpen((v) => !v)}
-            className={`lg:hidden flex h-10 w-10 items-center justify-center rounded-full border transition-colors duration-200 ease-out-quart motion-reduce:transition-none ${
-              solid ? "border-ink/10" : "border-white/40"
+            className={`lg:hidden flex h-11 w-11 items-center justify-center rounded-full border outline-none transition-all duration-200 ease-out-quart active:scale-95 focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-paper motion-reduce:transition-none ${
+              open
+                ? "border-ink/10 bg-ink/[0.05]"
+                : isSolid
+                  ? "border-ink/10 hover:bg-ink/[0.04]"
+                  : "border-white/40 hover:bg-white/10"
             }`}
           >
             <span className="sr-only">Menu</span>
             <div className="space-y-1.5">
               <span
                 className={`block h-px w-5 transition-transform duration-300 ease-out-quart motion-reduce:transition-none ${
-                  solid ? "bg-ink" : "bg-white"
+                  isSolid ? "bg-ink" : "bg-white"
                 } ${open ? "translate-y-[6px] rotate-45" : ""}`}
               />
               <span
                 className={`block h-px w-5 transition-opacity duration-200 ease-out-quart motion-reduce:transition-none ${
-                  solid ? "bg-ink" : "bg-white"
+                  isSolid ? "bg-ink" : "bg-white"
                 } ${open ? "opacity-0" : "opacity-100"}`}
               />
               <span
                 className={`block h-px w-5 transition-transform duration-300 ease-out-quart motion-reduce:transition-none ${
-                  solid ? "bg-ink" : "bg-white"
+                  isSolid ? "bg-ink" : "bg-white"
                 } ${open ? "-translate-y-[6px] -rotate-45" : ""}`}
               />
             </div>
@@ -541,101 +456,293 @@ export function Nav() {
         </div>
       </div>
 
-      {open && (
-        <div className="lg:hidden border-t border-ink/5 bg-paper">
-          <div className="container-page py-6">
-            <nav className="flex flex-col gap-4">
-              {NAV_LINKS.map((link) => {
-                const hasMenu = !!link.megaMenu;
-                const expanded = mobileExpanded === link.label;
-                if (!hasMenu) {
+      {/* Mobile menu — always mounted so it can animate open/closed via
+          grid-template-rows (no height measuring). Scrolls internally if the
+          content exceeds the viewport. */}
+      <div
+        id="mobile-nav"
+        className={`lg:hidden absolute inset-x-0 top-full transition-all duration-300 ease-out-quart motion-reduce:transition-none ${
+          open
+            ? "translate-y-0 opacity-100"
+            : "pointer-events-none -translate-y-2 opacity-0"
+        }`}
+      >
+          <div className="max-h-[calc(100svh-5rem)] overflow-y-auto overscroll-contain border-t border-ink/5 bg-paper shadow-[0_24px_48px_-24px_rgba(20,8,2,0.28)] md:max-h-[calc(100svh-6rem)]">
+            <div className="container-page py-4">
+              <nav className="flex flex-col gap-1">
+                {NAV_LINKS.map((link) => {
+                  const hasMenu = !!link.megaMenu || !!link.personaMenu;
+                  const expanded = mobileExpanded === link.label;
+                  if (!hasMenu) {
+                    return (
+                      <a
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setOpen(false)}
+                        className="rounded-lg py-2.5 text-base text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
+                      >
+                        {link.label}
+                      </a>
+                    );
+                  }
                   return (
-                    <a
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setOpen(false)}
-                      className="text-base text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
-                    >
-                      {link.label}
-                    </a>
-                  );
-                }
-                return (
-                  <div key={link.href} className="flex flex-col gap-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setMobileExpanded(expanded ? null : link.label)
-                      }
-                      aria-expanded={expanded}
-                      className="flex items-center justify-between text-left text-base text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
-                    >
-                      <span>{link.label}</span>
-                      <svg
-                        aria-hidden
-                        viewBox="0 0 12 12"
-                        className={`h-3 w-3 transition-transform duration-200 ease-out-quart motion-reduce:transition-none ${
-                          expanded ? "rotate-180" : ""
+                    <div key={link.href} className="flex flex-col">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setMobileExpanded(expanded ? null : link.label)
+                        }
+                        aria-expanded={expanded}
+                        className="flex items-center justify-between py-2.5 text-left text-base text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
+                      >
+                        <span>{link.label}</span>
+                        <svg
+                          aria-hidden
+                          viewBox="0 0 12 12"
+                          className={`h-3 w-3 shrink-0 transition-transform duration-300 ease-out-quart motion-reduce:transition-none ${
+                            expanded ? "rotate-180 text-brand-700" : "text-ink-muted"
+                          }`}
+                        >
+                          <path
+                            d="M2 4.5 6 8.5l4-4"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.4"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                      {/* Submenu — grid-rows animates the expand/collapse. */}
+                      <div
+                        className={`grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out-quart motion-reduce:transition-none ${
+                          expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                         }`}
                       >
-                        <path
-                          d="M2 4.5 6 8.5l4-4"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.4"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </button>
-                    {expanded && (
-                      <div className="ml-3 flex flex-col gap-5 border-l border-ink/10 pl-4">
-                        {link.megaMenu!.groups.map((group) => (
-                          <div key={group.heading} className="flex flex-col gap-2">
-                            <div className="text-[12px] font-medium tracking-tight text-ink-soft/70">
-                              {group.heading}
-                            </div>
-                            {group.items.map((item) =>
-                              item.soon ? (
-                                <span
-                                  key={item.label}
-                                  aria-disabled="true"
-                                  className="flex items-center gap-2 text-sm text-ink-muted opacity-70"
-                                >
-                                  {item.label}
-                                  <span className="rounded-full border border-ink/10 bg-ink/[0.03] px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.08em] text-ink-muted">
-                                    Soon
-                                  </span>
-                                </span>
-                              ) : (
-                                <a
-                                  key={item.href}
-                                  href={item.href}
-                                  onClick={() => setOpen(false)}
-                                  className="text-sm text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
-                                >
-                                  {item.label}
-                                </a>
-                              ),
+                        <div className="min-h-0 overflow-hidden">
+                          <div className="ml-3 flex flex-col gap-5 border-l border-ink/10 pb-2 pl-4 pt-2">
+                            {link.personaMenu ? (
+                              <SolutionsMobileMenu
+                                onClose={() => setOpen(false)}
+                                onOpenPersona={openPersonaPopup}
+                              />
+                            ) : (
+                            link.megaMenu!.groups.map((group) => (
+                              <div
+                                key={group.heading}
+                                className="flex flex-col gap-2"
+                              >
+                                <div className="text-[12px] font-medium tracking-tight text-ink-soft/70">
+                                  {group.heading}
+                                </div>
+                                {group.items.map((item) =>
+                                  item.soon ? (
+                                    <span
+                                      key={item.label}
+                                      aria-disabled="true"
+                                      className="flex items-center gap-2 text-sm text-ink-muted opacity-70"
+                                    >
+                                      {item.label}
+                                      <span className="rounded-full border border-ink/10 bg-ink/[0.03] px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.08em] text-ink-muted">
+                                        Soon
+                                      </span>
+                                    </span>
+                                  ) : (
+                                    <a
+                                      key={item.href}
+                                      href={item.href}
+                                      onClick={() => setOpen(false)}
+                                      className="text-sm text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
+                                    >
+                                      {item.label}
+                                    </a>
+                                  ),
+                                )}
+                              </div>
+                            ))
                             )}
                           </div>
-                        ))}
+                        </div>
                       </div>
-                    )}
+                    </div>
+                  );
+                })}
+                <a
+                  href="#book-a-demo"
+                  onClick={() => setOpen(false)}
+                  className="btn-primary mt-4 self-start"
+                >
+                  Book a Demo
+                </a>
+              </nav>
+            </div>
+          </div>
+      </div>
+
+      {/* Persona detail popup — shared with the homepage's WhoWeServe
+          section. Opened from the Solutions menu's right-hand personas
+          (Employers, Health Plans, Wellness Platforms, Underserved),
+          which have no dedicated sub-page. */}
+      <PersonaDetailPopup
+        persona={openPersona}
+        onClose={() => setOpenPersonaKey(null)}
+      />
+    </header>
+  );
+}
+
+// ── Solutions panel ───────────────────────────────────────────────────
+//
+// Mirrors the Resources mega-menu shape: a slim "Explore in depth" list on
+// the left, a gallery of editorial cards on the right.
+//   • Left  — the personas with live deep-dive pages (Brokers, Vendors).
+//             Rich anchors that navigate to the sub-page.
+//   • Right — the personas without a sub-page (Employers, Health Plans,
+//             Wellness Platforms, Underserved). Rendered as gradient
+//             cards — the same treatment as the Resources "Featured
+//             Articles" — that open the shared detail popup on click.
+
+// Quiet audience card — the loud full-bleed gradient covers read as a
+// wall of identical orange blocks, so the surface is a calm warm paper
+// with a single warm accent (the shared GlyphTile, which also ties this
+// column to the "Explore in depth" list on the left). Label + one
+// descriptor line, no restated copy. The whole card is the click target
+// into the persona popup; the arrow is a quiet affordance that leans in
+// on hover.
+function PersonaCard({
+  persona,
+  onOpen,
+}: {
+  persona: PopupPersona;
+  onOpen: (key: string) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(persona.key)}
+      aria-haspopup="dialog"
+      className="group flex flex-col gap-4 rounded-2xl bg-paper-warm p-5 text-left ring-1 ring-ink/[0.06] transition-all duration-200 ease-out-quart hover:-translate-y-0.5 hover:bg-paper hover:ring-ink/[0.12] hover:shadow-[0_1px_2px_rgba(15,20,25,0.05),0_18px_32px_-24px_rgba(184,70,20,0.45)] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/60 motion-reduce:transition-none"
+    >
+      <div className="flex items-center justify-between">
+        <GlyphTile glyph={persona.glyph} variant={persona.iconVariant} />
+        <span
+          aria-hidden
+          className="text-ink-subtle transition-all duration-200 ease-out-quart group-hover:translate-x-0.5 group-hover:text-brand-700 motion-reduce:transition-none"
+        >
+          <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+            <path
+              d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+      </div>
+      <div className="flex flex-col gap-1">
+        <span className="text-sm font-medium text-ink">{persona.label}</span>
+        <span className="text-xs leading-relaxed text-ink-soft">
+          {persona.intro}
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function SolutionsPanel({
+  onOpenPersona,
+}: {
+  onOpenPersona: (key: string) => void;
+}) {
+  return (
+    <div className="w-[860px] rounded-3xl border border-ink/5 bg-paper p-10 shadow-2xl shadow-ink/10">
+      <div className="grid grid-cols-[1fr_1.4fr] gap-14">
+        <div className="flex flex-col gap-5">
+          <div className="text-[12px] font-medium tracking-tight text-ink-soft/70">
+            Explore in depth
+          </div>
+          <ul className="flex flex-col gap-1">
+            {LINK_PERSONAS.map((persona) => (
+              <li key={persona.key}>
+                <a
+                  href={persona.href}
+                  className="group flex items-start gap-3 rounded-2xl p-2 transition-colors duration-150 ease-out-quart motion-reduce:transition-none hover:bg-ink/[0.04]"
+                >
+                  <GlyphTile glyph={persona.glyph} variant={persona.iconVariant} />
+                  <div className="flex flex-col pt-1">
+                    <span className="text-sm font-medium text-ink">
+                      {persona.label}
+                    </span>
+                    <span className="text-xs text-ink-soft">{persona.intro}</span>
                   </div>
-                );
-              })}
-              <a
-                href="#book-a-demo"
-                className="btn-primary mt-2 self-start"
-              >
-                Book a Demo
-              </a>
-            </nav>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="flex flex-col gap-6">
+          <div className="text-[12px] font-medium tracking-tight text-ink-soft/70">
+            More audiences
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {POPUP_PERSONAS.map((persona) => (
+              <PersonaCard
+                key={persona.key}
+                persona={persona}
+                onOpen={onOpenPersona}
+              />
+            ))}
           </div>
         </div>
-      )}
-    </header>
+      </div>
+    </div>
+  );
+}
+
+// Mobile counterpart of the Solutions panel — the two sub-page personas
+// as links, the four popup personas as buttons.
+function SolutionsMobileMenu({
+  onClose,
+  onOpenPersona,
+}: {
+  onClose: () => void;
+  onOpenPersona: (key: string) => void;
+}) {
+  return (
+    <>
+      <div className="flex flex-col gap-2">
+        <div className="text-[12px] font-medium tracking-tight text-ink-soft/70">
+          Explore in depth
+        </div>
+        {LINK_PERSONAS.map((persona) => (
+          <a
+            key={persona.key}
+            href={persona.href}
+            onClick={onClose}
+            className="text-sm text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
+          >
+            {persona.label}
+          </a>
+        ))}
+      </div>
+      <div className="flex flex-col gap-2">
+        <div className="text-[12px] font-medium tracking-tight text-ink-soft/70">
+          More audiences
+        </div>
+        {POPUP_PERSONAS.map((persona) => (
+          <button
+            key={persona.key}
+            type="button"
+            onClick={() => onOpenPersona(persona.key)}
+            className="text-left text-sm text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
+          >
+            {persona.label}
+          </button>
+        ))}
+      </div>
+    </>
   );
 }
 

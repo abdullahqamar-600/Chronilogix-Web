@@ -40,7 +40,7 @@ export default function HomePageV4() {
         <div className="flex flex-col">
           <Problem />
           <Outcome />
-          <WhoWeServe />
+          <WhoWeServe variant="abstract" />
         </div>
         <div className="flex flex-col gap-2 p-2 md:gap-3 md:p-3">
           <CustomerStories />

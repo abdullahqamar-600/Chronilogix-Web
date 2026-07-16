@@ -1,40 +1,111 @@
 "use client";
 
-import { useReveal, useReducedMotion } from "@/components/hooks/useReveal";
+import { useReveal } from "@/components/hooks/useReveal";
 
 /**
- * BrokersWhyItWorks — "Why It Works for Self-Funded Plans".
+ * BrokersWhyItWorks — "The Business Impact: Better Outcomes for Your
+ * Clients, Better Care for Their Members" (Section 7). Names both audiences
+ * the broker answers to — the employer client (cost) and the member
+ * (care) — so the impact reads as B2B and B2C at once.
  *
- * The one-sheet lists five reasons. Two of them are hard numbers ("up to
- * 70%" of routine human coaching replaced; "~1/20th" the cost) — those
- * get lifted into a two-tile stats band across the top. The remaining
- * three claims sit as a numbered list beneath, echoing the pillars
- * pattern used elsewhere on the site.
+ * Four cards, per the brief: Reduce Avoidable Claims, Improve Medication
+ * Adherence, Encourage Early Care, Scale Coaching Efficiently. The last
+ * card carries the one hard number from the brief — replacing up to 80%
+ * of traditional human coaching sessions at roughly $5 per session —
+ * rendered as an inline stat line rather than a separate stat tile, so
+ * all four cards read as one even set instead of two different layouts.
  */
 
-type ReasonCard = {
+type ImpactCard = {
   title: string;
   body: string;
 };
 
-const REASONS: ReasonCard[] = [
+const CARDS: ImpactCard[] = [
   {
-    title: "Targets the top drivers of avoidable spend",
-    body: "Diabetes, obesity, metabolic health, anxiety, depression, medication adherence — the conditions carrying the biggest line items in the claims report.",
+    title: "Reduce Avoidable Claims",
+    body: "Support healthier behaviors before conditions worsen into high-cost interventions.",
   },
   {
-    title: "Prevents minor issues from becoming major claims",
-    body: "Members are engaged during onboarding and re-engaged daily, catching drift while it's still a habit conversation — not a hospitalization.",
+    title: "Improve Medication Adherence",
+    body: "Help members stay on track with the treatment plan the plan already covers.",
   },
   {
-    title: "Improves adherence, self-management, and early engagement",
-    body: "Motivational Interviewing is designed to move members from ambivalence to action. The result is better follow-through on the interventions the plan already covers.",
+    title: "Encourage Early Care",
+    body: "Reduce the delays that turn manageable issues into expensive ones.",
+  },
+  {
+    title: "Scale Coaching Efficiently",
+    body: "Replace up to 80% of traditional human coaching sessions, at roughly $5 per session.",
   },
 ];
 
+// Same background treatment as the AgentCard: a blurred pattern image
+// masked so the color rises from the bottom edge, under a milky white overlay
+// that dissolves it into white near the top. Uses the purple/rose Millie AI
+// pattern from the homepage so every impact card carries that same tint.
+const CARD_PATTERN = "/millie-pattern.webp";
+const CARD_MASK =
+  "linear-gradient(to top, #000 0%, rgba(0,0,0,0.55) 55%, transparent 100%)";
+// The AgentCard gets extra warmth from its avatar's orange halo and its
+// warm-paper section backdrop; these impact cards have neither and sit on
+// pure white, so the same 0.55-floor wash crushes the tan into flat white.
+// We lift the wash floor (0.35 at the bottom edge) so the same warm pattern
+// actually reads here — matching the agent card's warmth, not just its CSS.
+const CARD_WASH =
+  "linear-gradient(to top, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.7) 55%, #FFFFFF 100%)";
+
+// Per-card line icon — same stroke language as the site's other inline
+// SVGs (1.5px stroke, round caps, no fill), tinted to the tonal brand-900.
+function ImpactIcon({ index, size = 26 }: { index: number; size?: number }) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none" as const,
+    stroke: "currentColor",
+    strokeWidth: 1.5,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    "aria-hidden": true,
+  };
+  switch (index) {
+    // Reduce avoidable claims — downward cost trend
+    case 0:
+      return (
+        <svg {...common}>
+          <path d="M4 7l6 6 3.5-3.5L20 16" />
+          <path d="M20 11v5h-5" />
+        </svg>
+      );
+    // Improve medication adherence — pill
+    case 1:
+      return (
+        <svg {...common}>
+          <rect x="3.5" y="9.5" width="17" height="6.4" rx="3.2" transform="rotate(-45 12 12.7)" />
+          <path d="M9 9.7 14.3 15" />
+        </svg>
+      );
+    // Encourage early care — clock
+    case 2:
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="8.5" />
+          <path d="M12 7.5V12l3.2 2" />
+        </svg>
+      );
+    // Scale coaching efficiently — ascending bars
+    default:
+      return (
+        <svg {...common}>
+          <path d="M5 20V13M12 20V8M19 20V4" />
+        </svg>
+      );
+  }
+}
+
 export function BrokersWhyItWorks() {
   const { ref, inView } = useReveal<HTMLDivElement>();
-  const reduced = useReducedMotion();
 
   return (
     <section
@@ -49,155 +120,70 @@ export function BrokersWhyItWorks() {
         <div className="flex flex-col items-start gap-6 md:flex-row md:items-end md:justify-between md:gap-12">
           <div className="max-w-[42ch]">
             <p className="reveal-row eyebrow [transition-delay:80ms]">
-              Why it works for self-funded plans
+              The business impact
             </p>
             <h2
               id="brokers-why-label"
               className="reveal-row mt-4 font-serif font-normal text-section text-ink [transition-delay:180ms]"
               style={{ textWrap: "balance" } as React.CSSProperties}
             >
-              A cost curve you can actually bend.
+              Fewer claims, better adherence, earlier care,{" "}
+              <span className="text-brand-700 italic">at a fraction of the cost.</span>
             </h2>
           </div>
           <p className="reveal-row eyebrow-subtle [transition-delay:260ms]">
-            Five reasons &mdash; two you can quote to a CFO.
+            A cost curve you can actually bend.
           </p>
         </div>
 
-        {/* Two-tile stats band — the CFO-defensible numbers, lifted out
-            of the reasons list so they carry weight independently. */}
-        <div className="mt-14 grid grid-cols-1 gap-4 md:mt-16 md:grid-cols-2 md:gap-6">
-          <StatTile
-            revealed={inView}
-            reduced={reduced}
-            delay={340}
-            barGrow={0.7}
-            barLabel="Human-coaching workload replaced"
-            lead="Up to 70%"
-            caption="of routine human coaching, replaced by Chronilogix"
-            comparison="Live coaching bench → software-delivered coaching"
-          />
-          <StatTile
-            revealed={inView}
-            reduced={reduced}
-            delay={460}
-            barGrow={0.05}
-            barLabel="Cost per member per month"
-            lead="~1/20th"
-            caption="the cost of live coaching, at comparable outcomes"
-            comparison="$60–70 PEPM → $20–30 PEPM"
-            afterTone
-          />
-        </div>
-
-        {/* Three-column reason list — the remaining defensible claims,
-            numbered so they read as a set, not a bag. */}
-        <ol className="mt-16 grid grid-cols-1 gap-8 md:mt-20 md:grid-cols-3 md:gap-6 lg:gap-10">
-          {REASONS.map((r, i) => {
-            const numeral = ["III", "IV", "V"][i] ?? String(i + 3);
-            const delay = 660 + i * 120;
+        <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 md:mt-16 lg:grid-cols-4">
+          {CARDS.map((card, i) => {
+            const delay = 340 + i * 130;
             return (
-              <li
-                key={r.title}
-                className="reveal-row group/reason flex flex-col gap-4 border-t border-ink/12 pt-6 transition-transform duration-400 ease-out-quart motion-reduce:transition-none md:border-t-0 md:border-l md:pl-7 md:pt-1 md:hover:-translate-y-1"
+              <div
+                key={card.title}
+                className="reveal-row relative flex min-h-[200px] flex-col overflow-hidden rounded-[24px] border border-ink/5 bg-white p-7 text-ink transition-transform duration-400 ease-out-quart motion-reduce:transition-none hover:-translate-y-1 md:min-h-[230px] md:p-8"
                 style={{ transitionDelay: `${delay}ms` }}
               >
-                <span className="font-serif text-[13px] italic tracking-[0.04em] text-brand-700">
-                  {numeral}.
+                {/* Blurred pattern wash rising from the bottom — identical
+                    treatment to the AgentCard, so the gradient carries the
+                    same warm→cool (teal) tones. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={CARD_PATTERN}
+                  alt=""
+                  aria-hidden
+                  draggable={false}
+                  className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover"
+                  style={{
+                    filter: "blur(32px) saturate(0.4) brightness(1.06)",
+                    WebkitFilter: "blur(32px) saturate(0.4) brightness(1.06)",
+                    maskImage: CARD_MASK,
+                    WebkitMaskImage: CARD_MASK,
+                  }}
+                />
+                {/* Milky white overlay — keeps the texture quiet under type. */}
+                <div
+                  aria-hidden
+                  className="absolute inset-0"
+                  style={{ background: CARD_WASH }}
+                />
+
+                <span className="relative text-brand-900">
+                  <ImpactIcon index={i} />
                 </span>
-                <h3 className="text-lg font-medium leading-snug text-ink transition-colors duration-400 ease-out-quart motion-reduce:transition-none group-hover/reason:text-brand-700 md:text-xl">
-                  {r.title}
+
+                <h3 className="relative mt-auto pt-8 font-serif text-xl font-normal leading-[1.15] md:text-2xl">
+                  {card.title}
                 </h3>
-                <p className="body-quiet max-w-[38ch]">{r.body}</p>
-              </li>
+                <p className="relative mt-3 max-w-[36ch] text-[14px] leading-relaxed text-ink-soft md:text-[15px]">
+                  {card.body}
+                </p>
+              </div>
             );
           })}
-        </ol>
+        </div>
       </div>
     </section>
-  );
-}
-
-function StatTile({
-  revealed,
-  reduced,
-  delay,
-  barGrow,
-  barLabel,
-  lead,
-  caption,
-  comparison,
-  afterTone,
-}: {
-  revealed: boolean;
-  reduced: boolean;
-  delay: number;
-  barGrow: number;
-  barLabel: string;
-  lead: string;
-  caption: string;
-  comparison: string;
-  afterTone?: boolean;
-}) {
-  const numeral = afterTone ? "II" : "I";
-  const parts = comparison.split(/\s*→\s*/);
-  const hasArrow = parts.length === 2;
-
-  return (
-    <div
-      className="reveal-row rounded-[24px] border border-ink/10 bg-paper-warm p-7 md:p-9"
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      <div className="flex items-start justify-between">
-        <span className="font-serif text-[12px] italic tracking-[0.04em] text-brand-700/80">
-          {numeral}.
-        </span>
-        <span className="font-serif text-[12px] italic text-ink-muted">
-          {barLabel}
-        </span>
-      </div>
-
-      <p className="mt-6 font-serif text-stat-md font-normal leading-none text-ink">
-        {lead}
-      </p>
-
-      <p className="mt-5 max-w-[36ch] text-base font-medium leading-snug text-ink md:text-lg">
-        {caption}
-      </p>
-
-      {hasArrow ? (
-        <p className="mt-3 font-serif text-[13px] italic leading-snug">
-          <span className="text-ink/45">{parts[0]}</span>
-          <span aria-hidden className="mx-1.5 not-italic text-brand-700">
-            →
-          </span>
-          <span className="text-ink-soft">{parts[1]}</span>
-        </p>
-      ) : (
-        <p className="mt-3 font-serif text-[13px] italic text-ink-muted">
-          {comparison}
-        </p>
-      )}
-
-      {/* Small bar viz — quiet illustrated companion to the number.
-          Reads as a proportion, not a chart with UI chrome. */}
-      <div className="mt-6 h-[6px] w-full rounded-full bg-ink/8">
-        <span
-          aria-hidden
-          className="block h-[6px] origin-left rounded-full"
-          style={{
-            width: `${Math.round(barGrow * 100)}%`,
-            background:
-              afterTone
-                ? "linear-gradient(90deg, #F9904D 0%, #FF7434 60%, #E45A1C 100%)"
-                : "linear-gradient(90deg, #F9904D 0%, #FF7434 60%, #E45A1C 100%)",
-            transform: revealed ? "scaleX(1)" : "scaleX(0)",
-            transition: reduced
-              ? undefined
-              : `transform 900ms cubic-bezier(0.22,1,0.36,1) ${delay + 320}ms`,
-          }}
-        />
-      </div>
-    </div>
   );
 }

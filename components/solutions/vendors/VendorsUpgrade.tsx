@@ -1,33 +1,68 @@
 "use client";
 
-import { useReveal } from "@/components/hooks/useReveal";
+import React from "react";
+import { useReveal, useReducedMotion } from "@/components/hooks/useReveal";
 
 /**
- * VendorsUpgrade — the positioning turn.
+ * VendorsUpgrade — the positioning turn (audio beat 3).
  *
  * Directly renders the audio's central claim: "Chronilogix is the
- * outcomes upgrade your products have been missing." Then previews the
- * three properties that make the layer real — always on, sits on top,
- * measurable in the wild.
+ * outcomes upgrade your products have been missing." Then names the three
+ * things it drives, verbatim from the brief — sustained utilization,
+ * adherence, and measurable real-world results.
  *
- * Left column: the claim, framed as an oversized statement.
- * Right column: a schematic showing Chronilogix as a coaching layer
- * that sits on top of the vendor's existing product (device, RPM,
- * portal, app — whatever they ship).
+ * The "how" (24/7 Rooney AI, MI) is deliberately held back for the next
+ * section (Meet Rooney AI); this beat is purely the WHAT: a coaching
+ * layer that sits on top of the product the vendor already ships.
+ *
+ * Left column: the claim, framed as an oversized statement, paid off by
+ * three branded property tiles.
+ * Right column: an isometric layer diagram — the vendor's product plane
+ * with a behavioral-signal stratum and the Chronilogix coaching layer
+ * stacked on top, coaching touchpoints rising off it.
  */
 
-const PROPERTIES: { title: string; body: string }[] = [
+/* ── Branded icon language — copied from the nav / MIExplainer tile system
+   so this section's icons match the rest of the site. ──────────────────── */
+
+type IconVariant = "peach" | "coral" | "ember";
+
+const ICON_BG: Record<IconVariant, string> = {
+  peach:
+    "radial-gradient(ellipse 70% 85% at 50% 105%, rgba(184,70,20,0.45) 0%, rgba(184,70,20,0) 68%), linear-gradient(180deg, #FB9C5E 0%, #FF7434 100%)",
+  coral:
+    "radial-gradient(ellipse 65% 70% at 50% -8%, rgba(253,179,125,0.55) 0%, rgba(253,179,125,0) 60%), linear-gradient(180deg, #FF7434 0%, #E45A1C 100%)",
+  ember:
+    "radial-gradient(circle at 28% 32%, rgba(253,179,125,0.5) 0%, rgba(253,179,125,0) 55%), radial-gradient(circle at 74% 74%, rgba(120,40,10,0.42) 0%, rgba(120,40,10,0) 55%), linear-gradient(135deg, #FB9C5E 0%, #B84614 100%)",
+};
+
+type Glyph = "sustain" | "adhere" | "measure";
+
+type Property = {
+  title: string;
+  body: string;
+  variant: IconVariant;
+  glyph: Glyph;
+};
+
+const PROPERTIES: Property[] = [
   {
-    title: "24/7, not episodic",
-    body: "Continuous engagement between prescriptions — the window your product doesn't see.",
+    title: "Sustained utilization",
+    body: "Patients keep using what you ship, long past the first 90 days.",
+    variant: "peach",
+    glyph: "sustain",
   },
   {
-    title: "On top of what you ship",
-    body: "Chronilogix layers over your device, app, or RPM program. Nothing to rip out.",
+    title: "Higher adherence",
+    body: "The care plan sticks, because someone keeps showing up for it.",
+    variant: "coral",
+    glyph: "adhere",
   },
   {
-    title: "Measured in the real world",
-    body: "Sustained utilization, adherence, and outcomes buyers can defend at renewal.",
+    title: "Measurable results",
+    body: "Real-world outcomes your buyers can defend at renewal.",
+    variant: "ember",
+    glyph: "measure",
   },
 ];
 
@@ -56,7 +91,7 @@ export function VendorsUpgrade() {
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-20 lg:items-center">
           <div>
             <p className="reveal-row eyebrow [transition-delay:60ms]">
-              The turn
+              The upgrade
             </p>
             <h2
               id="vendors-upgrade-label"
@@ -70,22 +105,25 @@ export function VendorsUpgrade() {
 
             <p className="reveal-row mt-6 max-w-[52ch] body-prose [transition-delay:260ms]">
               24/7 AI-powered chronic care and behavioral health coaching
-              that sits <em className="not-italic font-medium text-ink">on top</em>
-              {" "}of your existing solutions &mdash; driving sustained
-              utilization, adherence, and measurable results in the real
-              world. You don&rsquo;t replace your product. You upgrade it.
+              that sits{" "}
+              <em className="not-italic font-medium text-ink">on top</em> of
+              your existing solutions, driving sustained utilization,
+              adherence, and measurable results in the real world. You
+              don&rsquo;t replace your product. You upgrade it.
             </p>
 
-            <ul className="reveal-row mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3 [transition-delay:400ms]">
-              {PROPERTIES.map((p) => (
+            <ul className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {PROPERTIES.map((p, i) => (
                 <li
                   key={p.title}
-                  className="rounded-2xl border border-ink/10 bg-white/70 p-5 backdrop-blur-sm"
+                  className="reveal-row group rounded-2xl border border-ink/[0.08] bg-white/70 p-5 backdrop-blur-sm transition-[border-color,box-shadow,transform] duration-300 ease-out hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-[0_1px_2px_rgba(15,20,25,0.04),0_18px_36px_-24px_rgba(184,70,20,0.5)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                  style={{ transitionDelay: `${400 + i * 90}ms` }}
                 >
-                  <p className="text-[13px] font-medium tracking-tight text-brand-700">
+                  <PropertyTile variant={p.variant} glyph={p.glyph} />
+                  <p className="mt-4 text-[13.5px] font-semibold tracking-tight text-ink">
                     {p.title}
                   </p>
-                  <p className="mt-2 text-[13.5px] leading-snug text-ink-soft">
+                  <p className="mt-1.5 text-[13px] leading-snug text-ink-muted">
                     {p.body}
                   </p>
                 </li>
@@ -93,9 +131,8 @@ export function VendorsUpgrade() {
             </ul>
           </div>
 
-          {/* Layer schematic — a small isometric-ish stack showing the
-              vendor's product plane with Chronilogix sitting above it.
-              Reads as a diagram, not a photograph. */}
+          {/* Layer diagram — the vendor's product plane, a behavioral-signal
+              stratum, and the Chronilogix coaching layer stacked on top. */}
           <div className="reveal-row [transition-delay:520ms]">
             <LayerStack />
           </div>
@@ -105,136 +142,334 @@ export function VendorsUpgrade() {
   );
 }
 
+/* ── Property tile — nav/MIExplainer icon language at card scale ─────────── */
+
+function PropertyTile({
+  variant,
+  glyph,
+}: {
+  variant: IconVariant;
+  glyph: Glyph;
+}) {
+  return (
+    <span
+      className="flex h-9 w-9 items-center justify-center rounded-[11px] text-white shadow-[0_1px_2px_rgba(15,20,25,0.06),0_8px_18px_-10px_rgba(184,70,20,0.5)] transition-transform duration-300 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+      style={{ backgroundImage: ICON_BG[variant] }}
+    >
+      <PropertyGlyph glyph={glyph} />
+    </span>
+  );
+}
+
+// White glyphs drawn to read clearly at ~18px, one distinct mark per property.
+function PropertyGlyph({ glyph }: { glyph: Glyph }) {
+  if (glyph === "sustain") {
+    // Ongoing activity pulse — usage that keeps going.
+    return (
+      <svg aria-hidden viewBox="0 0 18 18" className="h-[18px] w-[18px]" fill="none">
+        <path
+          d="M2 9h2.6l1.8-4 2.6 8 1.9-4H16"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+  if (glyph === "adhere") {
+    // Rising steps — adherence climbing and holding.
+    return (
+      <svg aria-hidden viewBox="0 0 18 18" className="h-[18px] w-[18px]" fill="none">
+        <path
+          d="M3 14.5h12"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          opacity="0.7"
+        />
+        <path
+          d="M3.5 13v-2.4h3.4V8.2h3.4V5.8h3.4"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M11.9 3.7 13.7 5.8 11.6 7.4"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+  // measure — a small bar chart: measurable, defensible outcomes.
+  return (
+    <svg aria-hidden viewBox="0 0 18 18" className="h-[18px] w-[18px]" fill="none">
+      <path
+        d="M2.6 15h12.8"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.7"
+      />
+      <path
+        d="M5 15V9.5M9 15V6M13 15V3.4"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/* ── Layer diagram ──────────────────────────────────────────────────────── */
+
+// Isometric geometry. Each plate is a flat diamond top plus two extruded
+// side faces, so the layers read as solid slabs with real thickness. Labels
+// live entirely OUTSIDE the plates, tied back with thin leader lines.
+const CX = 172; // stack center x
+const HX = 112; // diamond half-width (x)
+const VY = 36; // diamond half-height (y)
+
+type PlateShape = { top: string; right: string; left: string };
+
+function plate(cy: number, t: number): PlateShape {
+  const topPath = `M${CX} ${cy - VY} L${CX + HX} ${cy} L${CX} ${cy + VY} L${CX - HX} ${cy} Z`;
+  const rightPath = `M${CX + HX} ${cy} L${CX} ${cy + VY} L${CX} ${cy + VY + t} L${CX + HX} ${cy + t} Z`;
+  const leftPath = `M${CX} ${cy + VY} L${CX - HX} ${cy} L${CX - HX} ${cy + t} L${CX} ${cy + VY + t} Z`;
+  return { top: topPath, right: rightPath, left: leftPath };
+}
+
+const BOTTOM = plate(312, 16); // vendor product plane
+const MIDDLE = plate(212, 8); // behavioral-signal stratum (thin, dark)
+const TOP = plate(104, 18); // Chronilogix coaching layer (brand, elevated)
+
+// Coaching touchpoints rising off the brand plate. Each entry seeds a
+// float loop (reduced-motion visitors get them held in place instead).
+const TOUCHPOINTS = [
+  { x: 132, r: 2.4, delay: 0, dur: 3600, top: 74 },
+  { x: 158, r: 3.4, delay: 900, dur: 4200, top: 58 },
+  { x: 186, r: 2.8, delay: 1800, dur: 3900, top: 66 },
+  { x: 210, r: 3.6, delay: 500, dur: 4500, top: 52 },
+  { x: 232, r: 2.6, delay: 2400, dur: 4000, top: 70 },
+];
+
 function LayerStack() {
+  const reduced = useReducedMotion();
+
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[420px]">
-      {/* Ambient wash */}
+      {/* Ambient warm wash centered on the coaching layer. */}
       <div
         aria-hidden
         className="absolute inset-0 rounded-full opacity-70 blur-3xl"
         style={{
           background:
-            "radial-gradient(circle at 50% 50%, rgba(255,116,52,0.22), transparent 65%)",
+            "radial-gradient(circle at 42% 32%, rgba(255,116,52,0.22), transparent 62%)",
         }}
       />
 
       <svg
         viewBox="0 0 400 400"
         className="relative h-full w-full"
-        aria-hidden
+        style={{ fontFamily: "var(--font-sans)" } as React.CSSProperties}
+        role="img"
+        aria-label="Diagram: the Chronilogix coaching layer sitting on top of a behavioral-signal layer and your existing product, with 24/7 coaching touchpoints rising off it."
       >
         <defs>
-          <linearGradient id="platePaper" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="vuPaperTop" x1="0" y1="0" x2="0.6" y2="1">
             <stop offset="0" stopColor="#FFFFFF" />
-            <stop offset="1" stopColor="#F3EDE3" />
+            <stop offset="1" stopColor="#F1EADF" />
           </linearGradient>
-          <linearGradient id="plateBrand" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#FB9C5E" />
-            <stop offset="1" stopColor="#E45A1C" />
+          <linearGradient id="vuInkTop" x1="0" y1="0" x2="0.6" y2="1">
+            <stop offset="0" stopColor="#333A44" />
+            <stop offset="1" stopColor="#1B212A" />
           </linearGradient>
-          <linearGradient id="plateInk" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#2A3038" />
-            <stop offset="1" stopColor="#0F1419" />
+          <linearGradient id="vuBrandTop" x1="0.05" y1="0" x2="0.85" y2="1">
+            <stop offset="0" stopColor="#FDB37D" />
+            <stop offset="0.55" stopColor="#F9904D" />
+            <stop offset="1" stopColor="#F0722C" />
           </linearGradient>
+          <filter
+            id="vuGlow"
+            x="-40%"
+            y="-40%"
+            width="180%"
+            height="180%"
+          >
+            <feDropShadow
+              dx="0"
+              dy="12"
+              stdDeviation="14"
+              floodColor="#E45A1C"
+              floodOpacity="0.32"
+            />
+          </filter>
         </defs>
 
-        {/* Bottom plate — the vendor's device / RPM / portal. */}
-        <g transform="translate(60 240)">
+        {/* Bottom plate — the vendor's device / RPM / portal / app. */}
+        <g>
+          <path d={BOTTOM.left} fill="#E1D6C6" />
+          <path d={BOTTOM.right} fill="#EDE4D6" />
           <path
-            d="M0 40 L140 0 L340 60 L200 100 Z"
-            fill="url(#platePaper)"
+            d={BOTTOM.top}
+            fill="url(#vuPaperTop)"
             stroke="#0F1419"
-            strokeOpacity="0.12"
+            strokeOpacity="0.10"
             strokeWidth="1"
           />
-          <text
-            x="170"
-            y="66"
-            fontFamily="ui-serif, Georgia"
-            fontSize="14"
-            fill="#0F1419"
-            opacity="0.55"
-            textAnchor="middle"
-            fontStyle="italic"
-          >
-            Your product
-          </text>
         </g>
 
-        {/* Middle plate — the behavioral data layer (thin, ink). */}
-        <g transform="translate(60 180)">
+        {/* Middle plate — the behavioral-signal stratum (thin, ink). */}
+        <g>
+          <path d={MIDDLE.left} fill="#10151A" />
+          <path d={MIDDLE.right} fill="#1B212A" />
+          <path d={MIDDLE.top} fill="url(#vuInkTop)" />
+        </g>
+
+        {/* Top plate — Chronilogix coaching layer (brand, elevated). */}
+        <g filter="url(#vuGlow)">
+          <path d={TOP.left} fill="#B84614" />
+          <path d={TOP.right} fill="#E45A1C" />
           <path
-            d="M0 40 L140 0 L340 60 L200 100 Z"
-            fill="url(#plateInk)"
-            opacity="0.9"
+            d={TOP.top}
+            fill="url(#vuBrandTop)"
+            stroke="#FFFFFF"
+            strokeOpacity="0.28"
+            strokeWidth="1"
           />
-          <text
-            x="170"
-            y="66"
-            fontFamily="ui-sans-serif, system-ui"
-            fontSize="11"
-            fill="#FFF"
-            opacity="0.7"
-            textAnchor="middle"
-            letterSpacing="0.08em"
-          >
-            BEHAVIORAL SIGNAL
-          </text>
         </g>
 
-        {/* Top plate — Chronilogix (brand, glow). */}
-        <g transform="translate(60 90)">
-          <path
-            d="M0 40 L140 0 L340 60 L200 100 Z"
-            fill="url(#plateBrand)"
-            filter="drop-shadow(0 10px 24px rgba(228,90,28,0.35))"
-          />
-          <text
-            x="170"
-            y="66"
-            fontFamily="ui-sans-serif, system-ui"
-            fontSize="16"
-            fontWeight="600"
-            fill="#FFF"
-            textAnchor="middle"
-          >
-            Chronilogix
-          </text>
-        </g>
+        {/* Coaching touchpoints rising off the coaching layer. */}
+        {TOUCHPOINTS.map((d, i) =>
+          reduced ? (
+            <circle
+              key={i}
+              cx={d.x}
+              cy={d.top}
+              r={d.r}
+              fill="#FF7434"
+              opacity={0.72}
+            />
+          ) : (
+            <circle
+              key={i}
+              cx={d.x}
+              cy={d.top}
+              r={d.r}
+              fill="#FF7434"
+              style={{
+                transformBox: "fill-box",
+                transformOrigin: "center",
+                animation: `vuRise ${d.dur}ms cubic-bezier(0.4,0,0.2,1) ${d.delay}ms infinite`,
+              }}
+            />
+          ),
+        )}
 
-        {/* Coaching signals — small dots rising off the brand plate. */}
-        {[
-          { x: 130, y: 60, r: 3 },
-          { x: 200, y: 40, r: 4 },
-          { x: 260, y: 70, r: 3 },
-          { x: 320, y: 90, r: 3 },
-        ].map((d, i) => (
-          <circle
-            key={i}
-            cx={d.x}
-            cy={d.y}
-            r={d.r}
-            fill="#FF7434"
-            opacity={0.65}
-          />
-        ))}
+        {/* Touchpoint caption — names the rising dots so their meaning is
+            unambiguous, tucked top-left clear of the right-hand labels. */}
+        <line
+          x1="96"
+          y1="46"
+          x2="120"
+          y2="60"
+          stroke="#FF7434"
+          strokeOpacity="0.5"
+          strokeWidth="1"
+        />
+        <text
+          x="92"
+          y="42"
+          textAnchor="end"
+          fontSize="11"
+          fontWeight={600}
+          fill="#E45A1C"
+        >
+          24/7 touchpoints
+        </text>
 
-        {/* Labels connecting plates */}
-        <g opacity="0.5">
-          <line x1="380" y1="130" x2="356" y2="130" stroke="#E45A1C" strokeWidth="1" />
-          <text x="384" y="134" fontFamily="ui-sans-serif" fontSize="10" fill="#E45A1C">
-            Coaching layer
-          </text>
-          <line x1="380" y1="220" x2="356" y2="220" stroke="#0F1419" strokeOpacity="0.5" strokeWidth="1" />
-          <text x="384" y="224" fontFamily="ui-sans-serif" fontSize="10" fill="#0F1419" fillOpacity="0.7">
-            Real-world signal
-          </text>
-          <line x1="380" y1="290" x2="356" y2="290" stroke="#0F1419" strokeOpacity="0.35" strokeWidth="1" />
-          <text x="384" y="294" fontFamily="ui-sans-serif" fontSize="10" fill="#0F1419" fillOpacity="0.55">
-            Your product plane
-          </text>
-        </g>
+        {/* Annotation labels — all copy lives out here, tied to each plate
+            with a thin leader line. */}
+        <PlateLabel
+          cy={104}
+          accent="#E45A1C"
+          title="Chronilogix"
+          titleColor="#E45A1C"
+          sub="coaching layer"
+        />
+        <PlateLabel
+          cy={212}
+          accent="#5B6470"
+          title="Behavioral signal"
+          titleColor="#2A3038"
+          sub="real-world data"
+        />
+        <PlateLabel
+          cy={312}
+          accent="#8A93A0"
+          title="Your product"
+          titleColor="#2A3038"
+          sub="device · RPM · app"
+        />
       </svg>
+
+      {/* Scoped float keyframe for the touchpoints. */}
+      <style>{`
+        @keyframes vuRise {
+          0%   { opacity: 0; transform: translateY(8px); }
+          18%  { opacity: 0.9; }
+          70%  { opacity: 0.6; }
+          100% { opacity: 0; transform: translateY(-20px); }
+        }
+      `}</style>
     </div>
+  );
+}
+
+// One annotation: a leader line from the plate's right vertex out to a
+// stacked two-line label. Kept in SVG so it scales with the diagram and
+// never reflows over the plates.
+function PlateLabel({
+  cy,
+  accent,
+  title,
+  titleColor,
+  sub,
+}: {
+  cy: number;
+  accent: string;
+  title: string;
+  titleColor: string;
+  sub: string;
+}) {
+  const vertexX = CX + HX; // right vertex of the diamond, at height cy
+  const railX = 296;
+  const textX = 302;
+  return (
+    <g>
+      <path
+        d={`M${vertexX} ${cy} H${railX}`}
+        stroke={accent}
+        strokeOpacity="0.55"
+        strokeWidth="1"
+      />
+      <circle cx={railX} cy={cy} r="1.8" fill={accent} />
+      <text
+        x={textX}
+        y={cy - 3}
+        fontSize="12.5"
+        fontWeight={600}
+        fill={titleColor}
+      >
+        {title}
+      </text>
+      <text x={textX} y={cy + 11} fontSize="10.5" fill="#8A93A0">
+        {sub}
+      </text>
+    </g>
   );
 }

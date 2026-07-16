@@ -387,7 +387,7 @@ function MemberViewColumn({
           do the cropping, so the hand reads as poking out of / behind the
           box rather than floating inside it. */}
       <div
-        className="surface-glass relative mt-4 flex flex-1 items-end justify-start rounded-[24px]"
+        className="surface-glass relative mt-4 flex flex-1 items-end justify-start overflow-hidden rounded-[24px]"
         style={{
           boxShadow:
             "inset 0 1px 0 rgba(255, 255, 255, 0.92), inset 0 -1px 0 rgba(15, 20, 25, 0.04)",

@@ -9,6 +9,7 @@ import {
 import { VendorsHero } from "@/components/solutions/vendors/VendorsHero";
 import { VendorsAfterDelivery } from "@/components/solutions/vendors/VendorsAfterDelivery";
 import { VendorsUpgrade } from "@/components/solutions/vendors/VendorsUpgrade";
+import { VendorsProgramGap } from "@/components/solutions/vendors/VendorsProgramGap";
 import { VendorsBehaviorGap } from "@/components/solutions/vendors/VendorsBehaviorGap";
 import { VendorsImpact } from "@/components/solutions/vendors/VendorsImpact";
 import { VendorsReposition } from "@/components/solutions/vendors/VendorsReposition";
@@ -17,26 +18,24 @@ import { VendorsClosingCTA } from "@/components/solutions/vendors/VendorsClosing
 export const metadata: Metadata = {
   title: "Vendors · Chronilogix",
   description:
-    "The outcomes upgrade your chronic care products have been missing. 24/7 AI-powered coaching that sits on top of what you already ship — replacing up to 80% of human coaching sessions at roughly $5 each, and lifting vendor retention by up to 40%.",
+    "Turn better health benefits into better health outcomes. Chronilogix helps employers, healthcare vendors, health plans, and care providers improve engagement and reduce avoidable healthcare costs through AI-powered behavioral coaching.",
 };
 
 /**
- * /solutions/vendors — page for chronic care product vendors.
+ * /solutions/vendors — for chronic-care product vendors: the product
+ * ships fine; the challenge is what happens after delivery. The hero's
+ * "Play Now" button starts the vendor brief and reveals a full-width
+ * sticky player that keeps playing as the visitor scrolls.
  *
- * The entire narrative on this page is a refactor of the recorded
- * vendor track (Recordings/FINAL edit Chronoligix Vendor track.m4a).
- * The audio itself sits inside the hero as an editorial "listen" card;
- * on scroll past the hero, the same player becomes a fixed bottom bar
- * so a visitor can keep listening while they scan the argument.
- *
- * Section order maps 1:1 to the audio's arc:
- *   1. Hero              — the hook (product isn't the problem) + audio card
- *   2. After Delivery    — the four post-shipment pressures
- *   3. Upgrade           — the positioning turn ("outcomes upgrade")
- *   4. Behavior Gap      — how Chronilogix closes it (Rooney + MI)
- *   5. Impact            — the three numbers (dark slab)
- *   6. Reposition        — from commodity supplier → outcomes partner
- *   7. Closing CTA       — "chronic coaching care that clicks."
+ * Section order follows the vendor narrative arc:
+ *   1. Hero               — your product works; the challenge is after delivery (+ before/after graph)
+ *   2. After Delivery     — the reality vendors face (delivery isn't the finish line)
+ *   3. Upgrade            — the turn: Chronilogix is the outcomes upgrade (sits on top)
+ *   4. Program Gap        — meet Rooney AI (your AI health coach)
+ *   5. Behavior Gap       — the behaviour gap (human barriers to adherence)
+ *   6. Impact             — the business impact (retention / coaching / cost stats)
+ *   7. Reposition         — a better story for buyers (stand out in a crowded market)
+ *   8. Closing CTA        — upgrade outcomes without changing your product
  */
 export default function VendorsPage() {
   return (
@@ -51,6 +50,7 @@ export default function VendorsPage() {
             <VendorsHero />
             <VendorsAfterDelivery />
             <VendorsUpgrade />
+            <VendorsProgramGap />
             <VendorsBehaviorGap />
             <VendorsImpact />
             <VendorsReposition />
@@ -58,8 +58,8 @@ export default function VendorsPage() {
           </div>
         </main>
 
-        {/* Sticky audio bar — sits above the CoachLauncher, revealed
-            once the hero card is out of view. */}
+        {/* Full-width sticky player, revealed when the hero's Play Now is
+            pressed; keeps playing across scroll. */}
         <VendorsStickyAudio />
       </VendorsAudioProvider>
 

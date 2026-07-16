@@ -62,7 +62,7 @@ export function Outcome() {
   return (
     <section
       id="outcome"
-      className="relative border-y border-ink/10 bg-paper-warm"
+      className="relative border-t border-ink/10 bg-paper-warm"
     >
       {/* Soft brand wash — sets a different visual key from the dense Problem section. */}
       <div

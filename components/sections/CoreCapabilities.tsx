@@ -128,13 +128,19 @@ function CapabilityRow({ block, index }: { block: Block; index: number }) {
     >
       {/* Fog veil — softens the seam where rows stack on md+. Fades from
           transparent to the section's white ground so the next row lands
-          on a clean surface, not a hard edge. Hidden on mobile. */}
+          on a clean surface, not a hard edge. Hidden on mobile.
+
+          Same treatment as LevelsOfCare: a taller veil with a symmetric
+          smoothstep ramp (eases in AND out) so the previous row dissolves
+          evenly across the whole scroll distance instead of rushing to
+          solid near the bottom. Full opacity by ~90% leaves a stable solid
+          band flowing into the next row. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-24 hidden h-24 md:block md:-top-32 md:h-32"
+        className="pointer-events-none absolute inset-x-0 -top-40 hidden h-40 md:block md:-top-80 md:h-80"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0.85) 85%, rgba(255,255,255,1) 100%)",
+            "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.03) 10%, rgba(255,255,255,0.12) 20%, rgba(255,255,255,0.26) 30%, rgba(255,255,255,0.42) 40%, rgba(255,255,255,0.58) 50%, rgba(255,255,255,0.74) 60%, rgba(255,255,255,0.87) 70%, rgba(255,255,255,0.96) 80%, rgba(255,255,255,1) 90%, rgba(255,255,255,1) 100%)",
         }}
       />
 

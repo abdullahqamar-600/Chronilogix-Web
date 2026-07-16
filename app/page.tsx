@@ -10,7 +10,7 @@ import { ProblemV3 } from "@/components/sections/ProblemV3";
 import { Outcome } from "@/components/sections/Outcome";
 import { Solution } from "@/components/sections/Solution";
 import { WhoWeServe } from "@/components/sections/WhoWeServe";
-import { ScienceKen, AetnaProof } from "@/components/sections/CustomerStories";
+import { AetnaProof } from "@/components/sections/CustomerStories";
 import { Testimonials } from "@/components/sections/Testimonials";
 
 // Home (V1) — the current canonical design. Was previously V5 and was
@@ -27,10 +27,10 @@ export default function HomePage() {
             <HeroV5 />
             <StatementV5 />
           </div>
+          {/* Section 3 now folds the Dr. Resnicow "science behind it" beat
+              into its own closing act, so the method and the mind behind it
+              read as one continuous section. */}
           <MIExplainer />
-          {/* Dr. Resnicow science beat, directly after the MI explainer:
-              the scientist behind the method (image left, copy right). */}
-          <ScienceKen />
           <Solution />
         </div>
         <div className="flex flex-col">
@@ -39,9 +39,14 @@ export default function HomePage() {
           <WhoWeServe />
         </div>
         <div className="flex flex-col gap-2 p-2 md:gap-3 md:p-3">
-          {/* Aetna field proof sits low, right before the testimonials. */}
-          <AetnaProof />
-          <Testimonials />
+          {/* Aetna field proof + testimonials read as one continuous cream
+              panel: wrapped flush (no gap) and clipped to a single rounded
+              frame so the field proof flows straight into the member
+              voices. */}
+          <div className="flex flex-col overflow-hidden rounded-[28px]">
+            <AetnaProof />
+            <Testimonials />
+          </div>
         </div>
       </main>
       <Footer />

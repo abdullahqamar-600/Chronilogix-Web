@@ -60,49 +60,54 @@ export function AetnaProof() {
     <section
       id="customer-stories"
       aria-labelledby="aetna-proof-heading"
-      className="relative bg-white"
+      className="relative bg-paper-warm"
     >
       <h2 id="aetna-proof-heading" className="sr-only">
         Proof in the field
       </h2>
 
-      <div className="container-page py-16 md:py-24 lg:py-28">
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-16">
-          {/* Left — framing + source */}
-          <div>
-            <p className="eyebrow">Proof in the field</p>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/Aetna_Logo.svg"
-              alt="Aetna"
-              className="mt-6 h-8 w-auto md:h-9"
-              draggable={false}
-            />
-            <p className="mt-6 max-w-md body-prose">
-              Member engagement, after nurse coaches were trained in Dr.
-              Resnicow&rsquo;s method. Dropouts fell by{" "}
-              <span className="text-ink">more than half</span>.
-            </p>
-            <a
-              href="/case-studies/aetna"
-              className="group/link mt-8 inline-flex items-center gap-2 text-sm font-medium text-ink transition-colors hover:text-brand-600"
-            >
-              Read the Aetna case study
-              <Arrow />
-            </a>
-          </div>
+      <div className="container-page pt-16 pb-10 md:pt-24 md:pb-12 lg:pt-28 lg:pb-14">
+        {/* Centered onto the same axis as the Testimonials carousel
+            directly below, so the two cream sections read as one
+            continuous "proof → voices" panel instead of flipping from a
+            left-aligned two-column block to a centered one. Narrative
+            order: source (Aetna) → the number → what it measures → the
+            mechanism → the case study. */}
+        <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+          <p className="eyebrow">Proof in the field</p>
 
-          {/* Right — the headline stat */}
-          <div className="lg:border-l lg:border-ink/10 lg:pl-16">
-            <p className="font-serif text-[64px] font-normal leading-none tracking-tight text-ink tabular-nums md:text-[88px]">
-              53%{" "}
-              <span className="text-brand-600">&rarr;</span>{" "}
-              76%
-            </p>
-            <p className="mt-4 text-sm font-medium uppercase tracking-[0.14em] text-ink-muted">
-              Member engagement
-            </p>
-          </div>
+          {/* Source — establishes credibility before the number lands. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/Aetna_Logo.svg"
+            alt="Aetna"
+            className="mt-6 h-8 w-auto md:h-9"
+            draggable={false}
+          />
+
+          {/* Hero stat — owns the center the way the quotes do below it. */}
+          <p className="mt-8 font-serif text-[64px] font-normal leading-none tracking-tight text-ink tabular-nums md:text-[88px]">
+            53%{" "}
+            <span className="text-brand-600">&rarr;</span>{" "}
+            76%
+          </p>
+          <p className="mt-4 text-sm font-medium uppercase tracking-[0.14em] text-ink-muted">
+            Member engagement
+          </p>
+
+          <p className="mt-8 max-w-md body-prose">
+            Measured after nurse coaches were trained in Dr.
+            Resnicow&rsquo;s method. Dropouts fell by{" "}
+            <span className="text-ink">more than half</span>.
+          </p>
+
+          <a
+            href="/case-studies/aetna"
+            className="group/link mt-8 inline-flex items-center gap-2 text-sm font-medium text-ink transition-colors hover:text-brand-600"
+          >
+            Read the Aetna case study
+            <Arrow />
+          </a>
         </div>
       </div>
     </section>

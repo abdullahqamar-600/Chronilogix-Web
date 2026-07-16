@@ -93,7 +93,10 @@ export function Testimonials() {
       id="testimonials"
       aria-labelledby="testimonials-heading"
       data-revealed={inView}
-      className="section bg-paper-warm"
+      // Reduced top padding (overriding .section's py) so the member
+      // voices sit closer to the Aetna field proof directly above —
+      // the two now read as one continuous cream panel.
+      className="section bg-paper-warm pt-12 md:pt-16 lg:pt-20"
     >
       {/* Decorative serif quote glyphs — one in the top-left, one mirrored
           in the bottom-right. Sit inside .section (which is relative +

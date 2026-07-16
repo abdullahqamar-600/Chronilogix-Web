@@ -5,198 +5,285 @@ import { useReveal, useReducedMotion } from "@/components/hooks/useReveal";
 /**
  * BrokersFrontDoorViz — hero right-column signature.
  *
- * Encodes the one-sheet's core positioning ("front-door claims mitigation
- * strategy") as a small diagram. A muted "reactive" horizon on the right
- * represents the moment a member surfaces in claims; a brand-orange
- * upstream marker on the left represents the moment Chronilogix engages
- * them. A curved arrow connects the two, "drawing in" on reveal.
+ * A "bending the cost curve" chart, the standard shape in healthcare
+ * cost-economics: a single rising baseline (do nothing), an intervention
+ * point, and the intervention trajectory bending away from the baseline
+ * after that point — the widening gap being the cost avoided.
  *
- * Below the arrow sits a compact "member card" mock — the one-sheet's
- * coaching preview, pared down to the minimum readable slice.
+ *   - Baseline "Without Chronilogix" (rust) rises across the whole
+ *     timeline as small, unaddressed risks compound into expensive claims.
+ *   - "With Chronilogix" (sage) rides the baseline until Chronilogix
+ *     engages, then flattens — risk is intercepted between visits before
+ *     it surfaces in claims data.
+ *
+ * Crucially the green line only diverges AFTER the engage marker: before
+ * Chronilogix is involved there is no intervention, so both trajectories
+ * share the same early baseline. Kept conceptual, not calendar-precise
+ * (x-axis reads "Earlier → Later"), because there's no dataset behind the
+ * gradations.
  */
+
+// Plot geometry — a 480×300 viewBox.
+const PLOT = { left: 48, right: 452, top: 16, bottom: 240 };
+
+// The point Chronilogix engages — where the intervention line bends off
+// the shared baseline. Still early, still low-cost.
+const ENGAGE = { x: 150, y: 214, tone: "#6FA287" };
+const WITHOUT_END = { x: 452, y: 44, tone: "#B23A1C" };
+
+// Baseline (do nothing) — rises across the full timeline. The "With"
+// line traces the same curve up to the engage point, then bends flat.
+const WITHOUT_PATH =
+  "M48,232 C90,228 120,222 150,214 C190,204 220,194 252,180 C286,165 320,140 360,108 C395,80 425,60 452,44";
+// Green begins at the engage point — before Chronilogix is involved the
+// member simply rides the baseline above.
+const WITH_PATH = "M150,214 C210,210 320,206 452,202";
+
+// Filled wedge between the two trajectories, opening only after engage.
+const SAVINGS_AREA =
+  "M150,214 C210,210 320,206 452,202 L452,44 C425,60 395,80 360,108 C320,140 286,165 252,180 C220,194 190,204 150,214 Z";
+
 export function BrokersFrontDoorViz() {
   const { ref, inView } = useReveal<HTMLDivElement>({ threshold: 0.3 });
   const reduced = useReducedMotion();
   const active = inView || reduced;
 
   return (
-    <div ref={ref} className="relative mx-auto w-full max-w-[440px]">
-      {/* Timeline — from "Chronilogix engages" (left) to "traditional
-          benefits notice" (right). */}
-      <div className="relative">
-        <svg
-          viewBox="0 0 440 220"
-          className="w-full"
-          preserveAspectRatio="xMidYMid meet"
-          aria-hidden
+    <div ref={ref} className="relative mx-auto w-full max-w-[640px]">
+      <svg
+        viewBox="0 0 480 300"
+        className="w-full"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden
+      >
+        <defs>
+          <linearGradient id="brokers-without" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#E8B04B" />
+            <stop offset="55%" stopColor="#F9904D" />
+            <stop offset="100%" stopColor="#B23A1C" />
+          </linearGradient>
+          <linearGradient id="brokers-savings" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#6FA287" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#6FA287" stopOpacity="0.04" />
+          </linearGradient>
+        </defs>
+
+        {/* Cost-avoided wedge — the gap between the two trajectories. */}
+        <path
+          d={SAVINGS_AREA}
+          fill="url(#brokers-savings)"
+          style={{
+            opacity: active ? 1 : 0,
+            transition: "opacity 800ms ease-out 1500ms",
+          }}
+        />
+
+        {/* Axes. */}
+        <line
+          x1={PLOT.left}
+          y1={PLOT.top}
+          x2={PLOT.left}
+          y2={PLOT.bottom}
+          stroke="#5B6470"
+          strokeOpacity="0.35"
+          strokeWidth="1"
+        />
+        <line
+          x1={PLOT.left}
+          y1={PLOT.bottom}
+          x2={PLOT.right}
+          y2={PLOT.bottom}
+          stroke="#5B6470"
+          strokeOpacity="0.35"
+          strokeWidth="1"
+        />
+
+        {/* Dashed divider at the point Chronilogix engages. */}
+        <line
+          x1={ENGAGE.x}
+          y1={PLOT.top}
+          x2={ENGAGE.x}
+          y2={PLOT.bottom}
+          stroke="#5B6470"
+          strokeOpacity="0.18"
+          strokeWidth="1"
+          strokeDasharray="3 5"
+          style={{
+            opacity: active ? 1 : 0,
+            transition: "opacity 500ms ease-out 420ms",
+          }}
+        />
+
+        {/* Baseline — Without Chronilogix, rising across the whole
+            timeline. Both scenarios share this curve until the engage
+            point. */}
+        <path
+          d={WITHOUT_PATH}
+          fill="none"
+          stroke="url(#brokers-without)"
+          strokeWidth="2.75"
+          strokeLinecap="round"
+          style={{
+            strokeDasharray: 640,
+            strokeDashoffset: active ? 0 : 640,
+            transition: reduced
+              ? undefined
+              : "stroke-dashoffset 1500ms cubic-bezier(0.22,0.61,0.36,1) 320ms",
+          }}
+        />
+
+        {/* With Chronilogix — bends off the baseline at the engage point
+            and flattens. */}
+        <path
+          d={WITH_PATH}
+          fill="none"
+          stroke="#6FA287"
+          strokeWidth="2.75"
+          strokeLinecap="round"
+          style={{
+            strokeDasharray: 340,
+            strokeDashoffset: active ? 0 : 340,
+            transition: reduced
+              ? undefined
+              : "stroke-dashoffset 1100ms cubic-bezier(0.22,0.61,0.36,1) 1100ms",
+          }}
+        />
+
+        {/* Engage marker (where the line bends) + escalation endpoint. */}
+        {[
+          { ...ENGAGE, delay: 1100 },
+          { x: WITHOUT_END.x, y: WITHOUT_END.y, tone: WITHOUT_END.tone, delay: 2000 },
+        ].map((p, i) => (
+          <g
+            key={i}
+            style={{
+              opacity: active ? 1 : 0,
+              transform: active ? "scale(1)" : "scale(0.4)",
+              transformOrigin: `${p.x}px ${p.y}px`,
+              transition: `opacity 400ms ease-out ${p.delay}ms, transform 400ms cubic-bezier(0.22,1,0.36,1) ${p.delay}ms`,
+            }}
+          >
+            <circle cx={p.x} cy={p.y} r="9" fill={p.tone} opacity="0.16" />
+            <circle cx={p.x} cy={p.y} r="4.5" fill={p.tone} />
+          </g>
+        ))}
+
+        {/* X-axis endpoint labels — conceptual, not calendar. */}
+        <text
+          x={PLOT.left}
+          y={PLOT.bottom + 22}
+          textAnchor="start"
+          className="fill-ink-muted"
+          style={{ fontSize: 11, fontWeight: 500 }}
         >
-          <defs>
-            <linearGradient
-              id="brokers-front-door-arrow"
-              x1="0"
-              y1="0"
-              x2="1"
-              y2="0"
-            >
-              <stop offset="0%" stopColor="#F9904D" />
-              <stop offset="60%" stopColor="#FF7434" />
-              <stop offset="100%" stopColor="#E45A1C" />
-            </linearGradient>
-          </defs>
+          Earlier
+        </text>
+        <text
+          x={PLOT.right}
+          y={PLOT.bottom + 22}
+          textAnchor="end"
+          className="fill-ink-muted"
+          style={{ fontSize: 11, fontWeight: 500 }}
+        >
+          Later
+        </text>
 
-          {/* Reactive horizon — dashed muted line where "claims surface". */}
-          <line
-            x1="0"
-            y1="150"
-            x2="440"
-            y2="150"
-            stroke="#5B6470"
-            strokeOpacity="0.3"
-            strokeWidth="1"
-            strokeDasharray="4 6"
-            style={{
-              opacity: active ? 1 : 0,
-              transition: "opacity 700ms ease-out 150ms",
-            }}
-          />
+        {/* X-axis title. */}
+        <text
+          x={(PLOT.left + PLOT.right) / 2}
+          y={PLOT.bottom + 44}
+          textAnchor="middle"
+          className="fill-ink-muted uppercase"
+          style={{ fontSize: 10, fontWeight: 500, letterSpacing: "0.08em" }}
+        >
+          Time since a risk first appears
+        </text>
 
-          {/* Left node — Chronilogix engages (day one). */}
-          <g
-            style={{
-              opacity: active ? 1 : 0,
-              transition: "opacity 500ms ease-out 400ms",
-            }}
-          >
-            <circle cx="70" cy="60" r="18" fill="#FFE6D4" />
-            <circle cx="70" cy="60" r="10" fill="#FF7434" />
-            <circle
-              cx="70"
-              cy="60"
-              r="10"
-              fill="#FF7434"
-              opacity="0.35"
-              style={{
-                transformOrigin: "70px 60px",
-                animation: reduced
-                  ? undefined
-                  : "livePulse 2400ms cubic-bezier(0.22,0.61,0.36,1) infinite",
-              }}
-            />
-            <text
-              x="70"
-              y="30"
-              textAnchor="middle"
-              className="fill-brand-700 font-serif"
-              style={{ fontSize: 12, fontStyle: "italic" }}
-            >
-              Day one
-            </text>
-          </g>
+        {/* Y-axis title, rotated. */}
+        <text
+          x={-128}
+          y={20}
+          textAnchor="middle"
+          transform="rotate(-90)"
+          className="fill-ink-muted uppercase"
+          style={{ fontSize: 10, fontWeight: 500, letterSpacing: "0.08em" }}
+        >
+          Cost to your plan
+        </text>
 
-          {/* Right node — the moment claims would otherwise surface. */}
-          <g
-            style={{
-              opacity: active ? 1 : 0,
-              transition: "opacity 500ms ease-out 550ms",
-            }}
-          >
-            <circle
-              cx="370"
-              cy="150"
-              r="10"
-              fill="#FFFFFF"
-              stroke="#5B6470"
-              strokeOpacity="0.45"
-              strokeWidth="1.4"
-            />
-            <text
-              x="370"
-              y="180"
-              textAnchor="middle"
-              className="fill-ink-muted font-serif"
-              style={{ fontSize: 12, fontStyle: "italic" }}
-            >
-              High-cost claim
-            </text>
-          </g>
+        {/* Engage annotation — sits atop the dashed divider. */}
+        <text
+          x={ENGAGE.x}
+          y={54}
+          textAnchor="middle"
+          className="font-serif"
+          style={{
+            fontSize: 12,
+            fontStyle: "italic",
+            fill: "#4C7A62",
+            opacity: active ? 1 : 0,
+            transition: "opacity 600ms ease-out 1300ms",
+          }}
+        >
+          Chronilogix engages
+        </text>
 
-          {/* Curved connector — arcs from the Chronilogix node down to
-              the claims horizon. Draws in via stroke-dashoffset. */}
-          <path
-            d="M 88 60 C 200 60, 240 150, 355 150"
-            fill="none"
-            stroke="url(#brokers-front-door-arrow)"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            style={{
-              strokeDasharray: 340,
-              strokeDashoffset: active ? 0 : 340,
-              transition: reduced
-                ? undefined
-                : "stroke-dashoffset 1500ms cubic-bezier(0.22,0.61,0.36,1) 600ms",
-            }}
-          />
+        {/* Line label — Without Chronilogix (escalating, rust). */}
+        <text
+          x={PLOT.right}
+          y={36}
+          textAnchor="end"
+          className="fill-ink font-serif"
+          style={{
+            fontSize: 13,
+            fontStyle: "italic",
+            opacity: active ? 1 : 0,
+            transition: "opacity 600ms ease-out 2100ms",
+          }}
+        >
+          Without Chronilogix
+        </text>
 
-          {/* Arrowhead near the right node — pops in after the line lands. */}
-          <g
-            style={{
-              opacity: active ? 1 : 0,
-              transform: active ? "translate(0, 0)" : "translate(-6px, 0)",
-              transition: reduced
-                ? undefined
-                : "opacity 400ms ease-out 1950ms, transform 400ms cubic-bezier(0.22,0.61,0.36,1) 1950ms",
-            }}
-          >
-            <path
-              d="M 350 143 L 360 150 L 350 157"
-              fill="none"
-              stroke="#E45A1C"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </g>
+        {/* Line label — With Chronilogix (flat, sage). */}
+        <text
+          x={PLOT.right}
+          y={228}
+          textAnchor="end"
+          className="font-serif"
+          style={{
+            fontSize: 13,
+            fontStyle: "italic",
+            fill: "#4C7A62",
+            opacity: active ? 1 : 0,
+            transition: "opacity 600ms ease-out 2100ms",
+          }}
+        >
+          With Chronilogix
+        </text>
 
-          {/* Intermediate ticks — small week markers below the arc,
-              suggesting "weeks and months of engagement" between the
-              two events. */}
-          {[130, 170, 210, 250, 290].map((x, i) => (
-            <circle
-              key={x}
-              cx={x}
-              cy={150}
-              r="1.5"
-              fill="#5B6470"
-              opacity={0.4}
-              style={{
-                opacity: active ? 0.4 : 0,
-                transition: `opacity 400ms ease-out ${1200 + i * 90}ms`,
-              }}
-            />
-          ))}
-
-          {/* Corner annotation — the weeks-of-lead-time label. */}
-          <text
-            x="220"
-            y="110"
-            textAnchor="middle"
-            className="fill-ink font-serif"
-            style={{
-              fontSize: 13,
-              fontStyle: "italic",
-              opacity: active ? 1 : 0,
-              transition: "opacity 600ms ease-out 1700ms",
-            }}
-          >
-            weeks &amp; months of engagement
-          </text>
-        </svg>
-      </div>
+        {/* Gap label — the cost avoided. */}
+        <text
+          x={352}
+          y={140}
+          textAnchor="middle"
+          className="font-serif"
+          style={{
+            fontSize: 13,
+            fontStyle: "italic",
+            fill: "#4C7A62",
+            opacity: active ? 1 : 0,
+            transition: "opacity 700ms ease-out 1600ms",
+          }}
+        >
+          Cost avoided
+        </text>
+      </svg>
 
       {/* Source line — brief, matches the italic-serif footnote family
           used elsewhere on the page. */}
-      <p className="eyebrow-subtle mt-4 max-w-[36ch] text-center mx-auto">
-        Chronilogix engages members long before they surface in claims data.
+      <p className="eyebrow-subtle mt-4 max-w-[38ch] text-center mx-auto">
+        Engage a risk early and it stays small &mdash; wait, and it
+        compounds into a claim.
       </p>
     </div>
   );
