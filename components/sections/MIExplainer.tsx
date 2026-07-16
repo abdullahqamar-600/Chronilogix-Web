@@ -2,145 +2,26 @@
 
 // MIExplainer — Section 3 of the homepage.
 //
-// Sits directly below StatementV5 (which sets up "MI is how people
-// actually change") and unpacks what MI is in one composed beat:
-// heading + summary + a four-process strip with arrows between, then a
-// single CTA. Designed to fit in roughly a single viewport at desktop
-// breakpoints so the section reads as one panel rather than a long
-// scroll narrative.
+// Sits directly below StatementV5 ("MI is how people actually change")
+// and pays it off in one composed beat.
+//
+// Layout:
+//   Header row — heading left, the plain-language MI summary + white-paper
+//     CTA right. Separated from the body by space, not a rule.
+//   Body row — two open compositions on the warm ground (no framed cards):
+//     Left  (narrower) — "Anatomy of the reply": what the MI reply avoids,
+//       what it does instead, and the earned-planning close. Quiet and
+//       typographic: flat marks, sentence case, no rules or pills.
+//     Right (wider) — "MI in action": one member message, then a branch
+//       into two divergent reply panels. A cool, flat, recessive "typical
+//       chatbot" reply and a warm, raised "Chronilogix" reply, so it reads
+//       as one message answered two ways, not a single chat thread.
 
 import React, { useEffect, useRef, useState } from "react";
 import { AIOrb } from "@/components/AIOrb";
 
-const STEPS = [
-  {
-    label: "Engage",
-    skill: "Open question",
-    blurb:
-      "Build partnership. Listen first, in the member's own language.",
-    Visual: EngageVisual,
-    Icon: HandshakeIcon,
-  },
-  {
-    label: "Focus",
-    skill: "Member-led agenda",
-    blurb:
-      "Find what matters now. Short summaries keep the agenda the member's, not ours.",
-    Visual: FocusVisual,
-    Icon: TargetIcon,
-  },
-  {
-    label: "Evoke",
-    skill: "Reflective listening",
-    blurb:
-      "Draw motivation out. Reflective listening offers back precise change talk.",
-    Visual: EvokeVisual,
-    Icon: WaveIcon,
-  },
-  {
-    label: "Plan",
-    skill: "Chosen, not prescribed",
-    blurb:
-      "Translate intent into one small next step, chosen by the member.",
-    Visual: PlanVisual,
-    Icon: CheckCircleIcon,
-  },
-] as const;
-
-export function MIExplainer() {
-  return (
-    <section
-      id="motivational-interviewing"
-      className="relative overflow-hidden rounded-[28px] bg-paper-warm"
-      aria-label="Motivational Interviewing explained"
-    >
-      <div className="container-page relative z-10 py-14 md:py-20 lg:py-24">
-        {/* Heading + summary */}
-        <div className="max-w-3xl">
-          <h2
-            className="text-section font-serif font-normal text-ink"
-            style={{ textWrap: "balance" } as React.CSSProperties}
-          >
-            Motivational Interviewing explained
-          </h2>
-          <p className="mt-6 max-w-[72ch] body-prose md:mt-7">
-            Motivational Interviewing (MI) is a collaborative way of
-            speaking that moves through four processes,{" "}
-            <span className="text-ink">engage, focus, evoke, plan</span>
-            , and four micro skills called{" "}
-            <span className="text-ink">OARS</span>: open questions,
-            affirmations, reflective listening, summaries.{" "}
-            <span className="text-ink">
-              Reflective listening is the workhorse.
-            </span>
-          </p>
-        </div>
-
-        {/* Process strip — horizontal snap carousel on mobile (one card
-            per swipe with a small peek of the next, native scroll feel),
-            four-card grid with arrow connectors on md+. Mobile pattern
-            replaces a 4-card vertical stack so the section doesn't
-            sprawl over multiple viewports on small screens. */}
-        <div className="-mx-5 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-5 px-5 pb-4 [-ms-overflow-style:none] [scrollbar-width:none] md:mx-0 md:mt-12 md:grid md:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] md:items-stretch md:gap-3 md:overflow-visible md:px-0 md:pb-0 md:scroll-px-0 lg:mt-14 lg:gap-4 [&::-webkit-scrollbar]:hidden">
-          {STEPS.map((step, i) => (
-            <React.Fragment key={step.label}>
-              <ProcessCard step={step} index={i} />
-              {i < STEPS.length - 1 ? <ProcessArrow /> : null}
-            </React.Fragment>
-          ))}
-        </div>
-
-        {/* Mobile-only swipe hint — matches the cadence used in the
-            Problem section so the carousel reads as a known pattern. */}
-        <p
-          aria-hidden
-          className="mt-3 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-ink-subtle md:hidden"
-        >
-          <span>Swipe</span>
-          <svg
-            width="20"
-            height="8"
-            viewBox="0 0 20 8"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M1 4h17M14 1l3 3-3 3" />
-          </svg>
-        </p>
-
-        <div className="mt-10 md:mt-12">
-          <a
-            href="/chronilogix-mi-whitepaper.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary group/mi-cta"
-          >
-            Read the full white paper
-            <Arrow />
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ProcessCard({
-  step,
-  index,
-}: {
-  step: {
-    label: string;
-    skill: string;
-    blurb: string;
-    Visual: React.ComponentType<{ active: boolean }>;
-    Icon: React.ComponentType<{ className?: string }>;
-  };
-  index: number;
-}) {
-  const ref = useRef<HTMLElement | null>(null);
+function useInView<T extends HTMLElement>(threshold = 0.15) {
+  const ref = useRef<T | null>(null);
   const [inView, setInView] = useState(false);
 
   useEffect(() => {
@@ -154,418 +35,498 @@ function ProcessCard({
           io.disconnect();
         }
       },
-      { threshold: 0.2, rootMargin: "0px 0px -10% 0px" },
+      { threshold, rootMargin: "0px 0px -10% 0px" },
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [inView]);
+  }, [inView, threshold]);
 
-  const { Visual, Icon } = step;
-  const ordinal = String(index + 1).padStart(2, "0");
-  const staggerMs = index * 110;
+  return { ref, inView };
+}
+
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
+    const on = () => setReduced(mq.matches);
+    mq.addEventListener?.("change", on);
+    return () => mq.removeEventListener?.("change", on);
+  }, []);
+  return reduced;
+}
+
+// Staggered rise on the section's ease-out curve. Motion-reduced visitors
+// get everything statically; if the observer never fires, JS still resolves
+// inView so content is not trapped at opacity 0.
+function makeReveal(inView: boolean, reduced: boolean) {
+  return (delay: number): React.CSSProperties =>
+    reduced
+      ? {}
+      : {
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(10px)",
+          transition: `opacity 620ms cubic-bezier(0.22, 0.61, 0.36, 1) ${delay}ms, transform 620ms cubic-bezier(0.22, 0.61, 0.36, 1) ${delay}ms`,
+        };
+}
+
+// Matched frame for both blocks — bordered paper on the warm ground with
+// a soft elevation. The good "block design"; restored after an over-eager
+// flatten. A warm brand light in the upper-left is the shared signature.
+const FRAME =
+  "relative overflow-hidden rounded-[24px] border border-ink/[0.08] bg-paper";
+
+function FrameWash() {
   return (
-    <article
-      ref={ref}
-      className="flex shrink-0 basis-[82%] snap-center flex-col md:basis-auto md:shrink"
-    >
-      <div
-        className="relative aspect-square overflow-hidden rounded-2xl bg-white"
-        style={{
-          opacity: inView ? 1 : 0,
-          transform: inView ? "translateY(0)" : "translateY(16px)",
-          transition: `opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1) ${staggerMs}ms, transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1) ${staggerMs}ms`,
-        }}
-      >
-        <Visual active={inView} />
-        {/* Step ordinal — sits as a small editorial marker in the
-            corner of each illustration. Reinforces the four-step
-            sequence without claiming label space below. */}
-        <span className="pointer-events-none absolute left-3 top-3 font-mono text-[10px] font-medium tabular-nums tracking-[0.1em] text-ink-subtle">
-          {ordinal}
-        </span>
-        {/* Skill chip — names the OARS technique the card demonstrates.
-            Right-corner counterweight to the ordinal, so the reader
-            can pattern-match "which MI move am I seeing here." */}
-        <span
-          className="pointer-events-none absolute right-3 top-3 rounded-full bg-white/85 px-2 py-[3px] text-[9.5px] font-medium uppercase tracking-[0.08em] text-brand-700 ring-1 ring-brand-600/20 backdrop-blur-sm"
-          style={{
-            opacity: inView ? 1 : 0,
-            transition: `opacity 500ms cubic-bezier(0.22, 0.61, 0.36, 1) ${staggerMs + 360}ms`,
-          }}
-        >
-          {step.skill}
-        </span>
-      </div>
+    <span
+      aria-hidden
+      className="pointer-events-none absolute inset-0"
+      style={{
+        background:
+          "radial-gradient(70% 55% at 0% 0%, rgba(249, 144, 77, 0.09) 0%, rgba(249, 144, 77, 0) 68%)",
+      }}
+    />
+  );
+}
 
-      <div
-        className="mt-4 md:mt-5"
-        style={{
-          opacity: inView ? 1 : 0,
-          transform: inView ? "translateY(0)" : "translateY(8px)",
-          transition: `opacity 600ms cubic-bezier(0.22, 0.61, 0.36, 1) ${staggerMs + 180}ms, transform 600ms cubic-bezier(0.22, 0.61, 0.36, 1) ${staggerMs + 180}ms`,
-        }}
-      >
-        <div className="flex items-center gap-2.5">
-          <Icon className="h-[18px] w-[18px] text-brand-600 md:h-[20px] md:w-[20px]" />
-          <p className="font-serif text-[19px] font-normal leading-none text-ink md:text-[20px]">
-            {step.label}
+export function MIExplainer() {
+  return (
+    <section
+      id="motivational-interviewing"
+      className="relative overflow-hidden rounded-[28px] bg-paper-warm"
+      aria-label="Motivational Interviewing explained"
+    >
+      <div className="container-page relative z-10 py-20 md:py-28 lg:py-36">
+        {/* Header — heading + CTA left, summary right, tops aligned. */}
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:items-start lg:gap-16">
+          <div>
+            <h2
+              className="text-section font-serif font-normal text-ink"
+              style={{ textWrap: "balance" } as React.CSSProperties}
+            >
+              Motivational Interviewing explained
+            </h2>
+            <a
+              href="/chronilogix-mi-whitepaper.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary group/mi-cta mt-7 md:mt-8"
+            >
+              Read the full white paper
+              <Arrow />
+            </a>
+          </div>
+          <p className="body-prose max-w-[54ch]">
+            Motivational Interviewing (MI) is a collaborative way of
+            speaking that moves through four processes,{" "}
+            <span className="text-ink">engage, focus, evoke, plan</span>
+            , and four micro skills called{" "}
+            <span className="text-ink">OARS</span>: open questions,
+            affirmations, reflective listening, summaries.{" "}
+            <span className="text-ink">
+              Reflective listening is the workhorse.
+            </span>
           </p>
         </div>
-        <p className="mt-2.5 max-w-[34ch] text-[13.5px] leading-snug text-ink-soft md:text-sm">
-          {step.blurb}
-        </p>
-      </div>
-    </article>
-  );
-}
 
-// Connector between process cards — hairline with a brand-tinted dot
-// terminator on md+, hidden on mobile where the strip stacks
-// vertically. Reads as quiet directional flow rather than a loud
-// chevron stamp.
-function ProcessArrow() {
-  return (
-    <div
-      aria-hidden
-      className="hidden items-center justify-center md:flex"
-      style={{ alignSelf: "start", paddingTop: "min(8vw, 92px)" }}
-    >
-      <svg
-        width="34"
-        height="10"
-        viewBox="0 0 34 10"
-        fill="none"
-        className="text-ink/25"
-      >
-        <line
-          x1="0"
-          y1="5"
-          x2="26"
-          y2="5"
-          stroke="currentColor"
-          strokeWidth="1"
-          strokeLinecap="round"
-        />
-        <circle cx="30" cy="5" r="2.5" className="fill-brand-600/70" />
-      </svg>
-    </div>
-  );
-}
-
-/* ── Step 1 — Engage ────────────────────────────────────────────────────── */
-
-function EngageVisual({ active }: { active: boolean }) {
-  const playState = active ? "running" : "paused";
-  return (
-    <div className="absolute inset-0">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/card-1-bg.jpg"
-        alt=""
-        className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-paper/65 via-paper/55 to-paper/70" />
-      <div className="relative flex h-full flex-col justify-center gap-2.5 p-4 md:p-5">
-        <div
-          className="relative flex max-w-[92%] items-start gap-2 self-start"
-          style={{
-            animation: "fadeUp 600ms ease-out 200ms forwards",
-            animationPlayState: playState,
-            opacity: 0,
-          }}
-        >
-          <span className="mt-1.5">
-            <AIOrb size={14} />
-          </span>
-          <div className="surface-glass relative overflow-hidden rounded-[14px] rounded-bl-[6px] px-3 py-2 text-[11.5px] leading-snug text-ink">
-            <span
-              aria-hidden
-              className="surface-glass-shine absolute inset-x-0 top-0 h-1/2 rounded-t-[14px]"
-            />
-            <span className="relative">
-              Mind if we just talk for a minute?
-            </span>
-          </div>
-        </div>
-        <div
-          className="surface-glass-inner relative max-w-[78%] self-end overflow-hidden rounded-[14px] rounded-br-[6px] px-3 py-2 font-serif text-[11.5px] italic leading-snug text-ink"
-          style={{
-            animation: "fadeUp 600ms ease-out 900ms forwards",
-            animationPlayState: playState,
-            opacity: 0,
-          }}
-        >
-          just had a long week.
+        {/* Body — anatomy (narrow) + the branched comparison (wide). */}
+        <div className="mt-14 grid gap-6 md:mt-16 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-stretch lg:gap-7 xl:gap-8">
+          <AnatomyColumn />
+          <ComparisonColumn />
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
-/* ── Step 2 — Focus ─────────────────────────────────────────────────────── */
+/* ── Left — anatomy of the MI-aligned reply ──────────────────────────────── */
 
-const FOCUS_TOPICS = [
-  { label: "Sleep", chosen: false },
-  { label: "Energy at work", chosen: false },
-  { label: "Relationship with Smith", chosen: true },
-  { label: "Eating habits", chosen: false },
-  { label: "Medication routine", chosen: false },
+// Copy kept short and plain, so it reads clearly for non-native speakers:
+// common words, no idioms ("piling on", "jumping to"), one idea per line.
+const AVOIDS = [
+  "Treating the setback as unimportant",
+  "Adding blame or pressure",
+  "Rushing into a new plan",
 ];
 
-function FocusVisual({ active }: { active: boolean }) {
-  const playState = active ? "running" : "paused";
-  return (
-    <div className="absolute inset-0">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/pattern.png"
-        alt=""
-        className="absolute left-0 top-0 h-full w-auto max-w-none scale-110 select-none blur-md"
-        draggable={false}
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-gradient-to-b from-paper-warm/70 via-paper-warm/60 to-paper-warm/75"
-      />
-      <div className="relative flex h-full items-center justify-center p-4 md:p-5">
-        <figure
-          className="relative w-full max-w-[200px] rounded-[14px] bg-white/95 p-3 shadow-[0_18px_40px_-14px_rgba(40,25,15,0.22),0_2px_8px_-2px_rgba(40,25,15,0.08)] ring-1 ring-ink/[0.04]"
-          style={{
-            animation: "fadeUp 600ms ease-out 120ms forwards",
-            animationPlayState: playState,
-            opacity: 0,
-          }}
-        >
-          <p className="text-[8.5px] uppercase tracking-[0.08em] text-ink-muted">
-            Maria · today
-          </p>
-          <p className="mt-0.5 text-[11px] font-medium text-ink">
-            What she could bring
-          </p>
-          <ul className="mt-2 space-y-[5px]">
-            {FOCUS_TOPICS.map((t, i) => (
-              <li
-                key={t.label}
-                className={`flex items-center gap-1.5 rounded-md px-1.5 py-0.5 text-[10.5px] leading-snug ${
-                  t.chosen ? "bg-brand-50 text-ink" : "text-ink-muted"
-                }`}
-                style={{
-                  animation: `fadeUp 360ms ease-out ${360 + i * 110}ms forwards`,
-                  animationPlayState: playState,
-                  opacity: 0,
-                }}
-              >
-                <span
-                  aria-hidden
-                  className={`inline-block h-[5px] w-[5px] shrink-0 rounded-full ${
-                    t.chosen ? "bg-brand-600" : "bg-ink/20"
-                  }`}
-                />
-                <span className={t.chosen ? "font-medium" : ""}>{t.label}</span>
-              </li>
-            ))}
-          </ul>
-        </figure>
-      </div>
-    </div>
-  );
-}
+const MOVES: { text: React.ReactNode }[] = [
+  { text: "Names what happened, without judging" },
+  {
+    text: (
+      <>
+        Notices that he came back,{" "}
+        <span className="text-brand-800">an early sign of change</span>
+      </>
+    ),
+  },
+  { text: "Asks what first motivated him" },
+];
 
-/* ── Step 3 — Evoke ─────────────────────────────────────────────────────── */
+function AnatomyColumn() {
+  const { ref, inView } = useInView<HTMLDivElement>(0.2);
+  const reduced = usePrefersReducedMotion();
+  const reveal = makeReveal(inView, reduced);
 
-function EvokeVisual({ active }: { active: boolean }) {
-  const playState = active ? "running" : "paused";
   return (
-    <div className="absolute inset-0">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/card-3-bg.jpg"
-        alt=""
-        className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-paper/65 via-paper/55 to-paper/70" />
-      <div className="relative flex h-full flex-col justify-center gap-2.5 p-4 md:p-5">
-        <div
-          className="surface-glass-inner relative max-w-[78%] self-end overflow-hidden rounded-[14px] rounded-br-[6px] px-3 py-2 font-serif text-[11.5px] italic leading-snug text-ink"
-          style={{
-            animation: "fadeUp 600ms ease-out 200ms forwards",
-            animationPlayState: playState,
-            opacity: 0,
-          }}
-        >
-          i feel invisible in it.
-        </div>
-        <div
-          className="relative flex max-w-[92%] items-start gap-2 self-start"
-          style={{
-            animation: "fadeUp 600ms ease-out 900ms forwards",
-            animationPlayState: playState,
-            opacity: 0,
-          }}
-        >
-          <span className="mt-1.5">
-            <AIOrb size={14} />
-          </span>
-          <div className="surface-glass relative overflow-hidden rounded-[14px] rounded-bl-[6px] px-3 py-2 text-[11.5px] leading-snug text-ink">
-            <span
-              aria-hidden
-              className="surface-glass-shine absolute inset-x-0 top-0 h-1/2 rounded-t-[14px]"
-            />
-            <span className="relative">
-              Invisible to someone you&rsquo;re still showing up for.
-            </span>
+    <div ref={ref} className="flex flex-col">
+      <p className="text-[13px] font-medium text-ink-muted">
+        How the reply works
+      </p>
+
+      <div className={`${FRAME} mt-4 flex flex-1 flex-col p-6 md:p-8`}>
+        <FrameWash />
+        <div className="relative flex flex-1 flex-col justify-center">
+          {/* Quiet register — what the reply deliberately holds back. Set
+              small and muted so it recedes beneath the focal group below. */}
+          <div style={reveal(0)}>
+            <GroupLabel tone="mute">What it avoids</GroupLabel>
+            <ul className="mt-2.5 space-y-1.5">
+              {AVOIDS.map((item, i) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-2.5 text-[13.5px] leading-snug text-ink-muted"
+                  style={reveal(70 + i * 70)}
+                >
+                  <Mark kind="x" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
-/* ── Step 4 — Plan ──────────────────────────────────────────────────────── */
+          {/* Focal register — what the reply actually does. Larger, airier,
+              full-ink, so the eye settles here. */}
+          <div className="mt-8" style={reveal(300)}>
+            <GroupLabel tone="brand">What it does instead</GroupLabel>
+            <ul className="mt-4 space-y-4">
+              {MOVES.map((item, i) => (
+                <li
+                  key={i}
+                  className="flex items-start gap-3 text-[15.5px] leading-relaxed text-ink"
+                  style={reveal(370 + i * 70)}
+                >
+                  <Mark kind="check" />
+                  <span>{item.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-function PlanVisual({ active }: { active: boolean }) {
-  const playState = active ? "running" : "paused";
-  return (
-    <div className="absolute inset-0">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/card-1-bg.jpg"
-        alt=""
-        className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-paper/65 via-paper/55 to-paper/70" />
-      <div className="relative flex h-full items-center justify-center p-4 md:p-5">
-        <figure
-          className="surface-glass relative w-full max-w-[200px] overflow-hidden rounded-[14px] p-3.5"
-          style={{
-            animation: "fadeUp 600ms ease-out 120ms forwards",
-            animationPlayState: playState,
-            opacity: 0,
-          }}
-        >
-          <span
-            aria-hidden
-            className="surface-glass-shine absolute inset-x-0 top-0 h-[42%] rounded-t-[14px]"
-          />
-          <p className="relative text-[8.5px] uppercase tracking-[0.08em] text-ink-muted">
-            Maria · tomorrow night
-          </p>
-          <p className="relative mt-0.5 text-[11px] font-medium text-ink">
-            Her next step
-          </p>
+          {/* Earned-planning close — set in serif to land as the block's
+              resolving thought, distinct from the sans body above. */}
           <p
-            className="relative mt-2 font-serif text-[14px] leading-[1.22] tracking-tight text-ink md:text-[15px]"
-            style={{
-              animation: "fadeUp 700ms ease-out 480ms forwards",
-              animationPlayState: playState,
-              opacity: 0,
-            }}
+            className="mt-9 font-serif text-[17px] leading-snug text-ink-soft"
+            style={reveal(640)}
           >
-            Text Smith one honest line before bed.
+            Planning comes next, when he is{" "}
+            <span className="text-brand-800">ready</span>, not before.
           </p>
-          <div
-            className="relative mt-3 flex items-center gap-1.5 text-[10.5px] text-ink-soft"
-            style={{
-              animation: "fadeUp 500ms ease-out 1200ms forwards",
-              animationPlayState: playState,
-              opacity: 0,
-            }}
-          >
-            <span
-              aria-hidden
-              className="flex h-[14px] w-[14px] items-center justify-center rounded-full bg-brand-600/15 text-brand-700"
-            >
-              <svg
-                className="h-[8px] w-[8px]"
-                viewBox="0 0 8 8"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M1.6 4.2 L3.4 5.8 L6.6 2.4" />
-              </svg>
-            </span>
-            <span>Chosen by Maria, not prescribed.</span>
-          </div>
-        </figure>
+        </div>
       </div>
     </div>
   );
 }
 
-/* ── Icons ──────────────────────────────────────────────────────────────── */
-
-function HandshakeIcon({ className }: { className?: string }) {
+function GroupLabel({
+  tone,
+  children,
+}: {
+  tone: "mute" | "brand";
+  children: React.ReactNode;
+}) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 18 18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
+    <span
+      className={`block font-semibold ${
+        tone === "brand"
+          ? "text-[13px] text-brand-800"
+          : "text-[12px] text-ink-muted"
+      }`}
     >
-      <path d="M2.5 10.5 6 7l2 1.5 2-2 3.5 3.5" />
-      <path d="M5.5 13.5 9 10l3 3" />
-      <path d="M15.5 7.5 12 11" />
-    </svg>
+      {children}
+    </span>
   );
 }
 
-function TargetIcon({ className }: { className?: string }) {
+/* ── Right — the conversation, animated so the contrast is felt ──────────────
+   Plays once in view: greeting, the member's message, then the generic
+   assistant reply. A beat later Chronilogix's reply slides up onto the top
+   of the stack and the generic reply dulls behind it, so the visitor sees
+   Chronilogix decline to answer the way a generic chatbot would. ─────────── */
+
+function ComparisonColumn() {
+  const { ref, inView } = useInView<HTMLDivElement>(0.2);
+  const reduced = usePrefersReducedMotion();
+
+  // Play steps: 1 greeting · 2 member · 3 generic reply · 4 Chronilogix reply
+  // slides in on top + generic reply recedes.
+  const [step, setStep] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    if (reduced) {
+      setStep(5);
+      return;
+    }
+    const timers = [
+      setTimeout(() => setStep(1), 250),
+      setTimeout(() => setStep(2), 1050),
+      setTimeout(() => setStep(3), 1950),
+      setTimeout(() => setStep(4), 3100),
+      setTimeout(() => setStep(5), 4200),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [inView, reduced]);
+
+  const EASE = "cubic-bezier(0.22, 0.61, 0.36, 1)";
+
+  const rise = (n: number): React.CSSProperties =>
+    reduced
+      ? {}
+      : {
+          opacity: step >= n ? 1 : 0,
+          transform: step >= n ? "translateY(0)" : "translateY(12px)",
+          transition: `opacity 520ms ${EASE}, transform 520ms ${EASE}`,
+        };
+
+  // Generic reply: lands at step 3, then recedes behind Chronilogix's reply
+  // at step 4. Dulled but still legible (0.55 + desaturated, nudged up and
+  // back), so it reads as deliberately set aside, not broken.
+  const genericStyle: React.CSSProperties = reduced
+    ? { opacity: 0.55, filter: "grayscale(0.5)", transform: "scale(0.965)" }
+    : {
+        opacity: step < 3 ? 0 : step >= 4 ? 0.55 : 1,
+        filter: step >= 4 ? "grayscale(0.5)" : "grayscale(0)",
+        transform:
+          step < 3
+            ? "translateY(12px)"
+            : step >= 4
+              ? "translateY(-8px) scale(0.965)"
+              : "translateY(0)",
+        transformOrigin: "left top",
+        transition: `opacity 560ms ${EASE}, transform 560ms ${EASE}, filter 560ms ${EASE}`,
+      };
+
+  // Chronilogix reply: rises onto the top of the stack at step 4.
+  const chronoStyle: React.CSSProperties = reduced
+    ? {}
+    : {
+        opacity: step >= 4 ? 1 : 0,
+        transform: step >= 4 ? "translateY(0)" : "translateY(26px)",
+        transition: `opacity 620ms ${EASE}, transform 620ms ${EASE}`,
+      };
+
   return (
-    <svg
-      className={className}
-      viewBox="0 0 18 18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <circle cx="9" cy="9" r="6.5" />
-      <circle cx="9" cy="9" r="3.2" />
-      <circle cx="9" cy="9" r="0.9" fill="currentColor" stroke="none" />
-    </svg>
+    <div ref={ref} className="flex flex-col">
+      <p className="text-[13px] font-medium text-ink-muted">MI in action</p>
+
+      <div
+        role="group"
+        aria-label="A coaching conversation: after the member describes a two-week lapse, a generic assistant reply is replaced by how Chronilogix actually replies"
+        className={`${FRAME} mt-4 flex flex-1 flex-col justify-center p-6 md:p-8 lg:min-h-[540px] lg:p-10`}
+      >
+        {/* Dulled background texture, kept well behind the text. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/card-3-bg.jpg"
+          alt=""
+          aria-hidden
+          className="absolute inset-0 h-full w-full scale-110 object-cover blur-lg"
+        />
+        <div aria-hidden className="absolute inset-0 bg-paper/[0.86]" />
+
+        <div className="relative">
+          {/* Setup exchange. */}
+          <div className="space-y-4 md:space-y-5">
+            <div style={rise(1)}>
+              <ChatBubble side="coach">
+                Hi James &mdash; it&rsquo;s been about ten days since we last
+                talked. Welcome back. What&rsquo;s been on your mind about the
+                eating plan?
+              </ChatBubble>
+            </div>
+            <div style={rise(2)}>
+              <ChatBubble side="member">
+                I fell off it for two weeks. Work blew up and I just gave up.
+              </ChatBubble>
+            </div>
+          </div>
+
+          {/* The reply — the generic answer lands first, then Chronilogix's
+              reply rises on top of it (after a short typing beat) while the
+              generic answer dulls and recedes behind. */}
+          <div className="mt-5 md:mt-6">
+            <div className="relative z-[5]" style={genericStyle}>
+              <GenericReply dismissed={step >= 4} />
+            </div>
+            <div
+              className="relative z-10 -mt-10 md:-mt-12"
+              style={chronoStyle}
+            >
+              <ChronilogixReply typing={step < 5} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
-function WaveIcon({ className }: { className?: string }) {
+// Setup bubbles, same chat design as before: the coach sits left behind the
+// AI orb, the member sits right in a filled ink bubble. No drop shadow.
+function ChatBubble({
+  side,
+  children,
+}: {
+  side: "coach" | "member";
+  children: React.ReactNode;
+}) {
+  if (side === "coach") {
+    return (
+      <div className="flex items-start gap-3">
+        <span className="mt-1 shrink-0">
+          <AIOrb size={22} />
+        </span>
+        <p className="max-w-[32rem] rounded-2xl rounded-tl-md bg-white px-4 py-3 text-[14.5px] leading-relaxed text-ink ring-1 ring-ink/[0.06]">
+          {children}
+        </p>
+      </div>
+    );
+  }
   return (
-    <svg
-      className={className}
-      viewBox="0 0 18 18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M2 9c1.5-2.5 3-2.5 4.5 0S9.5 11.5 11 9s3-2.5 4.5 0" />
-    </svg>
+    <div className="flex justify-end">
+      <p className="max-w-[30rem] rounded-2xl rounded-tr-md bg-ink px-4 py-3 text-[14.5px] leading-relaxed text-white/95">
+        {children}
+      </p>
+    </div>
   );
 }
 
-function CheckCircleIcon({ className }: { className?: string }) {
+// The generic assistant's reply — neutral grey mark, muted body. When
+// Chronilogix's reply lands on top, this is dismissed: a short caption states
+// in plain text that a generic bot stops here, so the point survives even
+// with motion off (it is not carried by the fade alone).
+function GenericReply({ dismissed }: { dismissed: boolean }) {
+  return (
+    <div className="flex items-start gap-3">
+      <span className="mt-1 shrink-0">
+        <GenericAvatar />
+      </span>
+      <div className="min-w-0 max-w-[34rem]">
+        <p className="text-[12px] font-medium text-ink-muted">
+          A generic assistant
+        </p>
+        {dismissed ? (
+          <p className="mt-0.5 text-[11.5px] italic text-ink-muted">
+            Where a generic bot stops.
+          </p>
+        ) : null}
+        <p className="mt-1.5 rounded-2xl rounded-tl-md bg-white px-4 py-3 text-[14px] leading-relaxed text-ink-muted ring-1 ring-ink/[0.07]">
+          No worries! Let&rsquo;s get you back on track. Try logging three
+          meals today.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Chronilogix's reply. Rises onto the top of the stack. It first shows a
+// short typing beat — a generic bot fires instantly, Chronilogix takes a
+// considered moment — then resolves into the MI-aligned reply. Elevation is
+// carried by a firmer ring and a bright inner top edge, never a drop shadow.
+function ChronilogixReply({ typing }: { typing: boolean }) {
+  return (
+    <div className="flex items-start gap-3">
+      <span className="mt-1 shrink-0">
+        <AIOrb size={22} />
+      </span>
+      <div className="min-w-0 max-w-[34rem]">
+        <p className="mb-1.5 text-[12px] font-medium text-ink">Chronilogix</p>
+        <div className="rounded-2xl rounded-tl-md bg-brand-50 px-4 py-3 text-[14.5px] leading-relaxed text-ink ring-1 ring-brand-600/35 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+          {typing ? (
+            <TypingDots />
+          ) : (
+            <>
+              Two stressful weeks where the plan got pushed aside &mdash;
+              that&rsquo;s pretty common when work goes sideways. You came back
+              to this conversation, which suggests it still matters to you.
+              When you think about why you started this back in February, what
+              comes up?
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Three-dot typing indicator — the considered beat before Chronilogix's
+// reply. Uses the shared loaderDot keyframe.
+function TypingDots() {
+  return (
+    <span
+      role="status"
+      aria-label="Chronilogix is typing"
+      className="inline-flex items-center gap-1 py-0.5"
+    >
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          aria-hidden
+          className="h-1.5 w-1.5 rounded-full bg-brand-600/70"
+          style={{
+            animation: `loaderDot 1000ms ease-in-out ${i * 160}ms infinite`,
+          }}
+        />
+      ))}
+    </span>
+  );
+}
+
+// Neutral sender mark for the generic assistant, deliberately not the orb.
+function GenericAvatar() {
+  return (
+    <span
+      aria-hidden
+      className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-ink/[0.08] ring-1 ring-ink/[0.06]"
+    >
+      <span className="h-2 w-2 rounded-full bg-ink/30" />
+    </span>
+  );
+}
+
+/* ── Shared flat marks — shape cue for the not/yes contrast, no pills ─────── */
+
+function Mark({ kind }: { kind: "x" | "check" }) {
+  if (kind === "check") {
+    return (
+      <svg
+        aria-hidden
+        className="mt-[5px] h-4 w-4 shrink-0 text-brand-700"
+        viewBox="0 0 16 16"
+        fill="none"
+      >
+        <path
+          d="M3.5 8.5 6.5 11.5 12.5 4.5"
+          stroke="currentColor"
+          strokeWidth="1.9"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
   return (
     <svg
-      className={className}
-      viewBox="0 0 18 18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
       aria-hidden
+      className="mt-[3px] h-[15px] w-[15px] shrink-0 text-ink-muted"
+      viewBox="0 0 16 16"
+      fill="none"
     >
-      <circle cx="9" cy="9" r="6.5" />
-      <path d="M5.8 9.2 8 11.4 12.4 6.8" />
+      <path
+        d="M4.5 4.5 11.5 11.5 M11.5 4.5 4.5 11.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }

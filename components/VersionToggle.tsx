@@ -11,11 +11,10 @@ import { usePathname } from "next/navigation";
 // renumbering pass (V5 → V1, original V1 → /v3). V4 begins the "trim
 // on-page text, push detail into a shared DetailModal" iteration; the
 // first section it reworks is Problem (see ProblemV2).
+// Only V1 (the canonical home) is surfaced in the toggle now. V2–V4 still
+// exist at their routes for reference but are hidden from the preview nav.
 const VERSIONS = [
   { label: "V1", href: "/" },
-  { label: "V2", href: "/v2" },
-  { label: "V3", href: "/v3" },
-  { label: "V4", href: "/v4" },
 ] as const;
 
 export function VersionToggle() {

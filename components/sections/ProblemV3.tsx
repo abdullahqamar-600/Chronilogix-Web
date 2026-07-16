@@ -147,9 +147,14 @@ const OBSERVATIONS = [
 
 export function ProblemV3() {
   const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [extraPush, setExtraPush] = useState(0);
   const [prefersReduced, setPrefersReduced] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
+  const cardRef = useRef<HTMLButtonElement | null>(null);
+  const resolutionRef = useRef<HTMLDivElement | null>(null);
+  const extraPushRef = useRef(0);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -162,7 +167,6 @@ export function ProblemV3() {
   useEffect(() => {
     if (prefersReduced) {
       setProgress(1);
-      return;
     }
     const el = sectionRef.current;
     if (!el) return;
@@ -174,7 +178,27 @@ export function ProblemV3() {
       // Progress runs 0 → 1 as the section moves from "just entering"
       // (top at bottom of viewport) to "fully in view" (top at 0).
       const p = 1 - rect.top / vh;
-      setProgress(Math.min(1, Math.max(0, p)));
+      if (!prefersReduced) setProgress(Math.min(1, Math.max(0, p)));
+
+      // The card is anchored to the SECTION's bottom edge, but the
+      // resolution line ("AI coaches fill all of these gaps.") lives in
+      // the right column below it and isn't pinned to that same edge —
+      // so the scroll-linked translateY% can't guarantee the two never
+      // collide on its own. Measure the actual rendered gap each frame
+      // (subtracting out whatever push we already applied, to get the
+      // card's "natural" position) and top up with a plain pixel offset
+      // so its top never rises above the resolution block's bottom.
+      const cardEl = cardRef.current;
+      const resEl = resolutionRef.current;
+      if (cardEl && resEl) {
+        const cardTop = cardEl.getBoundingClientRect().top;
+        const resBottom = resEl.getBoundingClientRect().bottom;
+        const gap = 20;
+        const naturalTop = cardTop - extraPushRef.current;
+        const needed = Math.max(0, resBottom + gap - naturalTop);
+        extraPushRef.current = needed;
+        setExtraPush(needed);
+      }
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -192,11 +216,14 @@ export function ProblemV3() {
   // The peek card is anchored to the SECTION bottom edge. translateY
   // is expressed as a percentage of the card's own height. At rest
   // (progress 0) the card is pushed 70% below section-bottom so only
-  // its top ~30% (eyebrow + hero numeral) shows above the fold. At
-  // in-view (progress 1) it eases up to 30% below — the bulk of the
-  // card is now visible with the CTA sitting inside the section.
-  const translateY = prefersReduced ? 30 : 70 - progress * 40; // 70% → 30%
-  const rotate = prefersReduced ? -1 : -3 + progress * 2; // -3deg → -1deg
+  // its top ~30% (eyebrow) shows above the fold. At in-view (progress
+  // 1) it eases up to 30% below — topped up by extraPush (px) so it
+  // can never rise far enough to cover the resolution line above it.
+  // Hover overrides scroll position entirely with a fixed "lifted" pose.
+  const scrollTranslateY = prefersReduced ? 30 : 70 - progress * 40; // 70% → 30%
+  const translateY = hovered ? 20 : scrollTranslateY;
+  const scrollRotate = prefersReduced ? -1 : -3 + progress * 2; // -3deg → -1deg
+  const rotate = hovered ? -0.6 : scrollRotate;
 
   return (
     <section
@@ -222,9 +249,14 @@ export function ProblemV3() {
           </div>
         </div>
 
-        {/* Right — narrative. Tightened vertical rhythm so headline +
-            two paragraphs + resolution all fit inside one viewport. */}
-        <div className="relative flex h-full flex-col justify-center px-6 py-10 md:px-14 md:py-14 lg:px-16 lg:py-16 xl:px-20">
+        {/* Right — narrative. On desktop the section is viewport-tall and
+            the peek card is anchored to the section's BOTTOM edge, so the
+            content is bottom-anchored too (lg:justify-end) with a bottom
+            padding that reserves room for the card's peek plus a small
+            gap. This keeps the space between the resolution line and the
+            card constant across viewport heights, instead of ballooning
+            on tall screens (top-anchored) or colliding with the card. */}
+        <div className="relative flex h-full flex-col justify-start px-6 py-10 md:px-14 md:py-14 lg:px-16 lg:pt-16 lg:pb-[220px] lg:justify-end xl:px-20">
           <h2
             id="problem-heading-v3"
             className="max-w-2xl text-hero font-serif font-normal text-ink"
@@ -255,7 +287,7 @@ export function ProblemV3() {
             moments that decide outcomes happen where no one is watching.
           </p>
 
-          <div className="mt-10 max-w-xl md:mt-12">
+          <div ref={resolutionRef} className="mt-10 max-w-xl md:mt-12">
             <span aria-hidden className="block h-px w-12 bg-ink/20" />
             <p className="mt-5 font-serif text-row font-normal leading-[1.15] text-ink md:mt-6">
               AI coaches fill all of these gaps.
@@ -266,54 +298,53 @@ export function ProblemV3() {
 
       {/* Peek card — anchored to the SECTION bottom edge so it rises
           out of the section's actual bottom, not partway up the right
-          column. On desktop it centers within the right column via a
-          two-column grid; on mobile it spans full width. Rounded top
-          only; the bottom sits below the section fold (clipped by
-          overflow-hidden). */}
+          column. The wrapper carries the SAME horizontal padding as the
+          right-column content above it, and the card is left-aligned to
+          match the text's left edge and width (max-w-xl) — so the card
+          reads as the natural continuation of the narrative column
+          rather than a detached, centered element. On mobile it spans
+          full width. Rounded top only; the bottom sits below the section
+          fold (clipped by overflow-hidden). */}
       <div
         aria-hidden="false"
         className="pointer-events-none absolute inset-x-0 bottom-0 lg:grid lg:grid-cols-2"
       >
         <div className="hidden lg:block" aria-hidden />
-        <div className="flex justify-center px-6 md:px-14 lg:px-16 xl:px-20">
+        <div className="flex justify-start px-6 md:px-14 lg:px-16 xl:px-20">
           <button
+            ref={cardRef}
             type="button"
             onClick={() => setOpen(true)}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            onFocus={() => setHovered(true)}
+            onBlur={() => setHovered(false)}
             aria-haspopup="dialog"
-            aria-label="See where care breaks down between visits"
-            className="peek-card pointer-events-auto group relative block w-full max-w-[540px] rounded-t-[28px] bg-paper text-left transition-transform duration-500 ease-out-expo focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/60 md:hover:[transform:translateY(20%)_rotate(-0.6deg)] motion-reduce:transition-none"
+            aria-label="See the full picture — where care breaks down between visits"
+            className="peek-card pointer-events-auto group relative block w-full max-w-xl rounded-t-[28px] bg-paper text-left transition-transform duration-500 ease-out-expo focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/60 motion-reduce:transition-none"
             style={{
-              transform: `translateY(${translateY}%) rotate(${rotate}deg)`,
+              transform: `translateY(calc(${translateY}% + ${extraPush}px)) rotate(${rotate}deg)`,
               boxShadow:
-                "0 -44px 88px -28px rgba(72,40,20,0.28), 0 -16px 36px -16px rgba(72,40,20,0.14), 0 -1px 2px rgba(15,20,25,0.04)",
+                "0 -50px 90px -40px rgba(72,40,20,0.10), 0 -18px 44px -30px rgba(72,40,20,0.06)",
               transformOrigin: "50% 100%",
             }}
           >
             {/* Card interior — mirrors the top of the pop-up so the
-                visitor recognises what will open. */}
+                visitor recognises what will open. No numbered-count
+                tease here: the deep-dive isn't a fixed checklist, so
+                the eyebrow leads straight into the headline. */}
             <div className="px-7 pt-9 pb-8 md:px-11 md:pt-12 md:pb-10">
               <p className="eyebrow">The problem, in detail</p>
 
-              <div className="mt-5 flex items-baseline gap-5 md:mt-6 md:gap-6">
-                <p className="font-serif text-stat-md font-normal leading-none text-ink">
-                  6
-                </p>
-                <p className="max-w-[22ch] font-serif text-[13.5px] italic leading-[1.4] text-ink-muted md:text-[14.5px]">
-                  places where the system quietly fails
-                </p>
-              </div>
-
               <p
-                className="mt-8 max-w-[26ch] font-serif text-[22px] font-normal leading-[1.2] text-ink md:mt-9 md:text-[26px]"
+                className="mt-6 max-w-[26ch] font-serif text-[22px] font-normal leading-[1.2] text-ink md:mt-7 md:text-[26px]"
                 style={{ textWrap: "balance" } as React.CSSProperties}
               >
                 Where care breaks down between visits.
               </p>
 
               <p className="mt-7 inline-flex items-center gap-2 text-[14px] font-medium tracking-[-0.005em] text-brand-700 transition-colors group-hover:text-brand-accent md:mt-8 md:text-[15px]">
-                <span className="underline decoration-brand-700/25 underline-offset-[6px] transition-[text-decoration-color] duration-300 group-hover:decoration-brand-accent/60">
-                  See the full breakdown
-                </span>
+                <span>See the full picture</span>
               <svg
                 aria-hidden
                 width="16"
@@ -435,10 +466,10 @@ function ProblemDetailPopup({
             <p className="eyebrow">The problem, in detail</p>
             <h2
               id="problem-detail-heading"
-              className="mt-5 max-w-2xl font-serif text-[26px] font-normal leading-[1.15] text-ink md:mt-6 md:text-[32px] lg:text-[36px]"
+              className="mt-5 max-w-2xl font-serif text-[22px] font-normal leading-[1.15] text-ink md:mt-6 md:text-[27px] lg:text-[30px]"
               style={{ textWrap: "balance" } as React.CSSProperties}
             >
-              Six places where care breaks down between visits.
+              Where care breaks down between visits.
             </h2>
 
             {/* Observations — qualitative patterns that frame the
@@ -485,9 +516,10 @@ function FactPanel({ index, fact }: { index: number; fact: Fact }) {
         <span aria-hidden className="block h-px w-8 bg-ink/10" />
       </div>
 
-      {/* Hero numeral */}
+      {/* Hero numeral — sized down from V1's text-stat-lg so the metrics
+          sit comfortably within the pop-up's narrower measure. */}
       <div className="mt-5 flex items-baseline gap-3">
-        <span className="font-serif text-stat-lg font-normal text-ink">
+        <span className="font-serif text-stat-md font-normal text-ink">
           {fact.lead}
         </span>
         {fact.unit ? (
