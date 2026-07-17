@@ -199,7 +199,7 @@ const RESOURCES_MENU: MegaMenu = {
     heading: "Featured Articles",
     articles: [
       {
-        href: "/resources/blog/rooney-ai-clinical-coaching",
+        href: "/resources/blog/inside-rooney-ai-clinical-grade-coaching-at-scale",
         title: "Inside Rooney AI: clinical grade coaching at scale",
         tag: "Insight",
         readTime: "5 min read",
@@ -207,7 +207,7 @@ const RESOURCES_MENU: MegaMenu = {
         eyebrow: "Rooney AI",
       },
       {
-        href: "/resources/blog/motivational-interviewing-at-scale",
+        href: "/resources/blog/motivational-interviewing-engineered-for-every-member",
         title: "Motivational Interviewing, engineered for every member",
         tag: "Research",
         readTime: "4 min read",

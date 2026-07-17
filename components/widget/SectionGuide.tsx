@@ -57,6 +57,15 @@ const DEMO_SRC = "/video/zenn-demo.mp4";
 const DEMO_POSTER = "/video/zenn-demo-poster.jpg";
 const DEMO_RUNTIME = "4:06";
 
+// White-label framing. Zenn is a partner-branded product running the
+// Chronilogix platform, so the copy keeps Chronilogix the subject and
+// casts Zenn as the surface you're watching it through. Without this, a
+// first-time visitor could mistake Zenn for the product being sold.
+const DEMO_EYEBROW = "Live demo";
+const DEMO_TITLE = "See Chronilogix, white-labeled as Zenn";
+const DEMO_BLURB =
+  "Our platform in action, running inside a partner's own app.";
+
 // Match the site's primary motion curve (out-quart) so this widget's
 // transitions read as part of the same system.
 const RAIL_EASE = "cubic-bezier(0.22, 0.61, 0.36, 1)";
@@ -455,7 +464,7 @@ function DemoCard({ reducedMotion }: { reducedMotion: boolean }) {
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            aria-label="Play the product demo"
+            aria-label="Play the demo: Chronilogix white-labeled as Zenn"
             aria-haspopup="dialog"
             className="group relative block w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/60"
           >
@@ -483,7 +492,7 @@ function DemoCard({ reducedMotion }: { reducedMotion: boolean }) {
                 }}
               />
               <span className="absolute left-3 top-2.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/90">
-                Product demo
+                {DEMO_EYEBROW}
               </span>
               <span className="absolute bottom-2.5 right-3 rounded-full bg-ink/55 px-1.5 py-0.5 text-[10.5px] font-medium tabular-nums text-white/90 backdrop-blur-sm">
                 {DEMO_RUNTIME}
@@ -511,6 +520,19 @@ function DemoCard({ reducedMotion }: { reducedMotion: boolean }) {
               </span>
             </span>
           </button>
+
+          {/* Caption — the white-label story. Chronilogix stays the
+              subject; Zenn is named as the partner brand the demo runs
+              under, so the visitor understands they're seeing our
+              technology, not a separate product. */}
+          <div className="px-3.5 pb-3 pt-2.5">
+            <p className="text-[12.5px] font-medium leading-snug text-ink">
+              {DEMO_TITLE}
+            </p>
+            <p className="mt-1 text-[11.5px] leading-snug text-ink-soft">
+              {DEMO_BLURB}
+            </p>
+          </div>
 
           {/* Minimize — floats over the top-right corner of the poster.
               Sibling of the demo button so its clicks never open the
@@ -637,13 +659,13 @@ function DemoModal({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Product demo"
+        aria-label="Demo: Chronilogix white-labeled as Zenn"
         onClick={onClose}
         className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
       >
         <div
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-[900px] overflow-hidden rounded-[18px] bg-ink shadow-[0_40px_80px_-24px_rgba(15,20,25,0.55)]"
+          className="relative w-full max-w-[1200px] overflow-hidden rounded-[18px] bg-ink shadow-[0_40px_80px_-24px_rgba(15,20,25,0.55)]"
           style={{
             animation: reducedMotion
               ? "none"
@@ -666,6 +688,18 @@ function DemoModal({
               />
             </svg>
           </button>
+
+          {/* Header — carries the white-label framing into the player so
+              the context holds while the demo runs, not just on the launch
+              card. pr reserves room for the close button. */}
+          <div className="flex flex-col gap-1 px-5 pb-3.5 pr-14 pt-4 md:px-7 md:pb-4 md:pr-16 md:pt-5">
+            <p className="text-[15px] font-medium leading-snug text-white md:text-[17px]">
+              {DEMO_TITLE}
+            </p>
+            <p className="text-[12.5px] leading-snug text-white">
+              {DEMO_BLURB}
+            </p>
+          </div>
 
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video
