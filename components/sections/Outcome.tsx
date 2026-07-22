@@ -139,9 +139,8 @@ function OutcomeIntro() {
         </h2>
 
         <p className="mt-7 max-w-[58ch] body-prose">
-          Continuous coaching between visits, when traditional care goes
-          quiet. Engagement rises, adherence improves, and avoidable
-          utilization drops.
+          Engagement rises, adherence improves, and avoidable utilization
+          drops.
         </p>
       </div>
 

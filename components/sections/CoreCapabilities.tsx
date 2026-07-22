@@ -74,7 +74,7 @@ export function CoreCapabilities() {
               Every Chronilogix reply carries it all.
             </span>
           </h2>
-          <p className="mt-5 max-w-[60ch] body-quiet">
+          <p className="mt-5 max-w-[60ch] body-prose">
             Clinical methodology, cultural and emotional reach, consistent
             delivery, and crisis safe handoffs. Engineered into every
             Chronilogix conversation, not added as features on top.
@@ -135,14 +135,20 @@ function CapabilityRow({ block, index }: { block: Block; index: number }) {
           evenly across the whole scroll distance instead of rushing to
           solid near the bottom. Full opacity by ~90% leaves a stable solid
           band flowing into the next row. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-40 hidden h-40 md:block md:-top-80 md:h-80"
-        style={{
-          background:
-            "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.03) 10%, rgba(255,255,255,0.12) 20%, rgba(255,255,255,0.26) 30%, rgba(255,255,255,0.42) 40%, rgba(255,255,255,0.58) 50%, rgba(255,255,255,0.74) 60%, rgba(255,255,255,0.87) 70%, rgba(255,255,255,0.96) 80%, rgba(255,255,255,1) 90%, rgba(255,255,255,1) 100%)",
-        }}
-      />
+      {/* No veil above the first row — there is no previous row to blend
+          into, and a veil here sweeps up over the section heading during
+          scroll (client: "cannot see the scroll"). Only rows that stack
+          onto a prior row get the seam-softening veil. */}
+      {index > 0 && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 -top-40 hidden h-40 md:block md:-top-80 md:h-80"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.03) 10%, rgba(255,255,255,0.12) 20%, rgba(255,255,255,0.26) 30%, rgba(255,255,255,0.42) 40%, rgba(255,255,255,0.58) 50%, rgba(255,255,255,0.74) 60%, rgba(255,255,255,0.87) 70%, rgba(255,255,255,0.96) 80%, rgba(255,255,255,1) 90%, rgba(255,255,255,1) 100%)",
+          }}
+        />
+      )}
 
       {/* Row body — opaque white background so each row hides the row
           beneath it as it stacks. Internal padding carries the rhythm

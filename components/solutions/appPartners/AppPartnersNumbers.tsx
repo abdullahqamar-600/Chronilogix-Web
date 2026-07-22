@@ -378,7 +378,7 @@ export function AppPartnersNumbers() {
         </div>
 
         <p className="eyebrow-subtle reveal-row mt-14 [transition-delay:700ms]">
-          Chronilogix business model &mdash; Rooney AI embedded as the
+          Chronilogix business model &mdash; Roni AI embedded as the
           coaching engine inside partner apps.
         </p>
       </div>

@@ -11,8 +11,8 @@ import { useReveal, useReducedMotion } from "@/components/hooks/useReveal";
  * things it drives, verbatim from the brief — sustained utilization,
  * adherence, and measurable real-world results.
  *
- * The "how" (24/7 Rooney AI, MI) is deliberately held back for the next
- * section (Meet Rooney AI); this beat is purely the WHAT: a coaching
+ * The "how" (24/7 Roni AI, MI) is deliberately held back for the next
+ * section (Meet Roni AI); this beat is purely the WHAT: a coaching
  * layer that sits on top of the product the vendor already ships.
  *
  * Left column: the claim, framed as an oversized statement, paid off by

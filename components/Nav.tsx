@@ -199,12 +199,12 @@ const RESOURCES_MENU: MegaMenu = {
     heading: "Featured Articles",
     articles: [
       {
-        href: "/resources/blog/inside-rooney-ai-clinical-grade-coaching-at-scale",
-        title: "Inside Rooney AI: clinical grade coaching at scale",
+        href: "/resources/blog/inside-roni-ai-clinical-grade-coaching-at-scale",
+        title: "Inside Roni AI: clinical grade coaching at scale",
         tag: "Insight",
         readTime: "5 min read",
         gradient: "from-[#1F2937] via-[#2C3D55] to-[#3F5572]",
-        eyebrow: "Rooney AI",
+        eyebrow: "Roni AI",
       },
       {
         href: "/resources/blog/motivational-interviewing-engineered-for-every-member",
@@ -552,7 +552,7 @@ export function Nav() {
                                       key={item.href}
                                       href={item.href}
                                       onClick={() => setOpen(false)}
-                                      className="text-sm text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
+                                      className="block py-1 text-sm text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
                                     >
                                       {item.label}
                                     </a>
@@ -721,7 +721,7 @@ function SolutionsMobileMenu({
             key={persona.key}
             href={persona.href}
             onClick={onClose}
-            className="text-sm text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
+            className="block py-1 text-sm text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
           >
             {persona.label}
           </a>
@@ -736,7 +736,7 @@ function SolutionsMobileMenu({
             key={persona.key}
             type="button"
             onClick={() => onOpenPersona(persona.key)}
-            className="text-left text-sm text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
+            className="block py-1 text-left text-sm text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
           >
             {persona.label}
           </button>

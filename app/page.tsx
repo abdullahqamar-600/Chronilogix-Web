@@ -7,7 +7,6 @@ import { HeroV5 } from "@/components/sections/HeroV5";
 import { StatementV5 } from "@/components/sections/StatementV5";
 import { MIExplainer } from "@/components/sections/MIExplainer";
 import { ProblemV3 } from "@/components/sections/ProblemV3";
-import { Outcome } from "@/components/sections/Outcome";
 import { Solution } from "@/components/sections/Solution";
 import { WhoWeServe } from "@/components/sections/WhoWeServe";
 import { AetnaProof } from "@/components/sections/CustomerStories";
@@ -35,16 +34,19 @@ export default function HomePage() {
         </div>
         <div className="flex flex-col">
           <ProblemV3 />
-          <Outcome />
+        </div>
+        {/* Field proof sits directly beneath the Problem — name the gap,
+            then show the evidence that closing it works. Same rounded-card
+            layout as the Solution section (two side-by-side proof cards). */}
+        <div className="flex flex-col gap-2 p-2 md:gap-3 md:p-3">
+          <AetnaProof />
+        </div>
+        <div className="flex flex-col">
           <WhoWeServe />
         </div>
         <div className="flex flex-col gap-2 p-2 md:gap-3 md:p-3">
-          {/* Aetna field proof + testimonials read as one continuous cream
-              panel: wrapped flush (no gap) and clipped to a single rounded
-              frame so the field proof flows straight into the member
-              voices. */}
+          {/* Member voices close the page. */}
           <div className="flex flex-col overflow-hidden rounded-[28px]">
-            <AetnaProof />
             <Testimonials />
           </div>
         </div>

@@ -71,7 +71,7 @@ export const content: ArticleContent = {
     },
     {
       type: "para",
-      text: "The warmth in Chronilogix is not improvised. It comes from Rooney AI, the engine inside the platform, which operationalizes Dr. Ken Resnicow’s thirty-plus years of NIH-funded Motivational Interviewing research. MI is a disciplined method — it works precisely because it is bounded, non-judgmental, and consistent. Those same properties are what make it safe to deploy at scale. A rigorous method and a rigorous privacy posture are not competing constraints; they are two expressions of the same respect for the person on the other side of the conversation.",
+      text: "The warmth in Chronilogix is not improvised. It comes from Roni AI, the engine inside the platform, which operationalizes Dr. Ken Resnicow’s thirty-plus years of NIH-funded Motivational Interviewing research. MI is a disciplined method — it works precisely because it is bounded, non-judgmental, and consistent. Those same properties are what make it safe to deploy at scale. A rigorous method and a rigorous privacy posture are not competing constraints; they are two expressions of the same respect for the person on the other side of the conversation.",
     },
     {
       type: "stat",

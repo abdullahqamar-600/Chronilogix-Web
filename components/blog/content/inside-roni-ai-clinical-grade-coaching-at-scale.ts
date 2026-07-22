@@ -1,12 +1,12 @@
 import type { ArticleContent } from "../article-types";
 
 export const content: ArticleContent = {
-  slug: "inside-rooney-ai-clinical-grade-coaching-at-scale",
+  slug: "inside-roni-ai-clinical-grade-coaching-at-scale",
   dek: "Chronilogix delivers evidence-based Motivational Interviewing to entire populations, around the clock. Here is what \"clinical grade\" means when the coach is an engine, and how the method behind three decades of research becomes every conversation.",
   blocks: [
     {
       type: "para",
-      text: "Behavioral health has never suffered from a shortage of good methods. It suffers from a shortage of people trained to deliver them. Motivational Interviewing works, the evidence has been settled for years, but a technique only helps the members who actually reach a skilled coach on the day they are ready to talk. Chronilogix was built to close that gap, and Rooney AI is the engine that makes it possible: a way to deliver the same disciplined, evidence-based coaching to an entire population, at three in the morning as reliably as at three in the afternoon.",
+      text: "Behavioral health has never suffered from a shortage of good methods. It suffers from a shortage of people trained to deliver them. Motivational Interviewing works, the evidence has been settled for years, but a technique only helps the members who actually reach a skilled coach on the day they are ready to talk. Chronilogix was built to close that gap, and Roni AI is the engine that makes it possible: a way to deliver the same disciplined, evidence-based coaching to an entire population, at three in the morning as reliably as at three in the afternoon.",
     },
     {
       type: "heading",
@@ -26,7 +26,7 @@ export const content: ArticleContent = {
     },
     {
       type: "para",
-      text: "The method inside Chronilogix is not a generic chatbot personality tuned to sound warm. It is Motivational Interviewing as codified across more than thirty years of NIH-funded research by Dr. Ken Resnicow, one of the field's foremost authorities, operationalized into the behavior of the engine. MI is a structured clinical discipline with recognizable moves, and those moves are what Rooney AI is built to execute.",
+      text: "The method inside Chronilogix is not a generic chatbot personality tuned to sound warm. It is Motivational Interviewing as codified across more than thirty years of NIH-funded research by Dr. Ken Resnicow, one of the field's foremost authorities, operationalized into the behavior of the engine. MI is a structured clinical discipline with recognizable moves, and those moves are what Roni AI is built to execute.",
     },
     {
       type: "para",
@@ -108,7 +108,7 @@ export const content: ArticleContent = {
     },
     {
       type: "para",
-      text: "Rooney AI takes that result and removes the ceiling on it. The lift no longer depends on how many coaches a plan can hire, train, and retain. It depends on the method, and the method is now available every hour to every member who opens a conversation.",
+      text: "Roni AI takes that result and removes the ceiling on it. The lift no longer depends on how many coaches a plan can hire, train, and retain. It depends on the method, and the method is now available every hour to every member who opens a conversation.",
     },
     {
       type: "para",

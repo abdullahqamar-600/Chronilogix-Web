@@ -72,7 +72,7 @@ export const content: ArticleContent = {
     },
     {
       type: "para",
-      text: "Encoding that discipline into software is precisely what makes 24/7 feasible without sacrificing fidelity. Rooney AI, the engine inside Chronilogix, is built to hold every exchange to MI method — reflective listening, evocation, and rolling with resistance — so a member gets a genuinely on-method conversation whether they open the app at breakfast or at 3am. The consistency that human coaching cannot guarantee across shifts is the thing an engineered method delivers by design.",
+      text: "Encoding that discipline into software is precisely what makes 24/7 feasible without sacrificing fidelity. Roni AI, the engine inside Chronilogix, is built to hold every exchange to MI method — reflective listening, evocation, and rolling with resistance — so a member gets a genuinely on-method conversation whether they open the app at breakfast or at 3am. The consistency that human coaching cannot guarantee across shifts is the thing an engineered method delivers by design.",
     },
     {
       type: "callout",

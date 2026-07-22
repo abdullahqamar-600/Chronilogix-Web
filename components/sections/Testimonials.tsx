@@ -132,10 +132,10 @@ export function Testimonials() {
             and gets out of the carousel's way. The h2 stays in the DOM as
             sr-only so screen readers still announce the section. */}
         <h2 id="testimonials-heading" className="sr-only">
-          What members are saying after their first sessions
+          What members are saying about Chronilogix AI Coaching
         </h2>
         <p className="eyebrow reveal-row text-center">
-          What members are saying after their first sessions
+          What members are saying about Chronilogix AI Coaching
         </p>
 
         {/* Carousel — single slide at a time, native scroll-snap. Quote

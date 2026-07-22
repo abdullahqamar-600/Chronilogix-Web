@@ -37,13 +37,32 @@ type Fact = {
   waterfall?: string[];
 };
 
-// Six facts lifted from V1's Problem section verbatim. Retained even
-// when a headline number is echoed in the V4 summary paragraph above,
-// because each fact carries mechanism detail (11M undiagnosed, 300×
-// suicide-risk multiplier, the ambivalence waterfall) that isn't in
-// the summary. The pop-up is the deep-dive, so the deep-dive stays
-// complete.
+// Eight facts backing the deep-dive. The two workforce/burden stats the
+// client added for the June update (40% HPSA + HRSA projections; 129M
+// chronic) lead, followed by the six facts carried over from V1. Each
+// carries mechanism detail (11M undiagnosed, 300× suicide-risk
+// multiplier, the ambivalence waterfall) beyond the on-page summary, so
+// the pop-up stays the complete deep-dive.
 const FACTS: Fact[] = [
+  {
+    lead: "40%",
+    body: (
+      <>
+        of Americans live in a{" "}
+        <em className="font-normal not-italic text-ink">
+          Mental Health Professional Shortage Area
+        </em>
+        , and more than 6,000 additional practitioners are needed just to
+        close today&rsquo;s federally designated gaps. HRSA projects
+        shortfalls of roughly 99,780 counselors, 99,840 psychologists,
+        43,810 psychiatrists, 77,050 addiction counselors, and 33,840
+        marriage and family therapists over the next decade &mdash; and
+        those figures reflect today&rsquo;s utilization, not the full unmet
+        need.
+      </>
+    ),
+    source: "HRSA · Health Workforce projections",
+  },
   {
     lead: "15M+",
     body: (
@@ -55,6 +74,25 @@ const FACTS: Fact[] = [
       </>
     ),
     source: "WHO Mental Health Atlas",
+  },
+  {
+    lead: "129M",
+    body: (
+      <>
+        Americans live with at least one chronic condition.{" "}
+        <em className="font-normal not-italic text-ink">60%</em> of adults
+        have one and <em className="font-normal not-italic text-ink">40%</em>{" "}
+        have two or more, and chronic disease drives roughly{" "}
+        <em className="font-normal not-italic text-ink">
+          90% of U.S. healthcare spending
+        </em>{" "}
+        &mdash; demand that already outstrips the supply of nurses, diabetes
+        educators, care managers, and health coaches. To keep up, health
+        systems increasingly lean on care coordinators, community health
+        workers, AI-assisted coaching, and remote monitoring.
+      </>
+    ),
+    source: "CDC",
   },
   {
     lead: "40M",
@@ -151,13 +189,13 @@ export function ProblemV3() {
   return (
     <section
       id="problem"
-      className="relative overflow-hidden border-y border-ink/10 bg-paper-warm lg:h-screen"
+      className="relative overflow-hidden border-y border-ink/10 bg-paper-warm lg:min-h-screen"
       aria-labelledby="problem-heading-v3"
     >
       <div className="grid h-full lg:grid-cols-2">
         {/* Left — portrait. Frames the human consequence the numbers describe. */}
         <div className="relative p-2 lg:p-2">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[24px] lg:aspect-auto lg:h-[calc(100vh-1rem)]">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[24px] lg:aspect-auto lg:h-full lg:min-h-[calc(100vh-1rem)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/problem-portrait.png"
@@ -183,33 +221,37 @@ export function ProblemV3() {
           >
             The most expensive moments{" "}
             <span className="text-ink-muted">
-              happen between appointments.
+              happen between appointments and where there is no care.
             </span>
           </h2>
 
           <p className="mt-6 max-w-xl body-prose md:mt-8">
-            The world is short more than{" "}
-            <span className="text-ink">15 million</span> behavioral and
-            chronic care coaches, and live coaching runs $60 to $70 per
-            member per month &mdash; out of reach at population scale. Even
-            for those who can access it, the wait for an appointment is two
-            to six weeks.
+            America doesn&rsquo;t have a therapy shortage &mdash; it has a{" "}
+            <span className="text-ink">continuity-of-care shortage</span>.
+            There simply aren&rsquo;t enough clinicians, coaches, care
+            managers, or diabetes educators to provide daily support between
+            appointments. AI coaching fills those gaps by extending the reach
+            of the existing workforce &mdash; and replacing it where AI
+            coaching can provide care efficaciously.
           </p>
 
-          <p className="mt-4 max-w-xl body-prose">
-            So the cost compounds between visits:{" "}
-            <span className="text-ink">$300 billion</span> in prescriptions
-            unfilled from ambivalence rather than forgetting,{" "}
-            <span className="text-ink">seven in ten</span> ER patients who
-            never return, and the 11 PM stress eating, the skipped
-            medication, the quiet slide back into old habits &mdash; the
-            moments that decide outcomes happen where no one is watching.
-          </p>
+          <div className="mt-6 max-w-xl md:mt-8">
+            <p className="eyebrow">The real shortage</p>
+            <p className="mt-3 body-prose">
+              It&rsquo;s not therapists that run short &mdash; it&rsquo;s{" "}
+              <span className="text-ink">the hours between them</span>. A
+              therapist may see a patient once every two to four weeks, for
+              45 to 60 minutes, while a person with diabetes, anxiety,
+              depression, obesity, hypertension, or heart disease makes
+              hundreds of health decisions in between. No workforce can be
+              there for all of them.
+            </p>
+          </div>
 
           <div className="mt-10 max-w-xl md:mt-12">
             <span aria-hidden className="block h-px w-12 bg-ink/20" />
             <p className="mt-5 font-serif text-row font-normal leading-[1.15] text-ink md:mt-6">
-              AI coaches fill all of these gaps.
+              Care has to live in the hours between.
             </p>
           </div>
 

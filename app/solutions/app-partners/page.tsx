@@ -12,6 +12,21 @@ import { AppPartnersProof } from "@/components/solutions/appPartners/AppPartners
 import { AppPartnersTrust } from "@/components/solutions/appPartners/AppPartnersTrust";
 import { AppPartnersFAQ } from "@/components/solutions/appPartners/AppPartnersFAQ";
 import { AppPartnersClosingCTA } from "@/components/solutions/appPartners/AppPartnersClosingCTA";
+import { PageNav, type TocItem } from "@/components/widget/pageNav";
+
+// "On this page" wayfinder, keyed to the app-partner narrative arc.
+const APP_PARTNERS_TOC: TocItem[] = [
+  { id: null, label: "Overview" },
+  { id: "ap-problem-label", label: "The problem" },
+  { id: "ap-pillars-label", label: "Pillars" },
+  { id: "ap-diagram-label", label: "How it fits" },
+  { id: "ap-numbers-label", label: "The numbers" },
+  { id: "ap-distro-label", label: "Distribution" },
+  { id: "ap-proof-label", label: "Proof" },
+  { id: "ap-trust-label", label: "Trust" },
+  { id: "ap-faq-label", label: "FAQ" },
+  { id: "book-a-demo", label: "Book a demo" },
+];
 
 export const metadata: Metadata = {
   title: "App Partners · Chronilogix",
@@ -43,6 +58,13 @@ export default function AppPartnersPage() {
           <AppPartnersClosingCTA />
         </div>
       </main>
+
+      {/* "On this page" wayfinder, keyed to this page's sections. */}
+      <PageNav
+        items={APP_PARTNERS_TOC}
+        revealId="ap-problem-label"
+        navLabel="App partner page sections"
+      />
 
       {/* Site-wide "Questions?" widget per CLAUDE.md. */}
       <CoachLauncher />

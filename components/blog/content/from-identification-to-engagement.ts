@@ -90,7 +90,7 @@ export const content: ArticleContent = {
     },
     {
       type: "para",
-      text: "Chronilogix is built for exactly this second discipline — turning identified members into engaged ones, and keeping them engaged. Its coaching engine, Rooney AI, is built on the Motivational Interviewing research of Dr. Ken Resnicow, who has spent more than three decades in NIH-funded work establishing how MI changes health behavior. That is the same clinical foundation behind the kind of engagement lift Aetna reported, delivered with the consistency and reach that human-only staffing cannot match.",
+      text: "Chronilogix is built for exactly this second discipline — turning identified members into engaged ones, and keeping them engaged. Its coaching engine, Roni AI, is built on the Motivational Interviewing research of Dr. Ken Resnicow, who has spent more than three decades in NIH-funded work establishing how MI changes health behavior. That is the same clinical foundation behind the kind of engagement lift Aetna reported, delivered with the consistency and reach that human-only staffing cannot match.",
     },
     {
       type: "para",

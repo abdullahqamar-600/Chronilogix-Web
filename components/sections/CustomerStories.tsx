@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 // ScienceKen — the Dr. Resnicow "science behind Chronilogix" beat.
 // Deliberately mirrors the MIExplainer section's layout/pattern so the
@@ -52,65 +52,170 @@ export function ScienceKen() {
   );
 }
 
-// AetnaProof — the field-proof beat, split out of the old CustomerStories
-// so it can sit lower on the page (just above Testimonials). Keeps the
-// "customer-stories" id so the SectionGuide "Proof" anchor still resolves.
+// AetnaProof — the field-proof beat, in the minimal editorial layout the
+// Outcome section uses: a rounded cream card with eyebrow + hero headline +
+// intro, then each proof as ONE big serif statement whose stat leads in brand
+// orange, set over a hairline rule, with a small source logo and a formal
+// source line. Type-led and quiet — no cards, no panels. Two proofs: the
+// PREMISE — support between visits changes outcomes (US Diabetes Prevention
+// Program / CDC) — and the METHOD — Dr. Resnicow's MI drives engagement
+// (Aetna). Keeps id="customer-stories" so the SectionGuide "Proof" anchor
+// resolves. Numbers are canonical: DPP per CDC/NIH; Aetna per /case-studies/aetna.
+
+type Proof = {
+  logo: string;
+  logoAlt: string;
+  logoClass: string;
+  stat: ReactNode;
+  statClass: string;
+  measure: string;
+  clause: string;
+  source: string;
+  caseStudyHref?: string;
+};
+
+const PROOFS: Proof[] = [
+  {
+    logo: "/Aetna_Logo.svg",
+    logoAlt: "Aetna",
+    logoClass: "h-9 md:h-10",
+    stat: <>53.1% &rarr; 76%</>,
+    statClass: "text-[1.3em]",
+    measure: "member engagement",
+    clause:
+      "after Aetna’s care teams retrained in Dr. Resnicow’s method — dropouts cut by more than half.",
+    source: "Source · Aetna Care Management · post-MI integration",
+    caseStudyHref: "/case-studies/aetna",
+  },
+  {
+    logo: "/us-dpp-logo.png",
+    logoAlt: "Centers for Disease Control and Prevention",
+    logoClass: "h-9 md:h-10",
+    stat: <>58%</>,
+    statClass: "text-[1.55em]",
+    measure: "fewer new Type 2 diabetes cases",
+    clause:
+      "when lifestyle support continues between appointments — the gap Chronilogix covers.",
+    source: "Source · US Diabetes Prevention Program · CDC and NIH",
+  },
+];
+
+function useProofInView<T extends HTMLElement>(threshold = 0.2) {
+  const ref = useRef<T | null>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    if (inView) return;
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          io.disconnect();
+        }
+      },
+      { threshold, rootMargin: "0px 0px -10% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [inView, threshold]);
+  return { ref, inView };
+}
+
 export function AetnaProof() {
   return (
     <section
       id="customer-stories"
-      aria-labelledby="aetna-proof-heading"
-      className="relative bg-paper-warm"
+      aria-labelledby="field-proof-heading"
+      className="relative flex flex-col justify-center rounded-[28px] bg-paper-warm py-14 md:py-16 lg:min-h-[calc(100vh-1rem)] lg:py-0"
     >
-      <h2 id="aetna-proof-heading" className="sr-only">
-        Proof in the field
-      </h2>
-
-      <div className="container-page pt-16 pb-10 md:pt-24 md:pb-12 lg:pt-28 lg:pb-14">
-        {/* Centered onto the same axis as the Testimonials carousel
-            directly below, so the two cream sections read as one
-            continuous "proof → voices" panel instead of flipping from a
-            left-aligned two-column block to a centered one. Narrative
-            order: source (Aetna) → the number → what it measures → the
-            mechanism → the case study. */}
-        <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+      <div className="container-page">
+        <div className="max-w-3xl">
           <p className="eyebrow">Proof in the field</p>
-
-          {/* Source — establishes credibility before the number lands. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/Aetna_Logo.svg"
-            alt="Aetna"
-            className="mt-6 h-8 w-auto md:h-9"
-            draggable={false}
-          />
-
-          {/* Hero stat — owns the center the way the quotes do below it. */}
-          <p className="mt-8 font-serif text-[64px] font-normal leading-none tracking-tight text-ink tabular-nums md:text-[88px]">
-            53%{" "}
-            <span className="text-brand-600">&rarr;</span>{" "}
-            76%
-          </p>
-          <p className="mt-4 text-sm font-medium uppercase tracking-[0.14em] text-ink-muted">
-            Member engagement
-          </p>
-
-          <p className="mt-8 max-w-md body-prose">
-            Measured after nurse coaches were trained in Dr.
-            Resnicow&rsquo;s method. Dropouts fell by{" "}
-            <span className="text-ink">more than half</span>.
-          </p>
-
-          <a
-            href="/case-studies/aetna"
-            className="group/link mt-8 inline-flex items-center gap-2 text-sm font-medium text-ink transition-colors hover:text-brand-600"
+          <h2
+            id="field-proof-heading"
+            className="mt-4 text-hero font-serif font-normal text-ink"
           >
-            Read the Aetna case study
-            <Arrow />
-          </a>
+            The premise is proven.
+            <br />
+            <span className="text-ink-muted">So is the method.</span>
+          </h2>
+
+          <p className="mt-5 max-w-[54ch] body-prose">
+            Support between visits changes outcomes &mdash; and Dr.
+            Resnicow&rsquo;s Motivational Interviewing, the method inside
+            Chronilogix, is{" "}
+            <span className="text-ink">what keeps people engaged in it</span>.
+          </p>
+        </div>
+
+        {/* Two proofs side by side so the whole beat sits in one viewport —
+            each a big serif statement whose stat leads in brand orange, under
+            a shared hairline, split by a vertical rule on desktop. */}
+        <div className="mt-9 grid gap-8 md:mt-11 md:grid-cols-2 md:gap-0">
+          {PROOFS.map((proof, i) => (
+            <ProofStatement key={proof.source} proof={proof} index={i} />
+          ))}
         </div>
       </div>
     </section>
+  );
+}
+
+function ProofStatement({ proof, index }: { proof: Proof; index: number }) {
+  const { ref, inView } = useProofInView<HTMLElement>(0.25);
+
+  return (
+    <figure
+      ref={ref}
+      className={`border-t border-ink/10 pt-6 md:pt-8 ${
+        index > 0 ? "md:border-l md:pl-8 lg:pl-12" : "md:pr-8 lg:pr-12"
+      }`}
+      style={{
+        opacity: inView ? 1 : 0,
+        transform: inView ? "translateY(0)" : "translateY(20px)",
+        transition: `opacity 700ms cubic-bezier(0.22, 0.61, 0.36, 1) ${index * 120}ms, transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1) ${index * 120}ms`,
+      }}
+    >
+      {/* Small source mark — the credential behind the number. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={proof.logo}
+        alt={proof.logoAlt}
+        className={`${proof.logoClass} w-auto`}
+        draggable={false}
+      />
+
+      <blockquote>
+        <p className="mt-5 font-serif text-[21px] font-normal leading-[1.28] text-ink md:text-[24px] lg:text-[26px]">
+          <span
+            className={`mr-2 font-normal text-brand-700 ${proof.statClass} leading-[0.9] align-[-0.06em] tabular-nums`}
+          >
+            {proof.stat}
+          </span>
+          {proof.measure},{" "}
+          <span className="text-ink-muted">{proof.clause}</span>
+        </p>
+      </blockquote>
+
+      <figcaption className="source-line mt-5 md:mt-6">
+        <span
+          aria-hidden
+          className="inline-block h-1.5 w-1.5 rounded-full bg-brand"
+        />
+        {proof.source}
+      </figcaption>
+
+      {proof.caseStudyHref ? (
+        <a
+          href={proof.caseStudyHref}
+          className="group/link mt-6 inline-flex items-center gap-2 text-sm font-medium text-ink transition-colors hover:text-brand-600 md:mt-7"
+        >
+          Read the Aetna case study
+          <Arrow />
+        </a>
+      ) : null}
+    </figure>
   );
 }
 

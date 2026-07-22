@@ -13,6 +13,18 @@ import {
   BrokersAudioProvider,
   BrokersStickyAudio,
 } from "@/components/solutions/brokers/brokersAudio";
+import { PageNav, type TocItem } from "@/components/widget/pageNav";
+
+// "On this page" wayfinder, keyed to the broker narrative arc.
+const BROKERS_TOC: TocItem[] = [
+  { id: null, label: "Overview" },
+  { id: "brokers-reality-label", label: "The reality" },
+  { id: "brokers-strategy-label", label: "The strategy" },
+  { id: "how-it-works", label: "How it works" },
+  { id: "brokers-why-label", label: "Why it works" },
+  { id: "brokers-advantage-label", label: "For brokers" },
+  { id: "book-a-demo", label: "Book a demo" },
+];
 
 export const metadata: Metadata = {
   title: "Brokers · Chronilogix",
@@ -41,7 +53,7 @@ export default function BrokersPage() {
               1. Hero               — the cost problem, not the product
               2. The Reality        — what's causing the problem
               3. Strategy           — introducing Chronilogix (front door)
-              4. Member experience  — meet Rooney AI
+              4. Member experience  — meet Roni AI
               5. Why it works       — the business impact for employers
               6. Advantage          — what it means for the broker (payoff)
               7. Closing CTA        — book a demo
@@ -61,6 +73,13 @@ export default function BrokersPage() {
           pressed; keeps playing across scroll. */}
       <BrokersStickyAudio />
       </BrokersAudioProvider>
+
+      {/* "On this page" wayfinder, keyed to this page's sections. */}
+      <PageNav
+        items={BROKERS_TOC}
+        revealId="brokers-reality-label"
+        navLabel="Broker page sections"
+      />
 
       {/* Site-wide "Questions?" widget per CLAUDE.md. */}
       <CoachLauncher />

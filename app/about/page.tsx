@@ -8,6 +8,17 @@ import { AboutMission } from "@/components/about/AboutMission";
 import { AboutTimeline } from "@/components/about/AboutTimeline";
 import { AboutPurpose } from "@/components/about/AboutPurpose";
 import { AboutClosingCTA } from "@/components/about/AboutClosingCTA";
+import { PageNav, type TocItem } from "@/components/widget/pageNav";
+
+// "On this page" wayfinder, keyed to the about page's own sections.
+const ABOUT_TOC: TocItem[] = [
+  { id: "team", label: "Team" },
+  { id: "science", label: "The science" },
+  { id: "values", label: "Mission" },
+  { id: "timeline", label: "Timeline" },
+  { id: "purpose", label: "Purpose" },
+  { id: "get-in-touch", label: "Get in touch" },
+];
 
 export const metadata: Metadata = {
   title: "About · Chronilogix",
@@ -36,9 +47,12 @@ export default function AboutPage() {
         </div>
       </main>
 
-      {/* CoachLauncher is the site-wide "Questions?" widget per CLAUDE.md.
-          SectionGuide is intentionally omitted — it's hardcoded to homepage
-          section anchors and would show dead links on /about. */}
+      {/* "On this page" wayfinder, keyed to this page's own section
+          anchors (the homepage-only SectionGuide is not reused here — it
+          carries a homepage TOC and the Zenn demo card). */}
+      <PageNav items={ABOUT_TOC} revealId="science" navLabel="About sections" />
+
+      {/* CoachLauncher is the site-wide "Questions?" widget per CLAUDE.md. */}
       <CoachLauncher />
     </>
   );

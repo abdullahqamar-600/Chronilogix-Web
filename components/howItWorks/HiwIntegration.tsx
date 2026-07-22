@@ -49,13 +49,13 @@ export function HiwIntegration() {
   return (
     <section
       id="integration"
-      className="relative overflow-hidden rounded-[28px] bg-white pt-24 pb-10 md:pt-32 md:pb-12 lg:pt-40 lg:pb-14"
+      className="relative overflow-hidden rounded-[28px] bg-white pt-14 pb-10 md:pt-16 md:pb-12 lg:pt-20 lg:pb-14"
     >
       <div className="container-page">
         {/* Header */}
         <div className="max-w-3xl">
           <h2
-            className="mt-4 text-hero font-serif font-normal text-ink"
+            className="text-hero font-serif font-normal text-ink"
             style={{ textWrap: "balance" } as React.CSSProperties}
           >
             Plugs into how{" "}
@@ -254,7 +254,7 @@ const PATHS: (Path & { heading: string })[] = [
   {
     index: "04",
     label: "Vendors of Chronic Care Supplies",
-    heading: "Co deployed with supplies and devices.",
+    heading: "Co-deployed with supplies and devices.",
     body: (
       <>
         Pairs with diabetes supply programs, glucose monitors, and other

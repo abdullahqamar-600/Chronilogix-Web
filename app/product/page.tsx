@@ -17,6 +17,20 @@ import { HiwAudience } from "@/components/howItWorks/HiwAudience";
 // import { HiwFeel } from "@/components/howItWorks/HiwFeel";
 import { HiwIntegration } from "@/components/howItWorks/HiwIntegration";
 import { HiwPlatform } from "@/components/howItWorks/HiwPlatform";
+import { PageNav, type TocItem } from "@/components/widget/pageNav";
+
+// "On this page" wayfinder — traces the product arc a buyer scans:
+// overview → the reply close-up → the two coaches → capabilities → who it's
+// for → deployment → platform.
+const PRODUCT_TOC: TocItem[] = [
+  { id: null, label: "Overview" },
+  { id: "reply", label: "The reply" },
+  { id: "agents", label: "The coaches" },
+  { id: "capabilities", label: "Capabilities" },
+  { id: "audience", label: "Who it's for" },
+  { id: "integration", label: "Integration" },
+  { id: "platform", label: "Platform" },
+];
 
 export const metadata: Metadata = {
   title: "Product · Chronilogix",
@@ -66,6 +80,7 @@ export default function ProductPage() {
         </div>
       </main>
       <Footer />
+      <PageNav items={PRODUCT_TOC} revealId="reply" navLabel="Product sections" />
     </>
   );
 }

@@ -74,7 +74,7 @@ export const content: ArticleContent = {
     },
     {
       type: "para",
-      text: "Chronilogix is a behavioral health and chronic care coaching platform whose engine, Rooney AI, is built directly on the Motivational Interviewing framework Dr. Ken Resnicow developed across more than thirty years of NIH-funded research. The method is not a garnish on a generic assistant. It is the operating logic: the same reflect, explore, and elicit moves a trained practitioner would make, applied consistently across every conversation and available whenever a member is ready to have one.",
+      text: "Chronilogix is a behavioral health and chronic care coaching platform whose engine, Roni AI, is built directly on the Motivational Interviewing framework Dr. Ken Resnicow developed across more than thirty years of NIH-funded research. The method is not a garnish on a generic assistant. It is the operating logic: the same reflect, explore, and elicit moves a trained practitioner would make, applied consistently across every conversation and available whenever a member is ready to have one.",
     },
     {
       type: "para",

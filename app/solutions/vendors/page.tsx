@@ -14,6 +14,19 @@ import { VendorsBehaviorGap } from "@/components/solutions/vendors/VendorsBehavi
 import { VendorsImpact } from "@/components/solutions/vendors/VendorsImpact";
 import { VendorsReposition } from "@/components/solutions/vendors/VendorsReposition";
 import { VendorsClosingCTA } from "@/components/solutions/vendors/VendorsClosingCTA";
+import { PageNav, type TocItem } from "@/components/widget/pageNav";
+
+// "On this page" wayfinder, keyed to the vendor narrative arc.
+const VENDORS_TOC: TocItem[] = [
+  { id: null, label: "Overview" },
+  { id: "vendors-after-delivery-label", label: "After delivery" },
+  { id: "vendors-upgrade-label", label: "The upgrade" },
+  { id: "vendors-program-gap-label", label: "Meet Roni" },
+  { id: "vendors-gap-label", label: "The gap" },
+  { id: "vendors-impact-label", label: "Impact" },
+  { id: "vendors-reposition-label", label: "Reposition" },
+  { id: "book-a-demo", label: "Book a demo" },
+];
 
 export const metadata: Metadata = {
   title: "Vendors · Chronilogix",
@@ -31,7 +44,7 @@ export const metadata: Metadata = {
  *   1. Hero               — your product works; the challenge is after delivery (+ before/after graph)
  *   2. After Delivery     — the reality vendors face (delivery isn't the finish line)
  *   3. Upgrade            — the turn: Chronilogix is the outcomes upgrade (sits on top)
- *   4. Program Gap        — meet Rooney AI (your AI health coach)
+ *   4. Program Gap        — meet Roni AI (your AI health coach)
  *   5. Behavior Gap       — the behaviour gap (human barriers to adherence)
  *   6. Impact             — the business impact (retention / coaching / cost stats)
  *   7. Reposition         — a better story for buyers (stand out in a crowded market)
@@ -62,6 +75,13 @@ export default function VendorsPage() {
             pressed; keeps playing across scroll. */}
         <VendorsStickyAudio />
       </VendorsAudioProvider>
+
+      {/* "On this page" wayfinder, keyed to this page's sections. */}
+      <PageNav
+        items={VENDORS_TOC}
+        revealId="vendors-after-delivery-label"
+        navLabel="Vendor page sections"
+      />
 
       {/* Site-wide "Questions?" widget per CLAUDE.md. */}
       <CoachLauncher />

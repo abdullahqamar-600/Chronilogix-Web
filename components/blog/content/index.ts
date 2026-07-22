@@ -1,5 +1,5 @@
 import type { ArticleContent } from "../article-types";
-import { content as a1 } from "./inside-rooney-ai-clinical-grade-coaching-at-scale";
+import { content as a1 } from "./inside-roni-ai-clinical-grade-coaching-at-scale";
 import { content as a2 } from "./motivational-interviewing-engineered-for-every-member";
 import { content as a3 } from "./30-years-of-mi-research";
 import { content as a4 } from "./designing-a-crisis-protocol-members-trust";

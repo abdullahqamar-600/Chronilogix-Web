@@ -208,21 +208,27 @@ function LevelRow({ level, index }: { level: Level; index: number }) {
     >
       {/* Fog veil — softens the seam where rows stack on md+. Hidden
           on mobile where rows flow naturally without overlapping. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-40 hidden h-40 md:block md:-top-80 md:h-80"
-        style={{
-          // Symmetric smoothstep ramp (eases in AND out) over a taller
-          // veil so the previous row dissolves evenly across the whole
-          // scroll distance instead of rushing from ~0.4 to solid in the
-          // final third. The gentle head keeps content readable, the
-          // gentle tail lands on the seam without a visible step, and
-          // full opacity is reached by ~90% so the last stretch is a
-          // stable solid band flowing into the next row.
-          background:
-            "linear-gradient(to bottom, rgba(251,248,244,0) 0%, rgba(251,248,244,0.03) 10%, rgba(251,248,244,0.12) 20%, rgba(251,248,244,0.26) 30%, rgba(251,248,244,0.42) 40%, rgba(251,248,244,0.58) 50%, rgba(251,248,244,0.74) 60%, rgba(251,248,244,0.87) 70%, rgba(251,248,244,0.96) 80%, rgba(251,248,244,1) 90%, rgba(251,248,244,1) 100%)",
-        }}
-      />
+      {/* No veil above the first row — there is no previous row to blend
+          into, and a veil here sweeps up over the "Three Levels of Care"
+          heading during scroll (client: "can't see the entire page during
+          the reveal"). Only rows that stack onto a prior row get it. */}
+      {index > 0 && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 -top-40 hidden h-40 md:block md:-top-80 md:h-80"
+          style={{
+            // Symmetric smoothstep ramp (eases in AND out) over a taller
+            // veil so the previous row dissolves evenly across the whole
+            // scroll distance instead of rushing from ~0.4 to solid in the
+            // final third. The gentle head keeps content readable, the
+            // gentle tail lands on the seam without a visible step, and
+            // full opacity is reached by ~90% so the last stretch is a
+            // stable solid band flowing into the next row.
+            background:
+              "linear-gradient(to bottom, rgba(251,248,244,0) 0%, rgba(251,248,244,0.03) 10%, rgba(251,248,244,0.12) 20%, rgba(251,248,244,0.26) 30%, rgba(251,248,244,0.42) 40%, rgba(251,248,244,0.58) 50%, rgba(251,248,244,0.74) 60%, rgba(251,248,244,0.87) 70%, rgba(251,248,244,0.96) 80%, rgba(251,248,244,1) 90%, rgba(251,248,244,1) 100%)",
+          }}
+        />
+      )}
 
       {/* Card body — the row sits flush with the surrounding section
           on the same paper-warm background. The fog veil above carries

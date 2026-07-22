@@ -3,7 +3,6 @@ import { Footer } from "@/components/Footer";
 import { PageLoader } from "@/components/PageLoader";
 import { SectionGuide } from "@/components/widget/SectionGuide";
 import { CoachLauncher } from "@/components/CoachLauncher";
-import { VersionToggle } from "@/components/VersionToggle";
 import { HeroV5 } from "@/components/sections/HeroV5";
 import { StatementV5 } from "@/components/sections/StatementV5";
 import { MIExplainer } from "@/components/sections/MIExplainer";
@@ -51,7 +50,6 @@ export default function HomePageV4() {
 
       <SectionGuide />
       <CoachLauncher />
-      <VersionToggle />
     </>
   );
 }

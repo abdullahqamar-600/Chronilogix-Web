@@ -27,14 +27,14 @@ export const BLOG_SORTS = ["Latest", "Most read", "Oldest"] as const;
 
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
-    slug: "inside-rooney-ai-clinical-grade-coaching-at-scale",
-    title: "Inside Rooney AI: clinical grade coaching at scale",
+    slug: "inside-roni-ai-clinical-grade-coaching-at-scale",
+    title: "Inside Roni AI: clinical grade coaching at scale",
     tag: "Product",
     topic: "Product",
     readTime: "5 min read",
     date: "2026-05-14",
     formattedDate: "May 14, 2026",
-    eyebrow: "Rooney AI",
+    eyebrow: "Roni AI",
     gradient: "from-[#0F1419] via-[#1F2937] to-[#3F5572]",
     textTone: "light",
   },
@@ -136,7 +136,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
   },
 ];
 
-export const FEATURED_SLUG = "inside-rooney-ai-clinical-grade-coaching-at-scale";
+export const FEATURED_SLUG = "inside-roni-ai-clinical-grade-coaching-at-scale";
 export const SIDEBAR_SLUGS = [
   "motivational-interviewing-engineered-for-every-member",
   "30-years-of-mi-research",

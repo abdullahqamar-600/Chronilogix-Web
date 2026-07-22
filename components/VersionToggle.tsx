@@ -8,13 +8,14 @@ import { usePathname } from "next/navigation";
 // preview affordance — should be removed before production.
 //
 // V4 is the current iteration slot — reintroduced after the earlier
-// renumbering pass (V5 → V1, original V1 → /v3). V4 begins the "trim
-// on-page text, push detail into a shared DetailModal" iteration; the
-// first section it reworks is Problem (see ProblemV2).
-// Only V1 (the canonical home) is surfaced in the toggle now. V2–V4 still
-// exist at their routes for reference but are hidden from the preview nav.
+// renumbering pass (V5 → V1, original V1 → /v3). All four explorations are
+// surfaced so the full set can be browsed from the preview nav. Purely a
+// build-time affordance — should be removed before production.
 const VERSIONS = [
   { label: "V1", href: "/" },
+  { label: "V2", href: "/v2" },
+  { label: "V3", href: "/v3" },
+  { label: "V4", href: "/v4" },
 ] as const;
 
 export function VersionToggle() {

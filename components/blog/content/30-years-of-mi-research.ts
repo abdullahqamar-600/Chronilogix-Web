@@ -38,7 +38,7 @@ export const content: ArticleContent = {
     },
     {
       type: "para",
-      text: "This is where Chronilogix's AI engine, Rooney AI, does its most careful work. It is trained on the MI corpus behind Resnicow's research to recognize change talk when a member offers it and to respond by deepening it — asking what lies underneath a stated goal rather than rushing to a plan. It resists the reflex every generic chatbot shares, which is to answer a moment of hesitation with a checklist.",
+      text: "This is where Chronilogix's AI engine, Roni AI, does its most careful work. It is trained on the MI corpus behind Resnicow's research to recognize change talk when a member offers it and to respond by deepening it — asking what lies underneath a stated goal rather than rushing to a plan. It resists the reflex every generic chatbot shares, which is to answer a moment of hesitation with a checklist.",
     },
     {
       type: "heading",

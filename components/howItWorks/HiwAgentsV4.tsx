@@ -6,21 +6,21 @@ import { useEffect, useRef, useState } from "react";
  * "The coaches" — V4 direction.
  *
  * Reconciles a hard docs-vs-site gap that the current HiwAgents.tsx
- * ignores: every source doc names ONE engine, "Rooney AI." The site now
+ * ignores: every source doc names ONE engine, "Roni AI." The site now
  * ships two named coaches, Roni + Millie. V4 keeps the two-coach
  * specialization the buyer sees, but frames it inside a single-engine
  * story so the surface aligns with the docs and the CLAUDE.md brand
  * hierarchy:
  *
- *   Chronilogix (platform) > Rooney AI (engine) > Roni / Millie (personas)
+ *   Chronilogix (platform) > Roni AI (engine) > Roni / Millie (personas)
  *
  * Layout arc, top to bottom:
  *
  *   1. Header — one engine, two clinical voices.
- *   2. Engine card — Rooney AI as the umbrella, with Dr. Resnicow
+ *   2. Engine card — Roni AI as the umbrella, with Dr. Resnicow
  *      credit and the MI credibility stats the docs lean on.
  *   3. Two persona columns — Roni + Millie, each with clinical scope,
- *      sample exchange, and a "Powered by Rooney AI" footer.
+ *      sample exchange, and a "Powered by Roni AI" footer.
  *   4. Handoff line — one member, both coaches, shared session memory.
  *
  * Design language is native to the site: paper-warm section band,
@@ -92,7 +92,7 @@ export function HiwAgentsV4() {
             className="mt-7 max-w-[62ch] body-prose"
             style={reveal(inView, 160)}
           >
-            <span className="text-ink">Rooney AI</span> powers every
+            <span className="text-ink">Roni AI</span> powers every
             conversation on the platform. Dr. Ken Resnicow&rsquo;s
             thirty years of Motivational Interviewing research, encoded
             once and delivered through two purpose-built specialists
@@ -100,7 +100,7 @@ export function HiwAgentsV4() {
           </p>
         </div>
 
-        {/* Engine card — Rooney AI as the umbrella. Reads as the
+        {/* Engine card — Roni AI as the umbrella. Reads as the
             infrastructure claim before the persona columns arrive.
             surface-glass keeps it in the site's card family; the
             ordinal + label mirrors the CoreCapabilities eyebrow style. */}
@@ -119,7 +119,7 @@ export function HiwAgentsV4() {
                 The engine
               </p>
               <h3 className="mt-3 font-serif text-[32px] font-normal leading-[1.05] text-ink md:text-[38px]">
-                Rooney{" "}
+                Roni{" "}
                 <span className="text-brand-700">AI</span>
               </h3>
               <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-soft md:text-[15.5px]">
@@ -166,7 +166,7 @@ export function HiwAgentsV4() {
           className="mt-10 max-w-[52ch] text-[14.5px] leading-relaxed text-ink-soft md:mt-12 md:text-[15px]"
           style={reveal(inView, 400)}
         >
-          Chronic disease and mental health rarely travel alone. Rooney
+          Chronic disease and mental health rarely travel alone. Roni
           delivers two coaches, each purpose-built for one clinical
           domain — same underlying methodology, different vocabulary,
           different pacing, different range.
@@ -187,7 +187,7 @@ export function HiwAgentsV4() {
           <span aria-hidden className="hidden h-px w-8 bg-ink/15 md:block" />
           <p className="max-w-[46ch] text-[13.5px] italic leading-snug text-ink-soft md:text-[14px]">
             One member. Both coaches. Shared session memory —{" "}
-            <span className="not-italic text-ink">Rooney</span> carries
+            <span className="not-italic text-ink">Roni</span> carries
             the whole story across every conversation.
           </p>
           <span aria-hidden className="hidden h-px w-8 bg-ink/15 md:block" />
@@ -309,7 +309,7 @@ function PersonaColumn({
       </div>
 
       {/* Clinical scope — pulled from docs so obesity + hypertension
-          (Rooney docs) or depression + anxiety (mental health) surface
+          (Roni docs) or depression + anxiety (mental health) surface
           explicitly, not hidden behind "chronic care" or "mental health"
           alone. */}
       <p className="mt-6 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-brand-700">
@@ -366,7 +366,7 @@ function PersonaColumn({
           the reader can't miss that both coaches are the same engine. */}
       <p className="mt-8 border-t border-ink/[0.08] pt-4 text-[11.5px] leading-snug text-ink-muted">
         Powered by{" "}
-        <span className="font-medium text-ink-soft">Rooney AI</span>{" "}
+        <span className="font-medium text-ink-soft">Roni AI</span>{" "}
         &middot; MI-trained &middot; Reviewed against MITI fidelity
       </p>
     </article>

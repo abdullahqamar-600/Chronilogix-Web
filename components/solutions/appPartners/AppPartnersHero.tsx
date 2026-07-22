@@ -148,7 +148,7 @@ export function AppPartnersHero() {
               }}
             >
               Chronilogix is the AI-native coaching platform behind{" "}
-              <span className="text-ink">Rooney AI</span> &mdash; the
+              <span className="text-ink">Roni AI</span> &mdash; the
               clinical intelligence layer you drop inside your app. Thirty
               years of{" "}
               <span className="text-ink">Dr. Ken Resnicow&rsquo;s</span>{" "}

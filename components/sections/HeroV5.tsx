@@ -210,7 +210,7 @@ export function HeroV5() {
             viewports (iPhone SE portrait) leave enough middle-band
             space for the phone to render at usable size. */}
         <div
-          className="relative z-20 flex-none pt-12 sm:pt-16 md:pt-24 lg:self-start lg:pt-36 xl:pt-44"
+          className="relative z-20 flex-none pt-24 sm:pt-24 md:pt-28 lg:self-start lg:pt-36 xl:pt-44"
           style={{
             opacity: textFade,
             transform: `translateY(${(1 - textFade) * 10}px)`,

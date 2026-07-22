@@ -64,7 +64,7 @@ export const content: ArticleContent = {
     },
     {
       type: "para",
-      text: "None of this makes the coaching colder. The warmth in Chronilogix comes from Rooney AI, the engine inside the platform, which operationalizes Dr. Ken Resnicow's thirty-plus years of NIH-funded Motivational Interviewing research — a method that works precisely because it is bounded, consistent, and non-judgmental. The same discipline that keeps data behind the wall is the discipline that makes a member feel safe enough to be honest with it. Compliant, isolated, and genuinely human is not a compromise we settled for. In behavioral health, it is the only version of the product that earns the right to help.",
+      text: "None of this makes the coaching colder. The warmth in Chronilogix comes from Roni AI, the engine inside the platform, which operationalizes Dr. Ken Resnicow's thirty-plus years of NIH-funded Motivational Interviewing research — a method that works precisely because it is bounded, consistent, and non-judgmental. The same discipline that keeps data behind the wall is the discipline that makes a member feel safe enough to be honest with it. Compliant, isolated, and genuinely human is not a compromise we settled for. In behavioral health, it is the only version of the product that earns the right to help.",
     },
   ],
 };

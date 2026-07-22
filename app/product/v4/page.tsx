@@ -12,7 +12,7 @@ import { HiwPlatform } from "@/components/howItWorks/HiwPlatform";
 export const metadata: Metadata = {
   title: "Product V4 · Chronilogix",
   description:
-    "V4 iteration of the product page. Same arc as /product, but the coaches section is reframed around Rooney AI as the platform engine — with Roni and Millie surfaced as the two clinical personas Rooney powers. Aligns the surface with every source doc that names Rooney AI as the single coaching engine.",
+    "V4 iteration of the product page. Same arc as /product, but the coaches section is reframed around Roni AI as the platform engine — with Roni and Millie surfaced as the two clinical personas Roni powers. Aligns the surface with every source doc that names Roni AI as the single coaching engine.",
 };
 
 /**
@@ -21,9 +21,9 @@ export const metadata: Metadata = {
  * Mirrors /product exactly, except the coaches section swaps
  * `<HiwAgents />` for `<HiwAgentsV4 />`. That single swap reconciles the
  * gap between the site (two named coaches: Roni + Millie) and every
- * source doc (single engine: Rooney AI). V4 frames Rooney AI as the
+ * source doc (single engine: Roni AI). V4 frames Roni AI as the
  * umbrella engine, then presents Roni + Millie as the two clinical
- * personas Rooney powers.
+ * personas Roni powers.
  *
  * Nothing else about the arc changes:
  *   Tier 1 — HiwHero → HiwReply → HiwAgentsV4 → CoreCapabilities.

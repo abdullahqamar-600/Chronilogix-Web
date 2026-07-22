@@ -1,6 +1,17 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Fragment,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+// useLayoutEffect warns during SSR; fall back to useEffect on the server.
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 type Profile = {
   key: string;
@@ -166,16 +177,14 @@ export function HiwAudience() {
             reducedMotion={reducedMotion}
             autoAdvancing={autoAdvancing}
           />
-          {/* Panel wrapper reserves the tallest tab's compacted height
-              so switching between tabs never collapses the section and
-              yanks everything below up. Sticky tab rail + stable-height
-              panel = no visual jerk on tab change, no scroll jump. */}
-          <div className="min-w-0 lg:min-h-[740px]">
-            <ProfilePanel
-              profile={profile}
-              reducedMotion={reducedMotion}
-            />
-          </div>
+          {/* Panel animates to the active tab's real content height rather
+              than reserving the tallest tab's — the tabs vary a lot (a
+              two-line description vs. description + Solida sub-block + pull
+              stat), so a fixed height left a large void under short tabs.
+              The measured-height transition keeps tab changes from jerking
+              (the reason a fixed height existed) while removing the dead
+              space (the reason it hurt). */}
+          <AudiencePanel profile={profile} reducedMotion={reducedMotion} />
         </div>
       </div>
     </section>
@@ -323,6 +332,52 @@ function ProfileTabs({
         })}
       </ul>
     </nav>
+  );
+}
+
+// Measures the active panel's natural height and animates the wrapper to
+// it, so the section is exactly as tall as the current tab needs. Overflow
+// is clipped so a grow (short → tall tab) reads as a clean top-down reveal
+// instead of the new content briefly overlapping the section below.
+function AudiencePanel({
+  profile,
+  reducedMotion,
+}: {
+  profile: Profile;
+  reducedMotion: boolean;
+}) {
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState<number | null>(null);
+
+  // Measure synchronously on tab change so the height transition runs from
+  // the previous value rather than flashing the new content unclipped.
+  useIsomorphicLayoutEffect(() => {
+    if (innerRef.current) setHeight(innerRef.current.offsetHeight);
+  }, [profile.key]);
+
+  // Re-measure on responsive reflow (e.g. the description rewrapping).
+  useEffect(() => {
+    const el = innerRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setHeight(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <div
+      className="min-w-0 overflow-hidden"
+      style={{
+        height: height ?? undefined,
+        transition: reducedMotion
+          ? undefined
+          : "height 480ms cubic-bezier(0.22, 0.61, 0.36, 1)",
+      }}
+    >
+      <div ref={innerRef}>
+        <ProfilePanel profile={profile} reducedMotion={reducedMotion} />
+      </div>
+    </div>
   );
 }
 

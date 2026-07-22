@@ -89,6 +89,18 @@ function FrameWash() {
   );
 }
 
+// Card eyebrow — names what each block demonstrates. These are the reader's
+// signposts into the section, so they read as a confident brand label: warm
+// tint, semibold uppercase, and a small brand dot, not a muted chip.
+function CardEyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="relative inline-flex w-fit items-center gap-2 rounded-full border border-brand-600/30 bg-brand-50/90 px-3.5 py-1.5 text-[11.5px] font-semibold uppercase tracking-[0.09em] text-brand-800 backdrop-blur-sm">
+      <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-brand-600" />
+      {children}
+    </span>
+  );
+}
+
 export function MIExplainer() {
   return (
     <section
@@ -119,7 +131,7 @@ export function MIExplainer() {
               <Arrow />
             </a>
           </div>
-          <p className="body-prose">
+          <p className="text-lg leading-relaxed text-ink-soft md:text-xl">
             Motivational Interviewing (MI) is a collaborative way of
             speaking that moves through four processes,{" "}
             <span className="text-ink">engage, focus, evoke, plan</span>
@@ -322,9 +334,7 @@ function AnatomyColumn() {
       <div className={`${FRAME} flex flex-1 flex-col p-7 md:p-9 lg:p-10`}>
         <FrameWash />
         <div className="relative flex flex-1 flex-col">
-          <span className="inline-flex w-fit items-center rounded-full border border-ink/10 bg-white/70 px-3 py-1 text-[12.5px] font-medium text-ink-muted backdrop-blur-sm">
-            How the reply works
-          </span>
+          <CardEyebrow>How the reply works</CardEyebrow>
 
           {/* Two contrasting beats distributed to fill the card so the
               anti-patterns → MI-moves contrast reads as structure, not one
@@ -478,9 +488,7 @@ function ComparisonColumn() {
         />
         <div aria-hidden className="absolute inset-0 bg-paper/70" />
 
-        <span className="relative inline-flex w-fit items-center rounded-full border border-ink/10 bg-white/70 px-3 py-1 text-[12.5px] font-medium text-ink-muted backdrop-blur-sm">
-          MI in action
-        </span>
+        <CardEyebrow>MI in action</CardEyebrow>
         <div className="relative mt-6 flex flex-1 flex-col justify-center">
           {/* Setup exchange. */}
           <div className="space-y-5 md:space-y-6">

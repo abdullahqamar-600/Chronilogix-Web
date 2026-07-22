@@ -19,7 +19,7 @@ const ENGINE_CARDS: EngineSubCard[] = [
     body: "Thirty years of Dr. Resnicow's research, encoded as coaching moves.",
   },
   {
-    title: "Rooney AI runtime",
+    title: "Roni AI runtime",
     body: "The reasoning layer that composes each reply in real time.",
   },
   {
@@ -97,7 +97,7 @@ export function AppPartnersDiagram() {
           >
             {/* IMAGE PLACEHOLDER: Screenshot of a partner app with a
                 Chronilogix-powered chat inside — chrome of partner app
-                on top, Rooney reply below. Size: ~500x700. */}
+                on top, Roni reply below. Size: ~500x700. */}
             <div className="surface-glass relative aspect-[3/4] w-full overflow-hidden rounded-[24px]">
               <span
                 aria-hidden

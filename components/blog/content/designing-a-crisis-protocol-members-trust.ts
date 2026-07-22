@@ -30,7 +30,7 @@ export const content: ArticleContent = {
     },
     {
       type: "para",
-      text: "Rooney AI, the engine inside Chronilogix, is tuned to notice the language of risk — expressions of hopelessness, self-harm, intent, or acute crisis — across the natural, unscripted way members actually write. Detection is deliberately biased toward sensitivity: it is far better to surface a concern that turns out to be minor than to miss one that was not. But detection is treated as a signal, not a verdict. The system's job at this stage is to slow down, not to conclude.",
+      text: "Roni AI, the engine inside Chronilogix, is tuned to notice the language of risk — expressions of hopelessness, self-harm, intent, or acute crisis — across the natural, unscripted way members actually write. Detection is deliberately biased toward sensitivity: it is far better to surface a concern that turns out to be minor than to miss one that was not. But detection is treated as a signal, not a verdict. The system's job at this stage is to slow down, not to conclude.",
     },
     {
       type: "para",
@@ -79,7 +79,7 @@ export const content: ArticleContent = {
     },
     {
       type: "para",
-      text: "That restraint is a design decision expressed in the product's behavior: Rooney AI does not attempt to counsel a member through an acute crisis on its own, does not offer clinical assessment, and does not obscure the path to real-time human help. It surfaces the 988 line, holds the member with care, and hands off. An AI that overreaches in a crisis is not more advanced — it is less trustworthy, and in behavioral health, trust is the entire asset.",
+      text: "That restraint is a design decision expressed in the product's behavior: Roni AI does not attempt to counsel a member through an acute crisis on its own, does not offer clinical assessment, and does not obscure the path to real-time human help. It surfaces the 988 line, holds the member with care, and hands off. An AI that overreaches in a crisis is not more advanced — it is less trustworthy, and in behavioral health, trust is the entire asset.",
     },
     {
       type: "heading",
