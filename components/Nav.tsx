@@ -8,6 +8,8 @@ import {
   type PopupPersona,
   POPUP_PERSONAS,
 } from "@/components/personas/personaData";
+import { PARTNER_LOGOS } from "@/components/partnerSolutions/partnerData";
+import { PartnerLogoChip } from "@/components/partnerSolutions/PartnerLogoChip";
 
 type MenuItem = {
   href: string;
@@ -46,7 +48,38 @@ type NavLink = {
   // rather than a generic MegaMenu: sub-page personas on the left,
   // popup personas on the right.
   personaMenu?: boolean;
+  // Optional gradient glyph shown before the label — used to make the
+  // Solutions tab stand out among the plain-text nav items.
+  icon?: ReactNode;
 };
+
+// Brand-gradient glyph for the Solutions tab. A 2×2 tile grid ("catalog of
+// solutions") filled with the brand orange ramp so the item pops on both the
+// light nav surface and the dark hero. Unique gradient id avoids SVG defs
+// collisions elsewhere on the page.
+const SolutionsIcon = (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    aria-hidden
+    className="shrink-0"
+  >
+    <defs>
+      <linearGradient id="solutions-nav-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#FB9C5E" />
+        <stop offset="55%" stopColor="#FF7434" />
+        <stop offset="100%" stopColor="#B84614" />
+      </linearGradient>
+    </defs>
+    <g fill="url(#solutions-nav-grad)">
+      <rect x="1.5" y="1.5" width="5.6" height="5.6" rx="1.7" />
+      <rect x="8.9" y="1.5" width="5.6" height="5.6" rx="1.7" />
+      <rect x="1.5" y="8.9" width="5.6" height="5.6" rx="1.7" />
+      <rect x="8.9" y="8.9" width="5.6" height="5.6" rx="1.7" />
+    </g>
+  </svg>
+);
 
 // Icon container — small illustration block, taking direct inspiration
 // from the MIExplainer process cards and Solution agent cards: a soft
@@ -220,7 +253,7 @@ const RESOURCES_MENU: MegaMenu = {
 
 const NAV_LINKS: NavLink[] = [
   { href: "/product", label: "Product" },
-  { href: "/solutions", label: "Solutions", personaMenu: true },
+  { href: "/solutions", label: "Solutions", personaMenu: true, icon: SolutionsIcon },
   { href: "/about", label: "About" },
   { href: "/faq", label: "FAQ" },
   { href: "/resources", label: "Resources", megaMenu: RESOURCES_MENU },
@@ -305,16 +338,18 @@ export function Nav() {
       {/* Wider than the site's default container-page (max-w 1240px) so
           the nav breathes on larger monitors, and a taller row height
           gives the links + CTA more vertical whitespace. */}
-      <div className="mx-auto grid h-20 w-full max-w-[1440px] grid-cols-3 items-center px-6 md:h-24 md:px-12 lg:px-16 xl:px-20">
-        {/* Left: nav links (desktop) */}
-        <nav className="hidden lg:flex items-center gap-8 justify-self-start">
+      <div className="mx-auto grid h-20 w-full max-w-[1440px] grid-cols-3 items-center px-6 md:h-24 md:px-12 lg:px-8 xl:px-20">
+        {/* Left: nav links (desktop). Gap tightens at lg so the five links
+            fit their grid third without bleeding into the centered logo
+            between 1024–1279px; it opens back up to gap-8 at xl. */}
+        <nav className="hidden lg:flex items-center gap-5 xl:gap-8 justify-self-start">
           {NAV_LINKS.map((link) => {
             const hasMenu = !!link.megaMenu || !!link.personaMenu;
             const isOpen = openMenu === link.label;
             return (
               <div
                 key={link.href}
-                className="relative"
+                className="relative flex items-center"
                 onMouseEnter={() => hasMenu && setOpenMenu(link.label)}
                 onMouseLeave={() => hasMenu && setOpenMenu(null)}
               >
@@ -328,6 +363,7 @@ export function Nav() {
                         : "text-white/85 hover:text-white"
                     }`}
                   >
+                    {link.icon}
                     {link.label}
                     <svg
                       aria-hidden
@@ -495,7 +531,10 @@ export function Nav() {
                         aria-expanded={expanded}
                         className="flex items-center justify-between py-2.5 text-left text-base text-ink-soft transition-colors duration-200 ease-out-quart motion-reduce:transition-none hover:text-ink"
                       >
-                        <span>{link.label}</span>
+                        <span className="flex items-center gap-2">
+                          {link.icon}
+                          {link.label}
+                        </span>
                         <svg
                           aria-hidden
                           viewBox="0 0 12 12"
@@ -650,14 +689,71 @@ function PersonaCard({
   );
 }
 
+// Dark slate gradient — matches the "Roni AI" featured card in the Resources
+// mega-menu (from-[#1F2937] via-[#2C3D55] to-[#3F5572]) with the same soft
+// top-right highlight, so the two dropdown cards read as one family.
+const PARTNER_CARD_BG =
+  "radial-gradient(circle at 85% 15%, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 42%), linear-gradient(135deg, #1F2937 0%, #2C3D55 55%, #3F5572 100%)";
+
+// Partner Solutions promo card for the Solutions mega-menu. A gradient
+// surface carrying the heading, a one-line hook, and the three partner
+// logos in white chips; the whole card links to /partner-solutions.
+function PartnerSolutionsMenuCard() {
+  return (
+    <a
+      href="/partner-solutions"
+      className="group/psc relative mt-auto flex min-h-[188px] flex-col justify-between overflow-hidden rounded-2xl p-6 text-left transition-all duration-200 ease-out-quart hover:-translate-y-0.5 hover:shadow-[0_2px_8px_rgba(15,20,25,0.12),0_24px_44px_-22px_rgba(31,41,55,0.8)] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/60 motion-reduce:transition-none"
+      style={{ backgroundImage: PARTNER_CARD_BG }}
+    >
+      <span className="relative">
+        <span className="flex items-center justify-between gap-3">
+          <span className="text-[14px] font-bold text-white/70">
+            Partner Solutions
+          </span>
+          <span
+            aria-hidden
+            className="text-white/85 transition-transform duration-200 ease-out-quart group-hover/psc:translate-x-0.5 motion-reduce:transition-none"
+          >
+            <svg width="18" height="18" viewBox="0 0 14 14" fill="none">
+              <path
+                d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+        </span>
+        <span className="mt-1.5 block text-[18px] font-bold leading-snug text-white">
+          See how Chronilogix makes existing healthcare products more valuable.
+        </span>
+      </span>
+      <span className="relative mt-5 grid grid-cols-3 gap-2">
+        {PARTNER_LOGOS.map((logo) => (
+          <PartnerLogoChip
+            key={logo.src}
+            logo={logo}
+            className="h-12 w-full"
+            imgClassName="h-full w-full object-contain"
+            pad="px-3 py-2.5"
+          />
+        ))}
+      </span>
+    </a>
+  );
+}
+
 function SolutionsPanel({
   onOpenPersona,
 }: {
   onOpenPersona: (key: string) => void;
 }) {
   return (
-    <div className="w-[860px] rounded-3xl border border-ink/5 bg-paper p-10 shadow-2xl shadow-ink/10">
-      <div className="grid grid-cols-[1fr_1.4fr] gap-14">
+    <div className="w-[940px] rounded-3xl border border-ink/5 bg-paper p-10 shadow-2xl shadow-ink/10">
+      {/* Extra panel width routed into the left column so the Partner
+          Solutions card (and its logos) get more room. */}
+      <div className="grid grid-cols-[1fr_1.11fr] gap-14">
         <div className="flex flex-col gap-5">
           <div className="text-[12px] font-medium tracking-tight text-ink-soft/70">
             Explore in depth
@@ -680,6 +776,12 @@ function SolutionsPanel({
               </li>
             ))}
           </ul>
+
+          {/* Partner Solutions promo — fills the space beneath the two
+              sub-page personas and aligns with the lower edge of the
+              "More audiences" grid. Distinct from the persona list: this is
+              the case-study showcase of live bundles, not a buyer persona. */}
+          <PartnerSolutionsMenuCard />
         </div>
 
         <div className="flex flex-col gap-6">
@@ -712,6 +814,40 @@ function SolutionsMobileMenu({
 }) {
   return (
     <>
+      {/* Partner Solutions promo — first entry, mirrors the desktop card. */}
+      <a
+        href="/partner-solutions"
+        onClick={onClose}
+        className="relative block overflow-hidden rounded-2xl p-4"
+        style={{ backgroundImage: PARTNER_CARD_BG }}
+      >
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(80% 60% at 50% -10%, rgba(255,255,255,0.28), transparent 60%)",
+          }}
+        />
+        <span className="relative block text-xl font-bold text-white">
+          Partner Solutions
+        </span>
+        <span className="relative mt-1 block text-[13px] font-bold text-white">
+          See how Chronilogix makes existing healthcare products more valuable.
+        </span>
+        <span className="relative mt-4 grid grid-cols-3 gap-2">
+          {PARTNER_LOGOS.map((logo) => (
+            <PartnerLogoChip
+              key={logo.src}
+              logo={logo}
+              className="h-12 w-full"
+              imgClassName="h-full w-full object-contain"
+              pad="px-3 py-2.5"
+            />
+          ))}
+        </span>
+      </a>
+
       <div className="flex flex-col gap-2">
         <div className="text-[12px] font-medium tracking-tight text-ink-soft/70">
           Explore in depth

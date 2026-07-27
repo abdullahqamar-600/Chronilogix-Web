@@ -202,7 +202,7 @@ export function HeroV5() {
           flank on the right. Phone in the centre claims a wider
           column so it reads as the hero visual rather than a side
           prop. Below `lg` we stack: heading → phone → subtext. */}
-      <div className="container-page relative z-20 flex h-full w-full flex-col lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1.1fr)_minmax(0,1.15fr)] lg:items-center lg:gap-20 lg:py-0 xl:gap-28">
+      <div className="container-page relative z-20 flex h-full w-full flex-col min-[900px]:grid min-[900px]:grid-cols-[minmax(0,1.15fr)_minmax(0,1.1fr)_minmax(0,1.15fr)] min-[900px]:items-center min-[900px]:gap-10 lg:gap-20 min-[900px]:py-0 xl:gap-28">
 
         {/* Left — Heading. Sits high in the desktop column so it
             shoulders the phone from above; on smaller viewports flows
@@ -210,16 +210,16 @@ export function HeroV5() {
             viewports (iPhone SE portrait) leave enough middle-band
             space for the phone to render at usable size. */}
         <div
-          className="relative z-20 flex-none pt-24 sm:pt-24 md:pt-28 lg:self-start lg:pt-36 xl:pt-44"
+          className="relative z-20 flex-none pt-24 sm:pt-24 md:pt-28 min-[900px]:self-start min-[900px]:pt-28 lg:pt-36 xl:pt-44"
           style={{
             opacity: textFade,
             transform: `translateY(${(1 - textFade) * 10}px)`,
             willChange: "opacity, transform",
           }}
         >
-          <div className="flex w-full flex-col items-center text-center lg:items-start lg:text-left">
+          <div className="flex w-full flex-col items-center text-center min-[900px]:items-start min-[900px]:text-left">
             <h1
-              className="max-w-[20ch] font-serif font-normal leading-[1.06] tracking-[-0.022em] text-ink text-[1.875rem] sm:text-[2.25rem] md:text-[2.75rem] lg:text-[2.5rem] xl:text-[2.875rem]"
+              className="max-w-[20ch] font-serif font-normal leading-[1.06] tracking-[-0.022em] text-ink text-[1.875rem] sm:text-[2.25rem] md:text-[2.75rem] min-[900px]:text-[2.1rem] lg:text-[2.5rem] xl:text-[2.875rem]"
               style={{ textWrap: "balance" } as React.CSSProperties}
             >
               Filling the gaps in{" "}
@@ -240,24 +240,26 @@ export function HeroV5() {
             keeps the phone at a legible size on short viewports where
             the flex-1 middle band would otherwise get crushed. */}
         <div
-          className="relative z-0 flex w-full flex-1 items-end justify-center pt-3 md:pt-4 lg:self-stretch lg:pt-0"
+          className="relative z-0 flex w-full flex-1 items-center justify-center pt-3 md:pt-4 min-[900px]:items-end min-[900px]:self-stretch min-[900px]:pt-0"
           style={{ minHeight: 200 }}
         >
+          {/* Stacked (below 900px): the phone is centred in the tall middle
+              band so the space above and below reads as equal, and grows to
+              fill that band — capped at the band width so it never overflows
+              on narrow phones. Desktop keeps the bottom-anchored 76% rise. */}
           <div
             style={{
               opacity: phoneFade,
               transform: `translateY(${(1 - phoneFade) * 14}px)`,
               willChange: "opacity, transform",
             }}
-            className="h-[80%] sm:h-[74%] lg:h-[76%]"
+            className="aspect-[1013/986] h-full max-h-[96%] w-auto max-w-full sm:max-h-[94%] min-[900px]:h-[76%] min-[900px]:max-h-none min-[900px]:w-auto min-[900px]:max-w-none"
           >
-            <div className="h-full" style={{ aspectRatio: "1013 / 986" }}>
-              <PhoneFrame
-                phase={phase}
-                activeIndex={activeIndex}
-                typingFor={typingFor}
-              />
-            </div>
+            <PhoneFrame
+              phase={phase}
+              activeIndex={activeIndex}
+              typingFor={typingFor}
+            />
           </div>
         </div>
 
@@ -266,14 +268,14 @@ export function HeroV5() {
             phone, giving the composition a diagonal read. Each child
             is a quiet beat: Resnicow attribution → CTA → stat pills. */}
         <div
-          className="relative z-20 flex-none pb-8 md:pb-10 lg:self-end lg:pb-28 xl:pb-32"
+          className="relative z-20 flex-none pb-8 md:pb-10 min-[900px]:self-end min-[900px]:pb-16 lg:pb-28 xl:pb-32"
           style={{
             opacity: textFade,
             transform: `translateY(${(1 - textFade) * 12}px)`,
             willChange: "opacity, transform",
           }}
         >
-          <div className="flex w-full flex-col items-center text-center lg:items-start lg:text-left">
+          <div className="flex w-full flex-col items-center text-center min-[900px]:items-start min-[900px]:text-left">
             <p
               className="max-w-[36ch] font-serif font-normal italic leading-[1.32] tracking-[-0.01em] text-ink text-base md:text-lg"
               style={{ textWrap: "balance" } as React.CSSProperties}
@@ -298,7 +300,7 @@ export function HeroV5() {
               <Arrow />
             </a>
 
-            <dl className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[12px] text-ink-muted md:mt-5 md:gap-2 md:text-[11px] lg:justify-start lg:text-[11.5px]">
+            <dl className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[12px] text-ink-muted md:mt-5 md:gap-2 md:text-[11px] min-[900px]:justify-start min-[900px]:text-[11.5px]">
               <div className="inline-flex items-center gap-1.5 rounded-full border border-ink/8 bg-white/70 px-3 py-1.5 backdrop-blur-sm md:px-3 md:py-1">
                 <dt className="font-medium leading-none text-ink">30+</dt>
                 <dd className="leading-none">years of MI research</dd>
@@ -323,7 +325,7 @@ export function HeroV5() {
           stark fade to white. Cream rgba mirrors `paper.warm`. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 z-10 hidden h-[16svh] lg:block"
+        className="pointer-events-none absolute inset-x-0 z-10 hidden h-[16svh] min-[900px]:block"
         style={{
           bottom: "8svh",
           background:
@@ -335,7 +337,7 @@ export function HeroV5() {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-[-10%] z-10 h-[20svh] lg:hidden"
+        className="pointer-events-none absolute inset-x-[-10%] z-10 h-[20svh] min-[900px]:hidden"
         style={{
           bottom: "12svh",
           background:

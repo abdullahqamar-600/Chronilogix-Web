@@ -34,9 +34,9 @@ export function Footer() {
   return (
     <footer className="relative">
       {/* Closing section — cream rounded card, full-bleed carousel + CTA */}
-      <section className="relative overflow-hidden rounded-[28px] bg-paper-warm pt-24 pb-20 md:pt-32 md:pb-28 lg:pt-40">
+      <section className="relative overflow-hidden rounded-[28px] bg-paper-warm pt-14 pb-20 md:pt-16 md:pb-28 lg:pt-20">
         {/* Full-bleed marquee carousel */}
-        <div className="relative mt-14 overflow-hidden md:mt-16 lg:mt-20" aria-hidden>
+        <div className="relative mt-10 overflow-hidden md:mt-12 lg:mt-12" aria-hidden>
           {/* Soft edge fade so cards melt into the cream on left/right */}
           <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-paper-warm to-transparent md:w-24" />
           <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-paper-warm to-transparent md:w-24" />
