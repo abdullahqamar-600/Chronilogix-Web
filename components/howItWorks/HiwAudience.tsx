@@ -77,18 +77,36 @@ const PROFILES: Profile[] = [
 
 const STEP_COUNT = PROFILES.length;
 // Auto-advance dwell per profile — matches the home page persona section
-// (12 s lands between a 250-wpm careful read and a 400-wpm skim).
+// (12 s lands between a 250-wpm careful read and a 400-wpm skim). Used only
+// in the non-pinned (mobile / reduced-motion) fallback.
 const DWELL_MS = 12000;
+// Scroll distance the pinned section consumes per step. The section pins to
+// the viewport and each step gets this much scroll before the next takes
+// over, so the visitor can't skip past a step without seeing it.
+const STEP_SCROLL_VH = 90;
 
 export function HiwAudience() {
   const [active, setActive] = useState(0);
+  // Continuous rail position (0 … STEP_COUNT-1) so the fill + knob glide with
+  // the scrollbar; `active` is the rounded step that drives labels + content.
+  const [railPos, setRailPos] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const [inView, setInView] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  // The tall spacer that provides the scroll distance; its offset maps to the
+  // active step while the inner content stays pinned.
+  const scrollWrapRef = useRef<HTMLDivElement>(null);
   // Once the visitor takes manual control of the rail, auto-advance steps
   // back. Their click is the strongest signal that they're reading on
-  // their own pace; the timer should not yank focus away again.
+  // their own pace; the timer should not yank focus away again. (Fallback
+  // path only — when pinned, the scrollbar is the control.)
   const userTookOverRef = useRef(false);
+
+  // On desktop we pin the section and scrub steps with the scrollbar. On
+  // small screens (single-column) or when the visitor prefers reduced motion,
+  // fall back to the tap + auto-advance rail so nothing gets scroll-jacked.
+  const pinned = isDesktop && !reducedMotion;
 
   useEffect(() => {
     if (typeof window === "undefined" || !window.matchMedia) return;
@@ -99,8 +117,60 @@ export function HiwAudience() {
     return () => mq.removeEventListener?.("change", onChange);
   }, []);
 
+  // Track the lg breakpoint — the pinned layout only applies where the
+  // two-column rail + panel exists.
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const apply = () => setIsDesktop(mq.matches);
+    apply();
+    mq.addEventListener?.("change", apply);
+    // Resize fallback: matchMedia's `change` only fires when the breakpoint
+    // is crossed, so a first mount at a transient 0/narrow width could latch
+    // the wrong value and never recover. A resize listener re-checks.
+    window.addEventListener("resize", apply);
+    return () => {
+      mq.removeEventListener?.("change", apply);
+      window.removeEventListener("resize", apply);
+    };
+  }, []);
+
+  // ── Pinned scroll driver ────────────────────────────────────────────
+  // Map how far the tall spacer has scrolled past the top of the viewport to
+  // a fractional step position. rAF-throttled so it stays smooth.
+  useEffect(() => {
+    if (!pinned) return;
+    const wrap = scrollWrapRef.current;
+    if (!wrap) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const total = wrap.offsetHeight - window.innerHeight;
+      if (total <= 0) return;
+      const top = wrap.getBoundingClientRect().top;
+      const scrolled = Math.min(Math.max(-top, 0), total);
+      const progress = scrolled / total; // 0 … 1 across the whole section
+      const pos = progress * (STEP_COUNT - 1);
+      setRailPos(pos);
+      setActive(Math.round(pos));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [pinned]);
+
+  // ── Fallback path (mobile / reduced motion) ─────────────────────────
   // Hold the auto-advance until the section is actually being read.
   useEffect(() => {
+    if (pinned) return;
     const el = sectionRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(
@@ -109,24 +179,38 @@ export function HiwAudience() {
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, []);
+  }, [pinned]);
 
   // Auto-advance timer. Stops at the last profile and once user clicks.
   useEffect(() => {
+    if (pinned) return;
     if (reducedMotion || !inView) return;
     if (userTookOverRef.current) return;
     if (active >= STEP_COUNT - 1) return;
     const t = setTimeout(() => setActive((a) => a + 1), DWELL_MS);
     return () => clearTimeout(t);
-  }, [active, inView, reducedMotion]);
+  }, [active, inView, reducedMotion, pinned]);
 
   const handleSelect = (idx: number) => {
+    if (pinned) {
+      // Jump the page to the scroll offset that centers this step.
+      const wrap = scrollWrapRef.current;
+      if (!wrap) return;
+      const total = wrap.offsetHeight - window.innerHeight;
+      const wrapTop = window.scrollY + wrap.getBoundingClientRect().top;
+      window.scrollTo({
+        top: wrapTop + (idx / (STEP_COUNT - 1)) * total,
+        behavior: reducedMotion ? "auto" : "smooth",
+      });
+      return;
+    }
     userTookOverRef.current = true;
     setActive(idx);
   };
 
   const profile = PROFILES[active];
   const autoAdvancing =
+    !pinned &&
     !reducedMotion &&
     inView &&
     !userTookOverRef.current &&
@@ -143,48 +227,62 @@ export function HiwAudience() {
         Who Chronilogix reaches
       </h2>
 
-      {/* Top / bottom edge gradients soften the boundary with adjacent
-          full-bleed sections — same treatment as the home persona block. */}
+      {/* Tall spacer supplies the scroll distance when pinned; the inner
+          block sticks to the viewport and swaps steps as it scrolls by. On
+          the fallback path this is a plain wrapper in normal flow. */}
       <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 z-20"
-        style={{
-          height: "min(180px, 18vh)",
-          background:
-            "linear-gradient(to bottom, #FFFFFF 0%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0) 100%)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-20"
-        style={{
-          height: "min(180px, 18vh)",
-          background:
-            "linear-gradient(to top, #FFFFFF 0%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0) 100%)",
-        }}
-      />
-
-      <div className="container-page py-24 md:py-28 lg:py-32">
-        {/* Tab rail + panel — the home persona pattern. The manifesto
-            intro that used to live here (night shift nurse / diabetic
-            patient / underinsured worker …) now lives on /about in the
-            AboutPurpose section so the same beat doesn't play twice on
-            /product. */}
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[300px_1fr] lg:gap-16 xl:grid-cols-[340px_1fr] xl:gap-24">
-          <ProfileTabs
-            active={active}
-            onSelect={handleSelect}
-            reducedMotion={reducedMotion}
-            autoAdvancing={autoAdvancing}
+        ref={scrollWrapRef}
+        className={pinned ? "relative" : ""}
+        style={pinned ? { height: `${STEP_COUNT * STEP_SCROLL_VH}vh` } : undefined}
+      >
+        <div
+          className={
+            pinned
+              ? "sticky top-0 flex h-screen items-center overflow-hidden"
+              : "relative"
+          }
+        >
+          {/* Top / bottom edge gradients soften the boundary with adjacent
+              full-bleed sections — same treatment as the home persona block. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 z-20"
+            style={{
+              height: "min(180px, 18vh)",
+              background:
+                "linear-gradient(to bottom, #FFFFFF 0%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0) 100%)",
+            }}
           />
-          {/* Panel animates to the active tab's real content height rather
-              than reserving the tallest tab's — the tabs vary a lot (a
-              two-line description vs. description + Solida sub-block + pull
-              stat), so a fixed height left a large void under short tabs.
-              The measured-height transition keeps tab changes from jerking
-              (the reason a fixed height existed) while removing the dead
-              space (the reason it hurt). */}
-          <AudiencePanel profile={profile} reducedMotion={reducedMotion} />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-20"
+            style={{
+              height: "min(180px, 18vh)",
+              background:
+                "linear-gradient(to top, #FFFFFF 0%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0) 100%)",
+            }}
+          />
+
+          <div
+            className={`container-page w-full ${
+              pinned ? "py-0" : "py-24 md:py-28 lg:py-32"
+            }`}
+          >
+            {/* Tab rail + panel — the home persona pattern. */}
+            <div className="grid grid-cols-1 gap-12 lg:grid-cols-[300px_1fr] lg:gap-16 xl:grid-cols-[340px_1fr] xl:gap-24">
+              <ProfileTabs
+                active={active}
+                railPos={railPos}
+                pinned={pinned}
+                onSelect={handleSelect}
+                reducedMotion={reducedMotion}
+                autoAdvancing={autoAdvancing}
+              />
+              {/* Panel animates to the active tab's real content height so the
+                  section is exactly as tall as the current step needs. */}
+              <AudiencePanel profile={profile} reducedMotion={reducedMotion} />
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -193,32 +291,40 @@ export function HiwAudience() {
 
 function ProfileTabs({
   active,
+  railPos,
+  pinned,
   onSelect,
   reducedMotion,
   autoAdvancing,
 }: {
   active: number;
+  railPos: number;
+  pinned: boolean;
   onSelect: (i: number) => void;
   reducedMotion: boolean;
   autoAdvancing: boolean;
 }) {
   // Progress rail math — each row gets an equal slice of the list
   // height; track spans first-row center → last-row center; fill grows
-  // top-down to the active row's center.
+  // top-down to the active row's center. When pinned, the rail rides the
+  // continuous `railPos` so it glides in lockstep with the scrollbar;
+  // otherwise it sits on the discrete `active` step.
   const segment = 100 / STEP_COUNT;
   const trackTop = segment / 2;
   const trackHeight = 100 - segment;
+  const pos = pinned ? railPos : active;
   const fillHeight =
-    STEP_COUNT > 1 ? (active / (STEP_COUNT - 1)) * trackHeight : 0;
-  const knobTop = trackTop + segment * active;
+    STEP_COUNT > 1 ? (pos / (STEP_COUNT - 1)) * trackHeight : 0;
+  const knobTop = trackTop + segment * pos;
 
   const fillRef = useRef<HTMLSpanElement>(null);
   const knobRef = useRef<HTMLSpanElement>(null);
 
   // Drive the fill height and knob position with WAAPI so the visual
-  // progress is smooth and linear across the entire dwell.
+  // progress is smooth and linear across the entire dwell. Fallback path
+  // only — when pinned, the rail is positioned directly from `railPos`.
   useEffect(() => {
-    if (!autoAdvancing) return;
+    if (pinned || !autoAdvancing) return;
     const fillEl = fillRef.current;
     const knobEl = knobRef.current;
     if (!fillEl || !knobEl) return;
@@ -241,12 +347,16 @@ function ProfileTabs({
       fillAnim.cancel();
       knobAnim.cancel();
     };
-  }, [active, autoAdvancing, segment, trackHeight, trackTop]);
+  }, [active, autoAdvancing, pinned, segment, trackHeight, trackTop]);
 
   return (
     <nav
       aria-label="Member profiles"
-      className="relative lg:sticky lg:top-28 lg:self-start"
+      className={
+        pinned
+          ? "relative lg:self-start"
+          : "relative lg:sticky lg:top-28 lg:self-start"
+      }
     >
       <ul className="relative">
         {/* Quiet base track */}
