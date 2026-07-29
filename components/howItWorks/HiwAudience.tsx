@@ -80,33 +80,44 @@ const STEP_COUNT = PROFILES.length;
 // (12 s lands between a 250-wpm careful read and a 400-wpm skim). Used only
 // in the non-pinned (mobile / reduced-motion) fallback.
 const DWELL_MS = 12000;
-// Scroll distance the pinned section consumes per step. The section pins to
-// the viewport and each step gets this much scroll before the next takes
-// over, so the visitor can't skip past a step without seeing it.
-const STEP_SCROLL_VH = 90;
+// Each pinned step owns one full viewport of scroll distance. A CSS scroll-snap
+// point sits at every step boundary with `scroll-snap-stop: always`, so a fast
+// fling is forced to stop on each step — the section can't be skipped — while
+// the browser handles all the scrolling natively (no event hijacking).
+const STEP_VH = 100;
 
 export function HiwAudience() {
   const [active, setActive] = useState(0);
-  // Continuous rail position (0 … STEP_COUNT-1) so the fill + knob glide with
-  // the scrollbar; `active` is the rounded step that drives labels + content.
+  // Continuous rail position (0 … STEP_COUNT-1) so the fill/knob + horizontal
+  // strip glide smoothly with the scroll; `active` is the rounded step that
+  // drives the labels + content.
   const [railPos, setRailPos] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const [inView, setInView] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-  // The tall spacer that provides the scroll distance; its offset maps to the
+  // The tall spacer that supplies the scroll distance; its offset maps to the
   // active step while the inner content stays pinned.
   const scrollWrapRef = useRef<HTMLDivElement>(null);
-  // Once the visitor takes manual control of the rail, auto-advance steps
-  // back. Their click is the strongest signal that they're reading on
-  // their own pace; the timer should not yank focus away again. (Fallback
-  // path only — when pinned, the scrollbar is the control.)
+  // Once the visitor takes manual control of the rail in the fallback path,
+  // auto-advance stops — their click is the strongest signal they're reading
+  // at their own pace.
   const userTookOverRef = useRef(false);
 
-  // On desktop we pin the section and scrub steps with the scrollbar. On
-  // small screens (single-column) or when the visitor prefers reduced motion,
-  // fall back to the tap + auto-advance rail so nothing gets scroll-jacked.
+  // Two pinned step modes + one fallback, chosen by width and motion pref:
+  //   • pinned   (≥1024, motion ok) — pin the section, rail on the left,
+  //     content on the right; the panel swaps in place per step.
+  //   • pinnedH  (<1024, motion ok) — pin the section, rail stacked on top,
+  //     content below on a horizontal strip that slides one panel per step
+  //     (tablet and mobile).
+  //   • fallback (reduced motion) — no pin; tap + auto-advance.
+  // Both pinned modes use the tall-spacer + sticky + scroll-snap mechanism so
+  // the visitor is stopped on every step and can't skip past.
   const pinned = isDesktop && !reducedMotion;
+  const pinnedH = !isDesktop && !reducedMotion;
+  const anyPinned = pinned || pinnedH;
+  // Rail rides the continuous scroll position in both pinned modes.
+  const continuous = anyPinned;
 
   useEffect(() => {
     if (typeof window === "undefined" || !window.matchMedia) return;
@@ -117,42 +128,56 @@ export function HiwAudience() {
     return () => mq.removeEventListener?.("change", onChange);
   }, []);
 
-  // Track the lg breakpoint — the pinned layout only applies where the
-  // two-column rail + panel exists.
+  // Width-based mode detection. One resize handler reading window.innerWidth
+  // directly (rather than a matchMedia listener) so the breakpoint updates on
+  // every resize — matchMedia's `change` only fires when a boundary is
+  // crossed, which could miss updates and strand the section in the wrong
+  // mode. Threshold: ≥1024 → pinned (rail beside content); below → pinnedH
+  // (rail above a horizontal sliding strip).
   useEffect(() => {
-    if (typeof window === "undefined" || !window.matchMedia) return;
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const apply = () => setIsDesktop(mq.matches);
-    apply();
-    mq.addEventListener?.("change", apply);
-    // Resize fallback: matchMedia's `change` only fires when the breakpoint
-    // is crossed, so a first mount at a transient 0/narrow width could latch
-    // the wrong value and never recover. A resize listener re-checks.
-    window.addEventListener("resize", apply);
+    if (typeof window === "undefined") return;
+    const check = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    check();
+    window.addEventListener("resize", check);
+    window.addEventListener("orientationchange", check);
     return () => {
-      mq.removeEventListener?.("change", apply);
-      window.removeEventListener("resize", apply);
+      window.removeEventListener("resize", check);
+      window.removeEventListener("orientationchange", check);
     };
   }, []);
 
-  // ── Pinned scroll driver ────────────────────────────────────────────
-  // Map how far the tall spacer has scrolled past the top of the viewport to
-  // a fractional step position. rAF-throttled so it stays smooth.
+  // ── Pinned scroll driver + snap gating ──────────────────────────────
+  // Map how far the tall spacer has scrolled past the top of the viewport to a
+  // fractional step position (purely visual — it drives the rail + slide) and
+  // toggle mandatory y snapping ON only while the spacer fills the viewport.
+  // Scoping the snap to the pinned range means the page snaps to each step
+  // (with `scroll-snap-stop: always` on the anchors forbidding a fling from
+  // passing one) without affecting the rest of the site. rAF-throttled.
   useEffect(() => {
-    if (!pinned) return;
+    if (!anyPinned) return;
     const wrap = scrollWrapRef.current;
     if (!wrap) return;
+    const root = document.documentElement;
     let raf = 0;
+    let snapOn = false;
     const update = () => {
       raf = 0;
+      const rect = wrap.getBoundingClientRect();
       const total = wrap.offsetHeight - window.innerHeight;
-      if (total <= 0) return;
-      const top = wrap.getBoundingClientRect().top;
-      const scrolled = Math.min(Math.max(-top, 0), total);
-      const progress = scrolled / total; // 0 … 1 across the whole section
-      const pos = progress * (STEP_COUNT - 1);
-      setRailPos(pos);
-      setActive(Math.round(pos));
+      if (total > 0) {
+        const scrolled = Math.min(Math.max(-rect.top, 0), total);
+        const pos = (scrolled / total) * (STEP_COUNT - 1);
+        setRailPos(pos);
+        setActive(Math.round(pos));
+      }
+      // Snap only while the section fully occupies the viewport.
+      const filling = rect.top <= 0 && rect.bottom >= window.innerHeight;
+      if (filling !== snapOn) {
+        snapOn = filling;
+        root.style.scrollSnapType = filling ? "y mandatory" : "";
+      }
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -164,13 +189,14 @@ export function HiwAudience() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (raf) cancelAnimationFrame(raf);
+      root.style.scrollSnapType = "";
     };
-  }, [pinned]);
+  }, [anyPinned]);
 
-  // ── Fallback path (mobile / reduced motion) ─────────────────────────
+  // ── Fallback path (reduced motion) ──────────────────────────────────
   // Hold the auto-advance until the section is actually being read.
   useEffect(() => {
-    if (pinned) return;
+    if (anyPinned) return;
     const el = sectionRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(
@@ -179,21 +205,22 @@ export function HiwAudience() {
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [pinned]);
+  }, [anyPinned]);
 
   // Auto-advance timer. Stops at the last profile and once user clicks.
   useEffect(() => {
-    if (pinned) return;
+    if (anyPinned) return;
     if (reducedMotion || !inView) return;
     if (userTookOverRef.current) return;
     if (active >= STEP_COUNT - 1) return;
     const t = setTimeout(() => setActive((a) => a + 1), DWELL_MS);
     return () => clearTimeout(t);
-  }, [active, inView, reducedMotion, pinned]);
+  }, [active, inView, reducedMotion, anyPinned]);
 
   const handleSelect = (idx: number) => {
-    if (pinned) {
-      // Jump the page to the scroll offset that centers this step.
+    if (anyPinned) {
+      // Scroll to the offset that lands on this step; the driver + snap sync
+      // the rail and slide.
       const wrap = scrollWrapRef.current;
       if (!wrap) return;
       const total = wrap.offsetHeight - window.innerHeight;
@@ -210,7 +237,7 @@ export function HiwAudience() {
 
   const profile = PROFILES[active];
   const autoAdvancing =
-    !pinned &&
+    !anyPinned &&
     !reducedMotion &&
     inView &&
     !userTookOverRef.current &&
@@ -227,18 +254,39 @@ export function HiwAudience() {
         Who Chronilogix reaches
       </h2>
 
-      {/* Tall spacer supplies the scroll distance when pinned; the inner
-          block sticks to the viewport and swaps steps as it scrolls by. On
-          the fallback path this is a plain wrapper in normal flow. */}
+      {/* Tall spacer supplies the scroll distance when pinned; the inner block
+          sticks to the viewport and advances steps as it scrolls by, and the
+          snap anchors below stop the scroll on each step. On the fallback path
+          this is a plain wrapper in normal flow. */}
       <div
         ref={scrollWrapRef}
-        className={pinned ? "relative" : ""}
-        style={pinned ? { height: `${STEP_COUNT * STEP_SCROLL_VH}vh` } : undefined}
+        className={anyPinned ? "relative" : ""}
+        style={anyPinned ? { height: `${STEP_COUNT * STEP_VH}vh` } : undefined}
       >
+        {/* One snap stop per step. `scroll-snap-stop: always` forbids the scroll
+            from flinging past a step, so the visitor is stopped on every one. */}
+        {anyPinned
+          ? PROFILES.map((p, i) => (
+              <div
+                key={`snap-${p.key}`}
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0"
+                style={{
+                  top: `${i * STEP_VH}vh`,
+                  height: `${STEP_VH}vh`,
+                  scrollSnapAlign: "start",
+                  scrollSnapStop: "always",
+                }}
+              />
+            ))
+          : null}
         <div
           className={
-            pinned
-              ? "sticky top-0 flex h-screen items-center overflow-hidden"
+            anyPinned
+              ? // flex-col + overflow-y-auto + `my-auto` on the child centres a
+                // step that fits and lets a taller one (the content-heavy last
+                // step on a narrow phone) scroll into view instead of clipping.
+                "sticky top-0 flex h-screen flex-col overflow-y-auto"
               : "relative"
           }
         >
@@ -265,22 +313,34 @@ export function HiwAudience() {
 
           <div
             className={`container-page w-full ${
-              pinned ? "py-0" : "py-24 md:py-28 lg:py-32"
+              anyPinned
+                ? "my-auto shrink-0 py-6"
+                : "py-24 md:py-28 lg:py-32"
             }`}
           >
             {/* Tab rail + panel — the home persona pattern. */}
-            <div className="grid grid-cols-1 gap-12 lg:grid-cols-[300px_1fr] lg:gap-16 xl:grid-cols-[340px_1fr] xl:gap-24">
+            <div className="grid grid-cols-1 gap-10 md:gap-12 lg:grid-cols-[300px_1fr] lg:gap-16 xl:grid-cols-[340px_1fr] xl:gap-24">
               <ProfileTabs
                 active={active}
                 railPos={railPos}
-                pinned={pinned}
+                continuous={continuous}
                 onSelect={handleSelect}
                 reducedMotion={reducedMotion}
                 autoAdvancing={autoAdvancing}
               />
-              {/* Panel animates to the active tab's real content height so the
-                  section is exactly as tall as the current step needs. */}
-              <AudiencePanel profile={profile} reducedMotion={reducedMotion} />
+              {pinnedH ? (
+                // 768–1023px — every step panel sits on one horizontal strip
+                // that slides with the scroll, one panel per step.
+                <SlidingPanels
+                  railPos={railPos}
+                  active={active}
+                  reducedMotion={reducedMotion}
+                />
+              ) : (
+                // Panel animates to the active tab's real content height so the
+                // section is exactly as tall as the current step needs.
+                <AudiencePanel profile={profile} reducedMotion={reducedMotion} />
+              )}
             </div>
           </div>
         </div>
@@ -292,27 +352,27 @@ export function HiwAudience() {
 function ProfileTabs({
   active,
   railPos,
-  pinned,
+  continuous,
   onSelect,
   reducedMotion,
   autoAdvancing,
 }: {
   active: number;
   railPos: number;
-  pinned: boolean;
+  continuous: boolean;
   onSelect: (i: number) => void;
   reducedMotion: boolean;
   autoAdvancing: boolean;
 }) {
   // Progress rail math — each row gets an equal slice of the list
   // height; track spans first-row center → last-row center; fill grows
-  // top-down to the active row's center. When pinned, the rail rides the
-  // continuous `railPos` so it glides in lockstep with the scrollbar;
-  // otherwise it sits on the discrete `active` step.
+  // top-down to the active row's center. In the pinned modes the fill + knob
+  // ride the continuous `railPos` so they glide in lockstep with the scroll;
+  // the fallback path uses the WAAPI dwell animation below.
   const segment = 100 / STEP_COUNT;
   const trackTop = segment / 2;
   const trackHeight = 100 - segment;
-  const pos = pinned ? railPos : active;
+  const pos = continuous ? railPos : active;
   const fillHeight =
     STEP_COUNT > 1 ? (pos / (STEP_COUNT - 1)) * trackHeight : 0;
   const knobTop = trackTop + segment * pos;
@@ -322,9 +382,9 @@ function ProfileTabs({
 
   // Drive the fill height and knob position with WAAPI so the visual
   // progress is smooth and linear across the entire dwell. Fallback path
-  // only — when pinned, the rail is positioned directly from `railPos`.
+  // only — in the pinned modes the rail is positioned from `active` + CSS.
   useEffect(() => {
-    if (pinned || !autoAdvancing) return;
+    if (continuous || !autoAdvancing) return;
     const fillEl = fillRef.current;
     const knobEl = knobRef.current;
     if (!fillEl || !knobEl) return;
@@ -347,13 +407,13 @@ function ProfileTabs({
       fillAnim.cancel();
       knobAnim.cancel();
     };
-  }, [active, autoAdvancing, pinned, segment, trackHeight, trackTop]);
+  }, [active, autoAdvancing, continuous, segment, trackHeight, trackTop]);
 
   return (
     <nav
       aria-label="Member profiles"
       className={
-        pinned
+        continuous
           ? "relative lg:self-start"
           : "relative lg:sticky lg:top-28 lg:self-start"
       }
@@ -486,6 +546,76 @@ function AudiencePanel({
     >
       <div ref={innerRef}>
         <ProfilePanel profile={profile} reducedMotion={reducedMotion} />
+      </div>
+    </div>
+  );
+}
+
+// 768–1023px — every step panel laid out on one horizontal strip whose
+// transform rides the continuous `railPos`, so the strip glides sideways in
+// lockstep with the scroll (one panel per step). The wrapper height tracks the
+// *current* step's natural height (top-aligned panels, not flex-stretch) so
+// short early steps stay short and clear the header — only the content-heavy
+// last step is tall. The wrapper clips off-screen (and taller) panels with
+// overflow-hidden.
+function SlidingPanels({
+  railPos,
+  active,
+  reducedMotion,
+}: {
+  railPos: number;
+  active: number;
+  reducedMotion: boolean;
+}) {
+  const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [height, setHeight] = useState<number | null>(null);
+
+  // Size the clip window to the active panel so the pinned group is only as
+  // tall as the step being read.
+  useIsomorphicLayoutEffect(() => {
+    const el = panelRefs.current[active];
+    if (el) setHeight(el.offsetHeight);
+  }, [active]);
+
+  // Re-measure the active panel on responsive reflow (e.g. text rewrapping).
+  useEffect(() => {
+    const el = panelRefs.current[active];
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setHeight(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [active]);
+
+  return (
+    <div
+      className="min-w-0 overflow-hidden"
+      style={{
+        height: height ?? undefined,
+        transition: reducedMotion
+          ? undefined
+          : "height 480ms cubic-bezier(0.22, 0.61, 0.36, 1)",
+      }}
+    >
+      <div
+        className="flex items-start"
+        style={{
+          width: `${STEP_COUNT * 100}%`,
+          transform: `translateX(-${(railPos / STEP_COUNT) * 100}%)`,
+          willChange: "transform",
+        }}
+      >
+        {PROFILES.map((p, i) => (
+          <div
+            key={p.key}
+            ref={(el) => {
+              panelRefs.current[i] = el;
+            }}
+            className="flex-none"
+            style={{ width: `${100 / STEP_COUNT}%` }}
+          >
+            <ProfilePanel profile={p} reducedMotion={reducedMotion} />
+          </div>
+        ))}
       </div>
     </div>
   );
