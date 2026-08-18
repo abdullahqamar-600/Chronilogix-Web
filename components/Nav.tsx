@@ -256,7 +256,8 @@ const NAV_LINKS: NavLink[] = [
   { href: "/solutions", label: "Solutions", personaMenu: true, icon: SolutionsIcon },
   { href: "/about", label: "About" },
   { href: "/faq", label: "FAQ" },
-  { href: "/resources", label: "Resources", megaMenu: RESOURCES_MENU },
+  // Resources tab hidden for now — restore by un-commenting this entry.
+  // { href: "/resources", label: "Resources", megaMenu: RESOURCES_MENU },
 ];
 
 export function Nav() {

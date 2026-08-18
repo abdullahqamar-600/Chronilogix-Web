@@ -85,7 +85,8 @@ const PROOFS: Proof[] = [
     clause:
       "after Aetna’s care teams retrained in Dr. Resnicow’s method — dropouts cut by more than half.",
     source: "Source · Aetna Care Management · post-MI integration",
-    caseStudyHref: "/case-studies/aetna",
+    // Case-study link hidden for now — restore by un-commenting.
+    // caseStudyHref: "/case-studies/aetna",
   },
   {
     logo: "/us-dpp-logo.png",
