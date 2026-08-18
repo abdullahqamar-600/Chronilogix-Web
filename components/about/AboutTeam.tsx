@@ -25,24 +25,23 @@ const LEADERS: Person[] = [
   { name: "Michael Lazor", role: "Fractional CTO", photo: "/team/michael.png" },
 ];
 
-// Advisors reuse the Reference portrait set so the entire team band keeps
-// one visual style. The intent is consistency of imagery, not literal
-// identity — these stand in until the advisors' own portraits ship.
+// Every advisor now has their own portrait — these were previously
+// pointing at the leaders' files as stand-ins.
 const ADVISORS: Person[] = [
   {
     name: "Nelson Griswold",
     role: "CEO, NextGen Benefits. One of the benefits industry’s most recognized strategic voices.",
-    photo: "/team/steven.png",
+    photo: "/team/nelson.png",
   },
   {
     name: "Geoffrey C. Williams, M.D., Ph.D.",
     role: "Global expert in the treatment of behavioral and chronic conditions.",
-    photo: "/team/lou.png",
+    photo: "/team/geoffrey.png",
   },
   {
     name: "Julian Lago",
     role: "Entrepreneur and advisor with two healthcare tech exits in the last 24 months.",
-    photo: "/team/michael.png",
+    photo: "/team/julian.png",
   },
 ];
 
@@ -122,11 +121,19 @@ export function AboutTeam() {
         </p>
 
         {/* Leader grid — portraits sit on the section's paper-tint with no
-            white container chrome. The photo IS the surface; name + role
-            live below it on the paper, the way the home page handles its
-            card content (image fills, no boxed white surface). */}
+            white container chrome. Name + role live below on the paper.
+
+            Width is capped at 64rem (and the advisory row at 48rem) so
+            both grids land on the same ~16rem column. The grid used to
+            run the full 1272px container, which was right when each card
+            held a full-width 4/5 portrait; with circular avatars the
+            columns were more than twice the width of their content and
+            the faces floated apart as four isolated islands rather than
+            reading as one team. Capping the width pulls them into a
+            band, and the shared column keeps the 4-up and 3-up rows in
+            the same rhythm. */}
         <ul
-          className="mt-14 grid grid-cols-2 gap-5 md:mt-16 md:gap-6 lg:mt-20 lg:grid-cols-4 lg:gap-7"
+          className="mx-auto mt-14 grid max-w-[64rem] grid-cols-2 gap-x-5 gap-y-12 md:mt-16 md:gap-x-6 lg:mt-20 lg:grid-cols-4 lg:gap-x-8"
           style={reveal(280)}
         >
           {LEADERS.map((leader, i) => (
@@ -142,14 +149,14 @@ export function AboutTeam() {
         {/* Advisory board — same portrait treatment as the leaders so the
             two rows read as one continuous people-band. Compact 3-up grid
             with shorter copy beneath. */}
-        <div className="mt-20 md:mt-24 lg:mt-28" style={reveal(640)}>
+        <div className="mt-16 md:mt-20 lg:mt-24" style={reveal(640)}>
           {/* The eyebrow and the grid share one centered block so the
               "Advisory board" label hangs above the left edge of the
               first advisor card rather than floating against the section
               edge while the grid sits indented. */}
-          <div className="lg:mx-auto lg:max-w-[75%]">
-            <p className="eyebrow-subtle">Advisory board</p>
-            <ul className="mt-6 grid grid-cols-2 gap-5 md:gap-6 lg:grid-cols-3 lg:gap-7">
+          <div className="mx-auto max-w-[48rem]">
+            <p className="eyebrow-subtle text-center">Advisory board</p>
+            <ul className="mt-6 grid grid-cols-2 gap-x-5 gap-y-12 md:gap-x-6 lg:grid-cols-3 lg:gap-x-8">
               {ADVISORS.map((a, i) => (
                 <PersonCard
                   key={a.name}
@@ -177,34 +184,45 @@ function PersonCard({
 }) {
   const isLead = size === "lead";
   return (
-    <li style={style} className="flex flex-col">
-      {/* The portrait. Rounded, subtle soft shadow so it sits on the paper
-          page rather than floating in a hard white box. */}
+    <li style={style} className="flex flex-col items-center text-center">
+      {/* Circular avatar rather than the former 4/5 portrait crop. The
+          supplied headshots are 400px circular cutouts on a transparent
+          ground, so a rectangular frame would slice the circle and leave
+          transparent corners; a round frame matches the source crop
+          exactly. Sized well below the source resolution on purpose —
+          144px at the largest step, which is still 1:1 at 2x DPR against
+          the 288px assets, so nothing is ever upscaled. */}
       <div
-        className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-ink/[0.06]"
+        className={`relative shrink-0 overflow-hidden rounded-full bg-paper ring-1 ring-ink/[0.06] ${
+          isLead
+            ? "h-28 w-28 md:h-32 md:w-32 lg:h-36 lg:w-36"
+            : "h-28 w-28 md:h-32 md:w-32"
+        }`}
         style={{
           boxShadow:
-            "0 1px 2px rgba(40,25,15,0.05), 0 18px 40px -24px rgba(40,25,15,0.22)",
+            "0 1px 2px rgba(40,25,15,0.05), 0 14px 30px -20px rgba(40,25,15,0.22)",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={person.photo}
           alt={`Portrait of ${person.name}`}
+          width={288}
+          height={288}
           draggable={false}
           className="h-full w-full select-none object-cover"
-          style={{ objectPosition: "50% 30%" }}
         />
       </div>
 
       {/* Labels — sit directly on the section paper, no card chrome. */}
-      <div className="flex flex-col px-0.5 pt-5 md:pt-6">
+      <div className="flex w-full flex-col items-center px-0.5 pt-5 md:pt-6">
         <h3
           className={
             isLead
               ? "font-serif text-[18px] font-normal leading-tight tracking-[-0.012em] text-ink md:text-[20px]"
               : "text-[14.5px] font-medium tracking-[-0.005em] text-ink md:text-[15px]"
           }
+          style={{ textWrap: "balance" } as React.CSSProperties}
         >
           {person.name}
         </h3>
@@ -212,8 +230,9 @@ function PersonCard({
           className={
             isLead
               ? "mt-1.5 text-[13px] font-medium tracking-[-0.005em] text-brand-700"
-              : "mt-1.5 text-[13px] leading-snug text-ink-muted md:text-[13.5px]"
+              : "mt-1.5 max-w-[24ch] text-[13px] leading-snug text-ink-muted md:text-[13.5px]"
           }
+          style={{ textWrap: "balance" } as React.CSSProperties}
         >
           {person.role}
         </p>
