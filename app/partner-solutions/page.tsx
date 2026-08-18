@@ -10,12 +10,25 @@ import { BUNDLES } from "@/components/partnerSolutions/partnerData";
 import { PageNav, type TocItem } from "@/components/widget/pageNav";
 
 // "On this page" wayfinder, keyed to the partner-solutions arc.
+//
+// Order mirrors this page's render order — hero, then BUNDLES in array
+// order (zenn → medimart → hibiscus), then YourSolutionPanel — and must be
+// kept in sync with it: the rail's fill, knob and "n / total" all derive
+// from position, so a row whose section sits elsewhere on the page — or
+// isn't reachable at all — silently skews the reader's sense of place.
+//
+// One row per SECTION, not per anchor. YourSolutionPanel is a single
+// <section id="book-a-demo"> whose heading carries ps-your-solution-label,
+// and the rail resolves every id to its enclosing <section>. Two rows
+// pointing into the same panel therefore collapse onto one target: the
+// later id wins the scroll-spy and the earlier row can never light up,
+// while still eating a rail slice and a slot in the counter. So the
+// closing panel gets exactly one row here.
 const PARTNER_TOC: TocItem[] = [
   { id: null, label: "Overview" },
   { id: "ps-zenn-label", label: "ZENN + Balance for Life" },
   { id: "ps-medimart-label", label: "Medimart" },
   { id: "ps-hibiscus-label", label: "Hibiscus Health" },
-  { id: "ps-your-solution-label", label: "Your solution" },
   { id: "book-a-demo", label: "Book a demo" },
 ];
 
