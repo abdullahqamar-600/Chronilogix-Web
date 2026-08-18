@@ -190,7 +190,16 @@ function ScienceMovement() {
             change.
           </p>
           <div className="mt-8 md:mt-9">
-            <a href="/about" className="btn-primary group/mi-cta">
+            {/* Deep-links to the about page's science section rather than the
+                top of /about. The promise of this CTA is "more about the man,"
+                so landing on the team grid and making the visitor hunt for him
+                breaks that promise. `#science` is owned by AboutScience, which
+                carries the matching `scroll-mt` so the card clears the fixed
+                nav. Plain <a> (not next/link) to match this file and the rest
+                of components/sections — a full load also sidesteps the
+                smooth-scroll animation `html { scroll-behavior: smooth }`
+                would otherwise apply to a client-side hash landing. */}
+            <a href="/about#science" className="btn-primary group/mi-cta">
               About Dr. Resnicow
               <Arrow />
             </a>
