@@ -351,7 +351,7 @@ function ConversationFrame() {
     <div className="relative mx-auto aspect-[4/5] w-full max-w-[460px] overflow-hidden rounded-[24px] border border-ink/[0.08] bg-paper shadow-[0_10px_28px_-18px_rgba(20,8,2,0.18)] lg:max-w-none">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/card-1-bg.jpg"
+        src="/card-1-bg.png"
         alt=""
         className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
       />

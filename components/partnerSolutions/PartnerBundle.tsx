@@ -311,7 +311,7 @@ function BlurredCardBackground({ washClass }: { washClass: string }) {
     <>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/card-1-bg.jpg"
+        src="/card-1-bg.png"
         alt=""
         aria-hidden
         className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"

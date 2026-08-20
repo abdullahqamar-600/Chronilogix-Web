@@ -2,7 +2,7 @@
 
 const CAROUSEL = [
   {
-    src: "/card-1-bg.jpg",
+    src: "/card-1-bg.png",
     aspect: "3/4",
     w: "w-[260px] md:w-[300px]",
   },

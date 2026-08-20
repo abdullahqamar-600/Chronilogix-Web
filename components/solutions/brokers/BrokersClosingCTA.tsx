@@ -10,7 +10,7 @@
  */
 
 const CAROUSEL = [
-  { src: "/card-1-bg.jpg", aspect: "3/4", w: "w-[260px] md:w-[300px]" },
+  { src: "/card-1-bg.png", aspect: "3/4", w: "w-[260px] md:w-[300px]" },
   {
     src: "/generated-images/chronilogix-soft-flower-senior-portrait.png",
     aspect: "3/4",

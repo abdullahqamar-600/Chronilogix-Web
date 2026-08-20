@@ -206,7 +206,7 @@ function EngageVisual({ active }: { active: boolean }) {
     <div className="absolute inset-0">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/card-1-bg.jpg"
+        src="/card-1-bg.png"
         alt=""
         className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
       />
@@ -371,7 +371,7 @@ function PlanVisual({ active }: { active: boolean }) {
     <div className="absolute inset-0">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/card-1-bg.jpg"
+        src="/card-1-bg.png"
         alt=""
         className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
       />
