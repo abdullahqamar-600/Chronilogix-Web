@@ -261,12 +261,23 @@ function PersonCard({
           still runs edge to edge. Reach for the gutter to resize these,
           not for a width on the portrait.
 
-          RESOLUTION CAVEAT: the source files are 400x400, which was the
-          crisp ceiling for the previous 192px step at 2x DPR. Filling the
-          column puts these near 294px on a wide screen, so on a retina
-          display they are upscaled roughly 1.5x and will read slightly
-          soft. That is a limit of the supplied assets, not of the layout —
-          the fix is higher-resolution originals, not a smaller frame.
+          NO FRAME CHROME, deliberately. This carried a `ring-1` hairline,
+          a `bg-paper` fill and a drop shadow, and all three fought the
+          artwork: the supplied circle already ends in a clean antialiased
+          edge, so the ring drew a second contour just outside it and the
+          cream fill lit up the 1px seam where the two circles' antialiasing
+          overlaps — a pale rim against the section's warmer paper-tint.
+          Read together they looked like a border the portraits were never
+          meant to have. The cutouts sit on the section ground unframed;
+          they need nothing else to read as portraits. Do not reintroduce a
+          ring, a background fill, or a shadow here — any of them puts the
+          rim back.
+
+          RESOLUTION CAVEAT: the source files are 390x390. Filling the
+          column puts these near 234px on a wide screen, so on a retina
+          display they are upscaled roughly 1.2x and may read a touch soft.
+          That is a limit of the supplied assets, not of the layout — the
+          fix is higher-resolution originals, not a smaller frame.
 
           One size for leaders and advisors alike. The advisors used to
           render two steps smaller, which broke the vertical alignment
@@ -276,13 +287,7 @@ function PersonCard({
           portrait — serif name and brand-colored role for leaders, plain
           sans for advisors — which is enough of a signal without shrinking
           the faces. */}
-      <div
-        className="relative aspect-square w-full shrink-0 overflow-hidden rounded-full bg-paper ring-1 ring-ink/[0.06]"
-        style={{
-          boxShadow:
-            "0 1px 2px rgba(40,25,15,0.05), 0 14px 30px -20px rgba(40,25,15,0.22)",
-        }}
-      >
+      <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-full">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={person.photo}
